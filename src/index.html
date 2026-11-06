@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fetchweir</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%236C8CFF'/%3E%3Cpath d='M12 5v10M8 11l4 4 4-4M5 19h14' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <!-- 标题栏 -->
+  <header class="titlebar" data-tauri-drag-region>
+    <div class="brand">
+      <span class="mark">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M4 20h16"/>
+        </svg>
+      </span>
+      <div>
+        <div class="brand-name">Fetchweir</div>
+        <div class="brand-sub">Download Manager</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="tb-pill" title="引擎状态"><span class="dot" id="engineDot"></span><span id="engineText">引擎就绪</span></div>
+    <div class="tb-pill" id="versionPill" title="当前版本">v—</div>
+    <div class="wincontrols">
+      <button class="wc" id="btnMinimize" title="最小化" aria-label="最小化">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+      <button class="wc" id="btnMaximize" title="最大化/还原" aria-label="最大化">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <button class="wc close" id="btnClose" title="关闭" aria-label="关闭">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="grp-label">下载</div>
+    <div class="sb active" data-nav="downloads" data-filter="all">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      <span>全部任务</span><span class="n" id="countAll">0</span>
+    </div>
+    <div class="sb" data-nav="downloads" data-filter="active">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+      <span>正在下载</span><span class="n" id="countActive">0</span>
+    </div>
+    <div class="sb" data-nav="downloads" data-filter="done">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <span>已完成</span><span class="n" id="countDone">0</span>
+    </div>
+
+    <div class="grp-label">系统</div>
+    <div class="sb" data-nav="settings">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      <span>设置</span>
+    </div>
+
+    <div class="side-foot">
+      <div class="limit-card">
+        <div class="limit-head"><span>当前速度</span><span class="limit-val" id="sideSpeed">0 B/s</span></div>
+        <div class="mini-track"><div class="mini-fill" id="sideLoad"></div></div>
+        <div class="limit-foot"><span id="sideActive">0 个任务下载中</span><span id="sideLimit">不限速</span></div>
+      </div>
+      <div class="user">
+        <div class="avatar">FW</div>
+        <div class="who">本机<small id="sidePlatform">—</small></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 主区 -->
+  <main class="main">
+    <!-- 下载列表 -->
+    <section class="view" id="view-downloads">
+      <div class="head-row">
+        <div>
+          <div class="h1" id="listTitle">全部任务</div>
+          <div class="muted" style="margin-top:3px">粘贴链接即可开始，服务端支持 Range 时自动分段并发。</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn ghost sm" id="btnOpenFolder">打开下载目录</button>
+        </div>
+      </div>
+
+      <div class="newbar">
+        <div class="field">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/></svg>
+          <input id="urlInput" type="text" placeholder="https://example.com/file.zip" spellcheck="false" autocomplete="off">
+        </div>
+        <button class="btn primary" id="btnAdd">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          开始下载
+        </button>
+        <button class="btn" id="btnAddOptions" title="高级选项">高级</button>
+      </div>
+      <div class="newbar" id="advancedBar" hidden>
+        <div class="field">
+          <input id="dirInput" type="text" placeholder="保存目录（默认取设置里的下载目录）" spellcheck="false">
+        </div>
+        <div class="field" style="width:150px">
+          <input id="connInput" type="number" min="1" max="16" placeholder="连接数">
+        </div>
+        <div class="dim" style="align-self:center">1–16 段并发；服务端不支持 Range 时自动退化为单连接</div>
+      </div>
+
+      <div class="list-wrap">
+        <div class="list-head">
+          <span>名称</span><span>大小</span><span>进度</span><span>速度</span><span>操作</span>
+        </div>
+        <div class="tasks" id="taskList"></div>
+        <div class="empty" id="emptyState">
+          <div class="big">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+          </div>
+          <div style="font-size:13px;font-weight:600">还没有下载任务</div>
+          <div class="dim">在上方输入链接，或从浏览器扩展发送任务到 Fetchweir。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置 -->
+    <section class="view" id="view-settings" hidden>
+      <div class="head-row">
+        <div>
+          <div class="h1">设置</div>
+          <div class="muted" style="margin-top:3px">改动会立即保存到本机配置。</div>
+        </div>
+        <div class="head-actions"><button class="btn primary" id="btnSaveSettings">保存设置</button></div>
+      </div>
+
+      <div class="settings-grid">
+        <div class="card setting-card">
+          <h3>下载</h3>
+          <p>保存位置与并发策略</p>
+          <div class="setting-row">
+            <span class="lbl">默认下载目录</span>
+          </div>
+          <div class="path-row">
+            <div class="field"><input id="setDir" type="text" spellcheck="false"></div>
+            <button class="btn sm" id="btnRevealDir">打开</button>
+          </div>
+          <div class="setting-row">
+            <span class="lbl">每任务连接数</span>
+            <input class="field num" id="setConns" type="number" min="1" max="16">
+          </div>
+          <div class="setting-row">
+            <span class="lbl">全局限速（KB/s，0 为不限）</span>
+            <input class="field num" id="setLimit" type="number" min="0">
+          </div>
+        </div>
+
+        <div class="card setting-card">
+          <h3>外观</h3>
+          <p>主题只影响界面，不影响下载</p>
+          <div class="setting-row">
+            <span class="lbl">主题</span>
+            <div class="seg" id="segTheme">
+              <button data-theme-val="dark">深色</button>
+              <button data-theme-val="light">浅色</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <span class="lbl">版本</span>
+            <span class="dim" id="setVersion">—</span>
+          </div>
+          <div class="setting-row">
+            <span class="lbl">数据目录</span>
+            <span class="dim" id="setDataDir" style="text-align:right;word-break:break-all">—</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 状态栏 -->
+  <div class="statusbar">
+    <span id="statusText">就绪</span>
+    <span class="right">
+      <span id="statusSpeed">0 B/s</span>
+      <span id="statusVersion">v—</span>
+    </span>
+  </div>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="overlay" id="detailOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="modal-head">
+      <div style="flex:1;min-width:0">
+        <div class="modal-title" id="detailTitle">任务详情</div>
+        <div class="dim" id="detailState" style="margin-top:4px">—</div>
+      </div>
+      <button class="ico" id="detailClose" title="关闭">
+        <svg width="14" height="14" viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="kv"><span class="k">链接</span><span class="v" id="detailUrl">—</span></div>
+      <div class="kv"><span class="k">保存路径</span><span class="v" id="detailPath">—</span></div>
+      <div class="kv"><span class="k">大小</span><span class="v" id="detailSize">—</span></div>
+      <div class="kv"><span class="k">已下载</span><span class="v" id="detailDone">—</span></div>
+      <div class="kv"><span class="k">分段</span><span class="v" id="detailConns">—</span></div>
+      <div class="kv"><span class="k">添加时间</span><span class="v" id="detailCreated">—</span></div>
+      <div class="kv" id="detailErrRow" hidden><span class="k">错误</span><span class="v" id="detailErr" style="color:var(--err)">—</span></div>
+    </div>
+    <div class="modal-foot" id="detailActions"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 打包 (${{ matrix.label }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            label: windows-x64
+            bundles: nsis
+          - os: ubuntu-22.04
+            label: linux-x64
+            bundles: deb,appimage
+          - os: macos-14
+            label: macos-arm64
+            bundles: dmg
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 校验 tag 与版本号
+        shell: pwsh
+        run: ./tools/Test-FwVersion.ps1 -FwTag "${{ github.ref_name }}"
+
+      - name: 安装 Linux 系统依赖
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf \
+            libxdo-dev libssl-dev build-essential curl wget file
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 安装前端依赖
+        run: npm ci --no-audit --no-fund
+
+      - name: 构建并发布
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Fetchweir ${{ github.ref_name }}"
+          releaseBody: |
+            Fetchweir ${{ github.ref_name }} 自动构建产物。
+
+            · Windows: NSIS 安装包
+            · Linux: deb / AppImage
+            · macOS: dmg（arm64）
+
+            更新说明与变更记录见仓库提交历史。
+          releaseDraft: false
+          prerelease: ${{ contains(github.ref_name, '-alpha') }}
+          args: --bundles ${{ matrix.bundles }}

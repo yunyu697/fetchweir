@@ -1,0 +1,43 @@
+[package]
+name = "fetchweir"
+# 版本号唯一来源是仓库根目录的 version.json，这里固定占位，
+# 真实版本由 build.rs 读入并以 FETCHWEIR_VERSION 编译期常量注入。
+version = "0.0.0"
+edition = "2021"
+rust-version = "1.77"
+build = "build.rs"
+description = "Fetchweir 下载管理器"
+
+[lib]
+name = "fetchweir_lib"
+# 不产出 cdylib：Windows GNU 工具链下，Tauri 依赖图会在 DLL 导出表中产生
+# 超过 65535 个导出序号（ld 报 "export ordinal too large"）。桌面端用 rlib 即可；
+# 若将来支持 Tauri 移动端，再单独为移动目标启用 cdylib。
+crate-type = ["staticlib", "rlib"]
+
+[[bin]]
+name = "fetchweir"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+serde_json = "1"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "sync", "time", "io-util"] }
+reqwest = { version = "0.12", default-features = false, features = ["native-tls", "stream", "http2"] }
+futures-util = "0.3"
+tokio-util = { version = "0.7", features = ["rt"] }
+thiserror = "2"
+dirs = "6"
+url = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

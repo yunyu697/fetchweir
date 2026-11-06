@@ -1,0 +1,2398 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark" data-density="comfortable">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fetchweir · 下载管理器</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%236C8CFF'/%3E%3Cpath d='M12 5v10M8 11l4 4 4-4M5 19h14' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* ============ tokens ============ */
+:root{
+  --r-sm:7px; --r:10px; --r-lg:14px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font:-apple-system,"Segoe UI Variable Text","Segoe UI","PingFang SC","Microsoft YaHei UI","Noto Sans SC",system-ui,sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Cascadia Mono","Liberation Mono",monospace;
+  --accent:#6C8CFF; --accent-2:#9A7BFF;
+  --ok:#2ED47A; --warn:#F5A524; --err:#FF5F6D; --info:#38C6E0;
+}
+html[data-theme="dark"]{
+  --bg:#0A0B0E; --bg-2:#0D0F14;
+  --panel:#12141A; --panel-2:#171A21; --panel-3:#1E222B;
+  --line:#242835; --line-2:#1A1D26;
+  --fg:#E9ECF2; --fg-2:#98A1B0; --fg-3:#606879;
+  --shadow:0 16px 40px rgba(0,0,0,.5);
+  --glass:rgba(255,255,255,.045);
+  --tick:rgba(10,11,14,.55);
+  --titlebar:#0C0D11;
+}
+html[data-theme="light"]{
+  --bg:#EDF0F5; --bg-2:#F4F6FA;
+  --panel:#FFFFFF; --panel-2:#F7F9FC; --panel-3:#EEF2F8;
+  --line:#DDE3EE; --line-2:#E8EDF5;
+  --fg:#121723; --fg-2:#576073; --fg-3:#8B95A7;
+  --shadow:0 14px 34px rgba(23,35,70,.09);
+  --glass:rgba(16,24,40,.03);
+  --tick:rgba(255,255,255,.75);
+  --titlebar:#F7F9FC;
+}
+html[data-density="compact"]{ --row-h:56px; --gap:8px; }
+html[data-density="comfortable"]{ --row-h:70px; --gap:12px; }
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--fg);
+  font:400 13px/1.55 var(--font);
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+  font-variant-numeric:tabular-nums;
+}
+::selection{background:color-mix(in srgb, var(--accent) 35%, transparent)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--panel-3);border:3px solid var(--bg);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:var(--fg-3)}
+
+/* ============ layout ============ */
+.app{
+  height:100%; display:grid; position:relative;
+  grid-template-columns:246px minmax(0,1fr);
+  grid-template-rows:44px minmax(0,1fr) 30px;
+}
+.titlebar{
+  grid-column:1/-1; grid-row:1;
+  display:flex; align-items:center; gap:10px; padding:0 10px 0 16px;
+  background:var(--titlebar); border-bottom:1px solid var(--line);
+  user-select:none;
+}
+.brand{display:flex;align-items:center;gap:9px}
+.mark{
+  width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--accent),var(--accent-2));
+  box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent);
+}
+.mark svg{display:block}
+.brand-name{font-size:13px;font-weight:650;letter-spacing:.01em}
+.brand-sub{font-size:10px;color:var(--fg-3);letter-spacing:.14em;text-transform:uppercase;margin-top:-2px}
+.spacer{flex:1}
+.tb-pill{
+  display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg-2);
+  background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:3px 10px 3px 8px;
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 18%,transparent)}
+.wincontrols{display:flex;gap:2px;margin-left:6px}
+.wc{width:34px;height:26px;border:0;background:transparent;border-radius:6px;display:grid;place-items:center;cursor:pointer;color:var(--fg-2);transition:.15s var(--ease)}
+.wc:hover{background:var(--panel-3);color:var(--fg)}
+.wc.close:hover{background:#E5484D;color:#fff}
+
+/* ============ sidebar ============ */
+.sidebar{
+  grid-column:1;grid-row:2/4;
+  background:var(--bg-2); border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:14px 12px 10px;gap:2px;
+  overflow-y:auto;
+}
+.grp-label{
+  font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--fg-3);padding:0 10px;margin:14px 0 6px;
+}
+.sb{
+  display:flex;align-items:center;gap:10px;height:34px;padding:0 10px;
+  border-radius:var(--r-sm);cursor:pointer;color:var(--fg-2);
+  font-size:13px;transition:background .16s var(--ease),color .16s var(--ease);
+  position:relative;white-space:nowrap;
+}
+.sb svg{flex:0 0 16px;opacity:.8}
+.sb:hover{background:var(--panel-2);color:var(--fg)}
+.sb.active{
+  background:color-mix(in srgb,var(--accent) 13%,transparent);
+  color:var(--fg);font-weight:550;
+}
+.sb.active svg{opacity:1;color:var(--accent)}
+.sb.active::before{
+  content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:2px;
+  background:var(--accent);border-radius:0 2px 2px 0;
+}
+.sb .n{margin-left:auto;font-size:11px;color:var(--fg-3);font-weight:500}
+.sb.active .n{color:var(--accent)}
+.sb-badge{
+  margin-left:auto;font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:20px;
+  background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);
+}
+.side-foot{margin-top:auto;padding-top:14px}
+.limit-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:11px 12px;
+}
+.limit-head{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--fg-3);margin-bottom:7px}
+.limit-val{font-size:12px;color:var(--fg);font-weight:600}
+.mini-track{height:4px;border-radius:4px;background:var(--panel-3);overflow:hidden}
+.mini-fill{height:100%;width:62%;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.limit-foot{display:flex;justify-content:space-between;font-size:10.5px;color:var(--fg-3);margin-top:7px}
+.user{display:flex;align-items:center;gap:9px;padding:8px 6px 2px;margin-top:8px}
+.avatar{
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:650;
+  background:linear-gradient(140deg,#3B4A6B,#232A3B);color:#C7D2E8;border:1px solid var(--line);
+}
+.user .who{font-size:12px;color:var(--fg)}
+.user .who small{display:block;font-size:10px;color:var(--fg-3)}
+
+/* ============ main ============ */
+.main{grid-column:2;grid-row:2;overflow:hidden;position:relative}
+.view{
+  position:absolute;inset:0;overflow-y:auto;
+  --vpad-x:24px; --vpad-y:20px; --vpad-b:22px;
+  padding:var(--vpad-y) var(--vpad-x) var(--vpad-b);
+  animation:fade .28s var(--ease);
+}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+.view[hidden]{display:none}
+
+.statusbar{
+  grid-column:2;grid-row:3;
+  display:flex;align-items:center;gap:16px;padding:0 16px;
+  background:var(--bg-2);border-top:1px solid var(--line);
+  font-size:10.5px;color:var(--fg-3);
+}
+.spark{width:120px;height:16px;opacity:.85}
+.statusbar .right{margin-left:auto;display:flex;gap:16px}
+
+/* ============ generic ============ */
+.h1{font-size:19px;font-weight:650;letter-spacing:-.01em}
+.h2{font-size:13px;font-weight:600}
+.muted{color:var(--fg-2);font-size:12px}
+.dim{color:var(--fg-3);font-size:11.5px}
+.row{display:flex;align-items:center;gap:10px}
+.head-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 16px;margin-bottom:16px;flex-wrap:wrap}
+.head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:32px;padding:0 13px;border-radius:var(--r-sm);border:1px solid var(--line);
+  background:var(--panel-2);color:var(--fg);font:500 12.5px var(--font);cursor:pointer;
+  transition:.15s var(--ease);white-space:nowrap;
+}
+.btn:hover{background:var(--panel-3);border-color:color-mix(in srgb,var(--fg-3) 40%,var(--line))}
+.btn:active{transform:translateY(.5px)}
+.btn.primary{
+  background:linear-gradient(160deg,var(--accent),color-mix(in srgb,var(--accent) 72%,var(--accent-2)));
+  border-color:transparent;color:#fff;font-weight:600;
+  box-shadow:0 6px 18px -6px color-mix(in srgb,var(--accent) 70%,transparent);
+}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ok{
+  background:color-mix(in srgb,var(--ok) 16%,var(--panel));
+  border-color:color-mix(in srgb,var(--ok) 42%,transparent);color:var(--ok);font-weight:600;
+}
+.btn.ok:hover{background:color-mix(in srgb,var(--ok) 24%,var(--panel));border-color:color-mix(in srgb,var(--ok) 58%,transparent)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--fg-2)}
+.btn.ghost:hover{background:var(--panel-2);color:var(--fg)}
+.btn.sm{height:27px;padding:0 10px;font-size:11.5px;border-radius:6px}
+.ico{
+  width:30px;height:30px;padding:0;border-radius:var(--r-sm);border:1px solid transparent;
+  background:transparent;color:var(--fg-2);display:grid;place-items:center;cursor:pointer;transition:.15s var(--ease);
+}
+.ico:hover{background:var(--panel-2);color:var(--fg);border-color:var(--line)}
+
+.field{
+  display:flex;align-items:center;gap:8px;height:32px;padding:0 11px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-sm);
+  color:var(--fg-3);min-width:0;
+}
+.field input{
+  border:0;background:transparent;outline:0;color:var(--fg);font:400 12.5px var(--font);width:100%;min-width:0;
+}
+.field input::placeholder{color:var(--fg-3)}
+.field.w240{width:240px}
+
+.chip{
+  height:26px;padding:0 11px;border-radius:20px;border:1px solid var(--line);
+  background:transparent;color:var(--fg-2);font-size:11.5px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:.15s var(--ease);white-space:nowrap;
+}
+.chip:hover{color:var(--fg);border-color:var(--fg-3)}
+.chip.on{
+  background:color-mix(in srgb,var(--accent) 14%,transparent);
+  border-color:color-mix(in srgb,var(--accent) 45%,transparent);
+  color:color-mix(in srgb,var(--accent) 78%,var(--fg));font-weight:550;
+}
+.chip .c{font-size:10px;opacity:.7}
+
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line-2)}
+.card-b{padding:16px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:12px 14px;position:relative;overflow:hidden;
+}
+.stat .k{font-size:11px;color:var(--fg-3);display:flex;align-items:center;gap:5px}
+.stat .v{font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:3px;display:flex;align-items:baseline;gap:4px}
+.stat .v span{font-size:11px;font-weight:500;color:var(--fg-3)}
+.stat .d{font-size:10.5px;margin-top:2px;color:var(--fg-3)}
+.stat .u{position:absolute;right:12px;top:12px;width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--panel-3);color:var(--fg-2)}
+
+/* progress */
+.bar{position:relative;height:5px;border-radius:4px;background:var(--panel-3);overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s var(--ease)}
+.bar i.done{background:var(--ok)}
+.bar i.wait{background:var(--fg-3)}
+.bar.ticks::after{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 19px,var(--tick) 19px 21px);
+  opacity:.55;pointer-events:none;
+}
+
+/* ============ task list ============ */
+/* 列宽统一由 --cols-task 控制：换档时只需要改这一个变量 */
+.app{--cols-task:26px 40px minmax(0,1fr) 110px 84px 74px 96px 32px}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.toolbar .grow{flex:1}
+.list-head{
+  display:grid;grid-template-columns:var(--cols-task);
+  align-items:end;gap:10px;padding:0 12px 7px;font-size:10.5px;color:var(--fg-3);
+  letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+}
+.list-head .hbtn{
+  background:none;border:0;padding:0;font:inherit;letter-spacing:inherit;text-transform:inherit;
+  color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;gap:3px;
+  width:100%;min-width:0;
+}
+.list-head .hbtn:hover{color:var(--fg)}
+.list-head .hbtn.on{color:var(--accent)}
+.list-head .hbtn .ar{font-style:normal;font-size:9px;opacity:0;transition:.15s}
+.list-head .hbtn.on .ar{opacity:1}
+.task{
+  display:grid;grid-template-columns:var(--cols-task);
+  align-items:center;gap:10px;min-height:var(--row-h);padding:0 12px;
+  border-radius:var(--r);border:1px solid transparent;cursor:pointer;user-select:none;
+  transition:background .15s var(--ease),border-color .15s var(--ease);
+}
+.task:hover{background:var(--panel);border-color:var(--line)}
+.task.sel{background:var(--panel);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.task.sel .t-name{color:var(--fg)}
+.t-cb{display:flex;align-items:center;justify-content:center;align-self:stretch}
+.t-cb .cb{width:15px;height:15px}
+.t-acts{display:flex;align-items:center;justify-content:flex-end;gap:5px}
+.tbtn{
+  height:24px;min-width:24px;padding:0 6px;border-radius:6px;border:1px solid var(--line);
+  background:transparent;color:var(--fg-2);display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  font:500 11px var(--font);cursor:pointer;transition:.14s var(--ease);white-space:nowrap;flex:0 0 auto;
+}
+.tbtn:hover{background:var(--panel-3);color:var(--fg);border-color:color-mix(in srgb,var(--fg-3) 45%,var(--line))}
+.tbtn.ok{
+  color:var(--ok);border-color:color-mix(in srgb,var(--ok) 30%,transparent);
+  background:color-mix(in srgb,var(--ok) 9%,transparent);font-weight:600;
+}
+.tbtn.ok:hover{background:color-mix(in srgb,var(--ok) 18%,transparent);border-color:color-mix(in srgb,var(--ok) 45%,transparent);color:var(--ok)}
+.tbtn.ok.ghost{background:transparent;border-color:color-mix(in srgb,var(--ok) 22%,transparent)}
+.tbtn.err:hover{background:color-mix(in srgb,var(--err) 12%,transparent);color:var(--err);border-color:color-mix(in srgb,var(--err) 35%,transparent)}
+.nw{display:none;font-size:10.5px;color:var(--fg-3)}
+.sort-ctl{display:flex;align-items:center;gap:6px}
+.sort-ctl .lbl{font-size:10.5px;color:var(--fg-3);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+#sortDir .ar{font-style:normal;font-size:11px;line-height:1}
+.task-bulk{
+  position:absolute;left:18px;right:18px;bottom:12px;z-index:9;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;border-radius:var(--r-lg);
+  background:var(--panel);
+  border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));
+  box-shadow:0 14px 30px -14px rgba(0,0,0,.65);
+}
+/* 批量条占据底部一条独立空间，列表区域同步收缩，绝不遮住最后一行 */
+.main.has-sel .view[data-view="main"]{bottom:66px}
+.task-bulk .sum{font-size:12px;color:var(--fg-2)}
+.task-bulk .sum b{color:var(--fg);font-weight:600}
+.task-bulk .right{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.task-bulk[hidden]{display:none}
+
+/* ============ 任务详情弹窗 ============ */
+.modal{
+  position:absolute;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;
+  padding:22px;background:color-mix(in srgb,#05070C 46%,transparent);
+  backdrop-filter:blur(3px);animation:fade .16s var(--ease);
+}
+.modal[hidden]{display:none}
+.modal-card{
+  width:min(940px,100%);max-height:100%;display:flex;flex-direction:column;
+  background:var(--bg);border:1px solid color-mix(in srgb,var(--fg-3) 30%,var(--line));
+  border-radius:14px;box-shadow:0 32px 80px -24px rgba(0,0,0,.75);overflow:hidden;
+  animation:pop .22s var(--ease);
+}
+.modal-bar{
+  display:flex;align-items:center;gap:10px;padding:9px 10px 9px 16px;
+  background:var(--panel);border-bottom:1px solid var(--line);flex:0 0 auto;
+}
+.modal-bar .t{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-2)}
+.modal-bar .dim{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--fg-3)}
+.modal-x{
+  margin-left:auto;width:28px;height:28px;flex:0 0 auto;border-radius:7px;border:1px solid var(--line);
+  background:transparent;color:var(--fg-2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:.14s var(--ease);
+}
+.modal-x:hover{background:var(--panel-3);color:var(--fg)}
+.modal-body{overflow-y:auto;overscroll-behavior:contain;padding:16px;flex:1 1 auto}
+.modal-body .det-head{margin-bottom:14px}
+.app.modal-open .sidebar{pointer-events:none}
+.thumb{
+  width:40px;height:40px;border-radius:9px;display:grid;place-items:center;
+  border:1px solid var(--line);color:var(--fg-2);position:relative;overflow:hidden;
+}
+.thumb.v{background:linear-gradient(150deg,#243055,#161B2B);color:#9FB4E8}
+.thumb.a{background:linear-gradient(150deg,#1E3B36,#141F1E);color:#7BD9C4}
+.thumb.i{background:linear-gradient(150deg,#3A2A42,#1D1622);color:#C99BE8}
+.thumb.d{background:linear-gradient(150deg,#3C3221,#1F1A12);color:#E5C489}
+html[data-theme="light"] .thumb.v{background:linear-gradient(150deg,#DCE6FF,#EEF3FF);color:#4E6BC4}
+html[data-theme="light"] .thumb.a{background:linear-gradient(150deg,#D8F2EA,#EDFBF6);color:#2E9C81}
+html[data-theme="light"] .thumb.i{background:linear-gradient(150deg,#F0E1FA,#FAF2FF);color:#9B5FC4}
+html[data-theme="light"] .thumb.d{background:linear-gradient(150deg,#F7E9CE,#FEF8EC);color:#B08A3C}
+.t-main{min-width:0}
+.t-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px}
+.t-sub{font-size:11px;color:var(--fg-3);display:flex;align-items:center;gap:6px;margin-top:2px}
+.t-sub .sep{width:2px;height:2px;border-radius:2px;background:var(--fg-3);opacity:.6}
+.t-bar{margin-top:7px;display:flex;align-items:center;gap:9px}
+.t-bar .bar{flex:1}
+.t-bar .pct{font-size:10.5px;color:var(--fg-3);width:34px;text-align:right}
+.t-size{font-size:12px;color:var(--fg-2);text-align:right}
+.t-size b{display:block;color:var(--fg);font-weight:500;font-size:12px}
+.t-size small{font-size:10.5px;color:var(--fg-3)}
+.t-speed{font-size:12px;color:var(--fg);text-align:right;font-weight:500}
+.t-speed small{display:block;font-size:10.5px;color:var(--fg-3);font-weight:400}
+.st{
+  display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:550;
+  padding:3px 8px;border-radius:6px;white-space:nowrap;
+}
+.st.dl{background:color-mix(in srgb,var(--accent) 14%,transparent);color:color-mix(in srgb,var(--accent) 82%,var(--fg))}
+.st.wait{background:var(--panel-3);color:var(--fg-2)}
+.st.ok{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.st.err{background:color-mix(in srgb,var(--err) 15%,transparent);color:var(--err)}
+.st.pause{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.st .d{width:5px;height:5px;border-radius:50%;background:currentColor}
+.st.dl .d{animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.tag{
+  font-size:10px;padding:1px 5px;border-radius:4px;background:var(--panel-3);color:var(--fg-3);
+  border:1px solid var(--line-2);font-weight:500;flex:0 0 auto;
+}
+.tag.hls{background:color-mix(in srgb,var(--info) 13%,transparent);color:var(--info);border-color:transparent}
+.tag.yt{background:color-mix(in srgb,var(--err) 12%,transparent);color:#FF7B86;border-color:transparent}
+
+/* ============ detail ============ */
+.det-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+.det-icon{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto}
+.det-title{font-size:18px;font-weight:650;letter-spacing:-.01em;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.det-url{
+  font-family:var(--mono);font-size:11px;color:var(--fg-3);margin-top:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:640px;
+}
+.det-actions{margin-left:auto;display:flex;gap:8px;flex:0 0 auto}
+.hero{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:18px 20px;margin-bottom:14px;
+}
+.hero-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+.big-speed{font-size:30px;font-weight:600;letter-spacing:-.025em;line-height:1.1}
+.big-speed span{font-size:13px;color:var(--fg-3);font-weight:400;margin-left:4px}
+.hero-meta{display:flex;gap:22px}
+.hero-meta .m{font-size:10.5px;color:var(--fg-3)}
+.hero-meta .m b{display:block;font-size:13px;color:var(--fg);font-weight:550;margin-top:2px}
+/* segment map */
+.segmap{display:grid;grid-template-columns:repeat(16,1fr);gap:5px;margin-top:6px}
+.seg{display:flex;flex-direction:column;gap:3px}
+.seg i{height:8px;border-radius:3px;background:var(--panel-3);transition:background .2s}
+.seg i.f{background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 70%,var(--accent-2)))}
+.seg i.a{background:color-mix(in srgb,var(--accent) 60%,var(--panel-3));animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:.55}50%{opacity:1}}
+.seg-legend{display:flex;gap:14px;font-size:10.5px;color:var(--fg-3);margin-top:10px}
+.seg-legend span{display:flex;align-items:center;gap:5px}
+.seg-legend b{width:8px;height:8px;border-radius:2px;display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line-2);font-size:12px}
+.kv:last-child{border-bottom:0}
+.kv .k{color:var(--fg-2)}
+.kv .v{color:var(--fg);font-family:var(--mono);font-size:11.5px}
+.conn-row{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:11.5px}
+.conn-row .id{width:34px;color:var(--fg-3);font-family:var(--mono);font-size:10.5px}
+.conn-row .bar{flex:1;height:3px}
+.conn-row .sp{width:64px;text-align:right;color:var(--fg-2);font-size:11px}
+.log{font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--fg-2);max-height:190px;overflow:auto}
+.log b{color:var(--fg-3);font-weight:400}
+.log .g{color:var(--ok)} .log .y{color:var(--warn)} .log .b{color:var(--accent)}
+
+/* ============ video ============ */
+.vid-top{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:start}
+.vid-grid{display:grid;grid-template-columns:minmax(0,1fr) 312px;gap:14px;align-items:start}
+.poster{
+  border-radius:var(--r-lg);border:1px solid var(--line);overflow:hidden;position:relative;
+  background:
+    radial-gradient(120% 90% at 20% 10%,#2B3B72 0%,transparent 60%),
+    radial-gradient(100% 80% at 90% 100%,#4A2B62 0%,transparent 55%),
+    linear-gradient(160deg,#111726,#0B0E16);
+  aspect-ratio:16/10;display:grid;place-items:center;
+}
+.poster .play{
+  width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;backdrop-filter:blur(4px);
+}
+.poster .dur{
+  position:absolute;right:8px;bottom:8px;font-size:10.5px;background:rgba(0,0,0,.65);
+  color:#fff;padding:2px 6px;border-radius:4px;font-family:var(--mono);
+}
+.poster .res{
+  position:absolute;left:8px;top:8px;font-size:10px;background:rgba(0,0,0,.6);color:#fff;
+  padding:2px 6px;border-radius:4px;font-weight:600;letter-spacing:.04em;
+}
+.vid-info h2{font-size:16px;font-weight:600;margin-bottom:6px}
+.vid-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.vid-chips .tag{font-size:10.5px;padding:2px 7px}
+.seg-tabs{display:inline-flex;background:var(--panel-3);border-radius:9px;padding:3px;gap:2px}
+.seg-tabs button{
+  border:0;background:transparent;color:var(--fg-2);font:500 12px var(--font);
+  padding:5px 13px;border-radius:7px;cursor:pointer;transition:.15s var(--ease);
+}
+.seg-tabs button.on{background:var(--panel);color:var(--fg);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+table.fmt{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+table.fmt th{
+  font-size:10.5px;color:var(--fg-3);font-weight:600;text-align:left;letter-spacing:.05em;
+  text-transform:uppercase;padding:0 8px 8px;border-bottom:1px solid var(--line);
+}
+table.fmt th:nth-child(1){width:30px}
+table.fmt th:nth-child(2){width:106px}
+table.fmt th:nth-child(3){width:98px}
+table.fmt th:nth-child(4){width:42px}
+table.fmt th:nth-child(5){width:50px}
+table.fmt th:nth-child(6){width:72px}
+table.fmt th:nth-child(7){width:74px}
+table.fmt th.r,table.fmt td.r{text-align:right}
+table.fmt td{padding:9px 8px;border-bottom:1px solid var(--line-2);font-size:12.5px;overflow-wrap:anywhere}
+table.fmt .dim{font-size:10px}
+table.fmt tr:last-child td{border-bottom:0}
+table.fmt tbody tr{cursor:pointer;transition:background .12s}
+table.fmt tbody tr:hover{background:var(--panel-2)}
+table.fmt tbody tr.on{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+table.fmt tbody tr.off{opacity:.42;cursor:not-allowed}
+.radio{
+  width:15px;height:15px;border-radius:50%;border:1.5px solid var(--fg-3);display:grid;place-items:center;flex:0 0 auto;
+}
+.radio.on{border-color:var(--accent)}
+.radio.on::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.mono{font-family:var(--mono);font-size:11.5px}
+.q-badge{
+  font-size:9.5px;font-weight:700;letter-spacing:.03em;padding:1px 5px;border-radius:4px;
+  background:var(--panel-3);color:var(--fg-2);
+}
+.q-badge.best{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.q-badge.warn{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+.out-card{position:sticky;top:0}
+.out-item{display:flex;align-items:center;gap:9px;padding:9px 10px;background:var(--panel-2);border-radius:8px;border:1px solid var(--line-2);margin-bottom:7px}
+.out-item .k{font-size:10px;color:var(--fg-3);width:26px}
+.out-item .v{font-size:12px;font-weight:500}
+.out-item .x{margin-left:auto;font-size:10.5px;color:var(--fg-3);font-family:var(--mono)}
+.out-plus{text-align:center;font-size:14px;color:var(--fg-3);margin:-2px 0 5px}
+.compat{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.compat .cv{
+  display:flex;align-items:center;gap:4px;font-size:10.5px;padding:3px 7px;border-radius:5px;
+  background:var(--panel-2);border:1px solid var(--line-2);color:var(--fg-2);
+}
+.compat .cv.no{color:var(--err);border-color:color-mix(in srgb,var(--err) 25%,transparent)}
+.compat .cv.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 22%,transparent)}
+
+/* ============ sniff ============ */
+.sniff-head{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+}
+.sniff-url{font-family:var(--mono);font-size:11.5px;color:var(--fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.grp{
+  border:1px solid var(--line);border-radius:var(--r-lg);background:var(--panel);
+  margin-bottom:10px;overflow:hidden;
+}
+.grp-h{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel-2);border-bottom:1px solid var(--line-2)}
+.grp-h .t{font-size:12.5px;font-weight:600}
+.grp-h .c{font-size:10.5px;color:var(--fg-3)}
+.grp-h .acts{margin-left:auto;display:flex;gap:8px;align-items:center}
+.grp-body{padding:4px}
+.sn{
+  display:grid;grid-template-columns:18px 44px minmax(0,1fr) 82px 110px 84px;
+  align-items:center;gap:11px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:background .12s;
+}
+.sn:hover{background:var(--panel-2)}
+.sn.on{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.cb{
+  width:15px;height:15px;border-radius:4px;border:1.5px solid var(--fg-3);display:grid;place-items:center;
+  transition:.14s var(--ease);flex:0 0 auto;
+}
+.cb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.cb.on svg{display:block}
+.cb svg{display:none}
+.sn-thumb{width:44px;height:30px;border-radius:5px;border:1px solid var(--line);overflow:hidden;position:relative;background:var(--panel-3)}
+.sn-thumb .g1{position:absolute;inset:0;background:linear-gradient(140deg,#3B4A7A,#171C2C)}
+.sn-thumb .g2{position:absolute;inset:0;background:linear-gradient(140deg,#2E4B3D,#141C18)}
+.sn-thumb .g3{position:absolute;inset:0;background:linear-gradient(140deg,#4A3651,#1B1622)}
+html[data-theme="light"] .sn-thumb .g1{background:linear-gradient(140deg,#D8E2FA,#EDF2FE)}
+html[data-theme="light"] .sn-thumb .g2{background:linear-gradient(140deg,#D9F0E6,#EEFAF5)}
+html[data-theme="light"] .sn-thumb .g3{background:linear-gradient(140deg,#EFDFF6,#FAF2FE)}
+.sn-thumb .mini{position:absolute;inset:0;display:grid;place-items:center;color:#fff;opacity:.7;font-size:9px;font-weight:700}
+html[data-theme="light"] .sn-thumb .mini{color:#4A5573;opacity:.85}
+.sn-name{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sn-url{font-family:var(--mono);font-size:10.5px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sn-size{font-size:11.5px;color:var(--fg-2);text-align:right}
+.sn-badges{display:flex;gap:4px;flex-wrap:wrap}
+.sn-act{text-align:right;font-size:11px;color:var(--fg-3)}
+.dup{
+  font-size:9.5px;padding:1px 5px;border-radius:4px;background:color-mix(in srgb,var(--warn) 14%,transparent);
+  color:var(--warn);border:1px solid transparent;
+}
+.bulk-bar{
+  position:sticky;bottom:calc(-1 * var(--vpad-b));
+  margin:14px calc(-1 * var(--vpad-x)) calc(-1 * var(--vpad-b));
+  padding:11px var(--vpad-x);
+  background:color-mix(in srgb,var(--bg) 94%,transparent);
+  backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.bulk-bar .sum{font-size:12px;color:var(--fg-2)}
+.bulk-bar .sum b{color:var(--fg);font-weight:600}
+.bulk-bar .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ============ settings ============ */
+.set-wrap{display:grid;grid-template-columns:180px minmax(0,1fr);gap:24px}
+.set-nav{display:flex;flex-direction:column;gap:2px;position:sticky;top:0}
+.set-nav a{
+  padding:7px 11px;border-radius:7px;font-size:12.5px;color:var(--fg-2);
+  text-decoration:none;cursor:pointer;
+}
+.set-nav a:hover{background:var(--panel-2);color:var(--fg)}
+.set-nav a.on{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--fg);font-weight:550}
+.sec{margin-bottom:22px}
+.sec-h{font-size:13px;font-weight:600;margin-bottom:3px}
+.sec-d{font-size:11.5px;color:var(--fg-3);margin-bottom:10px}
+.set-row{
+  display:flex;align-items:center;gap:16px;padding:12px 16px;
+  border-bottom:1px solid var(--line-2);
+}
+.set-row:last-child{border-bottom:0}
+.set-row .lab{font-size:12.5px}
+.set-row .lab small{display:block;font-size:11px;color:var(--fg-3);margin-top:2px}
+.set-row .ctl{margin-left:auto;flex:0 0 auto;display:flex;align-items:center;gap:8px}
+.sw{
+  width:36px;height:20px;border-radius:20px;background:var(--panel-3);position:relative;cursor:pointer;
+  border:1px solid var(--line);transition:background .18s var(--ease);flex:0 0 auto;
+}
+.sw::after{
+  content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;
+  background:var(--fg-2);transition:left .18s var(--ease),background .18s var(--ease);
+}
+.sw.on{background:var(--accent);border-color:transparent}
+.sw.on::after{left:18px;background:#fff}
+.sw.danger.on{background:var(--err)}
+.mini-select{
+  height:29px;border-radius:6px;background:var(--panel-2);border:1px solid var(--line);
+  color:var(--fg);font:400 12px var(--font);padding:0 8px;cursor:pointer;outline:0;
+}
+.slider{width:150px;accent-color:var(--accent)}
+.swatches{display:flex;gap:7px}
+.sw-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.15s}
+.sw-dot:hover{transform:scale(1.1)}
+.sw-dot.on{border-color:var(--fg);box-shadow:0 0 0 2px var(--bg) inset}
+.danger-zone{border-color:color-mix(in srgb,var(--err) 30%,var(--line))}
+.warn-box{
+  background:color-mix(in srgb,var(--warn) 9%,transparent);border:1px solid color-mix(in srgb,var(--warn) 28%,transparent);
+  border-radius:var(--r);padding:12px 14px;font-size:11.5px;color:var(--fg-2);line-height:1.7;
+}
+.warn-box b{color:var(--warn)}
+.warn-box .t{color:var(--fg);font-weight:600;display:block;margin-bottom:4px;font-size:12px}
+
+/* ============ 响应式：容器查询（.vp-frame 宽度 = 窗口内容宽度） ============ */
+/* 设计最小窗口 900×620；四档：S 900–1039 / M 1040–1199 / L 1200–1439 / XL ≥1440 */
+.vp-frame{height:100%;container-type:inline-size;position:relative}
+.vp-frame.pinned{outline:1px dashed color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:-1px}
+.vp-dock{
+  position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:80;
+  display:flex;align-items:center;gap:4px;padding:4px 6px 4px 11px;border-radius:20px;
+  background:color-mix(in srgb,var(--panel) 92%,transparent);border:1px solid var(--line);
+  box-shadow:0 12px 30px rgba(0,0,0,.38);backdrop-filter:blur(14px);
+  font-size:10.5px;color:var(--fg-3);white-space:nowrap;user-select:none;
+}
+.vp-dock .tag-w{letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-right:2px}
+.vp-dock button{
+  height:22px;padding:0 8px;border-radius:14px;border:1px solid transparent;background:transparent;
+  color:var(--fg-2);font:500 11px var(--font);cursor:pointer;transition:.14s var(--ease);
+}
+.vp-dock button:hover{background:var(--panel-3);color:var(--fg)}
+.vp-dock button.on{background:color-mix(in srgb,var(--accent) 15%,transparent);border-color:color-mix(in srgb,var(--accent) 42%,transparent);color:var(--fg)}
+.vp-dock .now{font-family:var(--mono);font-size:10.5px;color:var(--fg-2);margin-left:4px;padding-left:8px;border-left:1px solid var(--line)}
+.minw-note{
+  display:none;position:fixed;left:50%;top:52px;transform:translateX(-50%);z-index:90;
+  padding:7px 12px;border-radius:8px;font-size:11.5px;
+  background:color-mix(in srgb,var(--warn) 16%,var(--panel));border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);
+  color:var(--fg);box-shadow:var(--shadow);white-space:nowrap;
+}
+@media (max-width:899px){
+  .minw-note{display:block}
+  body{overflow-x:auto}
+  .vp-frame{min-width:900px}
+}
+.btn:disabled{opacity:.36;cursor:not-allowed}
+.cb.half{border-color:var(--accent);background:linear-gradient(90deg,var(--accent) 50%,transparent 50%)}
+.toast{
+  position:fixed;left:50%;bottom:52px;transform:translate(-50%,8px);z-index:95;
+  padding:9px 14px;border-radius:9px;font-size:12px;color:var(--fg);
+  background:var(--panel-3);border:1px solid var(--line);box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .18s var(--ease),transform .18s var(--ease);
+  max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* —— L：1200–1439 —— */
+@container (max-width:1439px){
+  .app{grid-template-columns:216px minmax(0,1fr)}
+  .app{--cols-task:26px 38px minmax(0,1fr) 102px 78px 70px 90px 30px}
+  .view{--vpad-x:18px;--vpad-y:18px;--vpad-b:18px}
+  .vid-grid{grid-template-columns:minmax(0,1fr) 288px}
+  .sidebar{padding:12px 10px 10px}
+}
+/* —— 视频区：小于 1360 收成单列 —— */
+@container (max-width:1359px){
+  .vid-grid{grid-template-columns:minmax(0,1fr)}
+  .out-card{position:static}
+  .poster{aspect-ratio:auto;height:200px}
+}
+/* —— M：1040–1199 —— */
+@container (max-width:1199px){
+  .app{grid-template-columns:60px minmax(0,1fr)}
+  .app{--cols-task:26px 38px minmax(0,1fr) 74px 66px 88px 30px}
+  .sidebar{padding:12px 8px 8px;gap:5px}
+  .grp-label,.sb .n,.sb-badge,.limit-card,.user{display:none}
+  .sb{font-size:0;justify-content:center;width:44px;height:40px;padding:0;margin:0 auto}
+  .sb.active::before{display:none}
+  .sb svg{flex:0 0 auto}
+  .side-foot{margin-top:auto;padding-top:4px}
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .two-col{grid-template-columns:1fr}
+  .set-wrap{grid-template-columns:minmax(0,1fr);gap:14px}
+  .set-nav{flex-direction:row;gap:4px;overflow-x:auto;position:static;padding-bottom:6px}
+  .set-nav a{white-space:nowrap;padding:6px 10px;background:var(--panel);border:1px solid var(--line)}
+  .statusbar .spark{display:none}
+  /* 收掉「大小」列，体积并入副标题 */
+  .t-size,.list-head .h-size{display:none}
+  .nw-size{display:inline}
+  /* 嗅探行收掉尾部说明列 */
+  .sn{grid-template-columns:18px 40px minmax(0,1fr) 72px 96px}
+  .sn-act{display:none}
+  .grp-h{flex-wrap:wrap}
+  .sniff-head{flex-wrap:wrap;row-gap:10px}
+  .det-head{flex-wrap:wrap}
+  .det-url{max-width:100%}
+}
+/* —— S：900–1039 —— */
+@container (max-width:1039px){
+  .app{grid-template-columns:56px minmax(0,1fr)}
+  .app{--cols-task:24px 34px minmax(0,1fr) 62px 80px 28px}
+  .view{--vpad-x:14px;--vpad-y:14px;--vpad-b:14px}
+  .task-bulk{left:14px;right:14px;bottom:10px;gap:8px}
+  .sidebar{padding:10px 6px 8px}
+  .sb{width:40px;height:38px}
+  /* 再收掉「速度」列，速度并入副标题 */
+  .t-speed,.list-head .h-speed{display:none}
+  .nw-speed{display:inline}
+  .tbtn{padding:0 5px;min-width:22px}
+  .tbtn .lbl{display:none}
+  .thumb{width:34px;height:34px}
+  .stat-grid{gap:8px}
+  .stat{padding:10px 12px}
+  .stat .v{font-size:17px}
+  .stat .u{width:20px;height:20px;right:10px;top:10px}
+  .stat .d{font-size:10px;padding-right:20px}
+  .head-actions .field{flex:1 1 170px;width:auto}
+  .head-actions .field.w240{width:auto}
+  .hide-s{display:none}
+  .toolbar .sort-ctl{flex:1 1 auto;justify-content:flex-end}
+  .brand-sub{display:none}
+  .tb-pill{display:none}
+  .titlebar{padding:0 8px 0 12px;gap:6px}
+  .det-title{font-size:16px}
+  .det-actions{margin-left:0;flex-wrap:wrap}
+  .hero{padding:14px 14px}
+  .hero-top{gap:10px}
+  .hero-meta{flex-wrap:wrap;gap:14px 18px}
+  .big-speed{font-size:26px}
+  .poster{height:170px}
+  .vid-top{grid-template-columns:180px minmax(0,1fr)}
+  /* 格式矩阵：收掉帧率与容器两列，编码与体积保留 */
+  table.fmt th:nth-child(4),table.fmt td:nth-child(4),
+  table.fmt th:nth-child(5),table.fmt td:nth-child(5){display:none}
+  table.fmt th,table.fmt td{padding-left:6px;padding-right:6px}
+  .segmap{gap:4px}
+  .sn{grid-template-columns:16px 34px minmax(0,1fr) 62px 84px;gap:9px}
+  .sn-thumb{width:34px;height:24px}
+  .sniff-head{padding:10px 12px}
+  .filter-bar .mini-select{max-width:150px}
+  .set-row{flex-wrap:wrap;row-gap:8px}
+  .set-row .ctl{margin-left:auto}
+  .statusbar{gap:10px;padding:0 12px}
+  .statusbar .right{gap:12px}
+}
+</style>
+</head>
+<body>
+<div class="vp-frame" id="vpFrame">
+<div class="app">
+
+  <header class="titlebar">
+    <div class="brand">
+      <div class="mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3v11"/><path d="m7.5 10 4.5 4.5L16.5 10"/><path d="M4 20h16"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">Fetchweir</div>
+      </div>
+      <div class="brand-sub" style="margin-left:2px">下载管理</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="tb-pill"><span class="dot"></span>引擎在线 · 32 连接</div>
+    <button class="ico" id="themeBtn" title="切换主题">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+      </svg>
+    </button>
+    <button class="ico" title="通知">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+      </svg>
+    </button>
+    <div class="wincontrols">
+      <button class="wc" title="最小化"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5h6" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="wc" title="最大化"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2.5" y="2.5" width="5" height="5" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="wc close" title="关闭"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5" stroke="currentColor" stroke-width="1.2"/></svg></button>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <div class="grp-label">下载</div>
+    <div class="sb active" data-nav="main" data-filter="all">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+      全部任务 <span class="n">128</span>
+    </div>
+    <div class="sb" data-nav="main" data-filter="downloading">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m6.5 10.5 5.5 5 5.5-5"/><path d="M5 20h14"/></svg>
+      下载中 <span class="n" style="color:var(--accent)">4</span>
+    </div>
+    <div class="sb" data-nav="main" data-filter="queued">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+      排队中 <span class="n">6</span>
+    </div>
+    <div class="sb" data-nav="main" data-filter="done">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+      已完成 <span class="n">112</span>
+    </div>
+    <div class="sb" data-nav="main" data-filter="failed">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v5M12 16h.01"/></svg>
+      失败 <span class="n">2</span>
+    </div>
+
+    <div class="grp-label">分类</div>
+    <div class="sb" data-nav="main" data-filter="video"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m10 9.5 4.5 2.5-4.5 2.5z"/></svg>视频 <span class="n">42</span></div>
+    <div class="sb" data-nav="main" data-filter="audio"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>音频 <span class="n">18</span></div>
+    <div class="sb" data-nav="main" data-filter="image"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="m4.5 17 4.5-4.5 3.5 3.5 3-2.5 4 3.5"/></svg>图片 <span class="n">31</span></div>
+    <div class="sb" data-nav="main" data-filter="doc"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>文档 <span class="n">23</span></div>
+    <div class="sb" data-nav="main" data-filter="archive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3.5 7h17v12.5a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M3.5 7 5.5 3.5h13L20.5 7"/><path d="M10 11h4"/></svg>压缩包 <span class="n">9</span></div>
+
+    <div class="grp-label">工具</div>
+    <div class="sb" data-nav="sniff"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/><path d="M8.5 11h5M11 8.5v5"/></svg>资源嗅探 <span class="sb-badge">47</span></div>
+    <div class="sb" data-nav="video"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M8 5v14M16 5v14"/></svg>视频下载 <span class="n">新</span></div>
+
+    <div class="side-foot">
+      <div class="limit-card">
+        <div class="limit-head"><span>全局限速</span><span class="limit-val" id="limitVal">12.0 MB/s</span></div>
+        <div class="mini-track"><div class="mini-fill" id="limitFill"></div></div>
+        <div class="limit-foot"><span>当前 30.2 MB/s</span><span>上限 42</span></div>
+      </div>
+      <div class="user">
+        <div class="avatar">TZ</div>
+        <div class="who">本地模式<small>数据仅存本机</small></div>
+      </div>
+      <div class="sb" data-nav="settings" style="margin-top:6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 14a1.6 1.6 0 0 0 .32 1.77l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.6 1.6 0 0 0 15 18.6a1.6 1.6 0 0 0-1 1.47V21a2 2 0 1 1-4 0v-.11A1.6 1.6 0 0 0 9 19.3a1.6 1.6 0 0 0-1.77.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.6 1.6 0 0 0 4.7 15a1.6 1.6 0 0 0-1.47-1H3a2 2 0 1 1 0-4h.11A1.6 1.6 0 0 0 4.7 9a1.6 1.6 0 0 0-.32-1.77l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.6 1.6 0 0 0 9 4.7h.09A1.6 1.6 0 0 0 10 3.23V3a2 2 0 1 1 4 0v.11a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.6 1.6 0 0 0 19.3 9v.09a1.6 1.6 0 0 0 1.47 1H21a2 2 0 1 1 0 4h-.11a1.6 1.6 0 0 0-1.49 1Z"/></svg>
+        设置
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- ===================== 主界面 ===================== -->
+    <section class="view" data-view="main">
+      <div class="head-row">
+        <div>
+          <div class="h1">全部任务</div>
+          <div class="muted" style="margin-top:3px">4 个下载中 · 6 个排队 · 加权公平调度，前台任务优先</div>
+        </div>
+        <div class="head-actions">
+          <div class="field w240">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4" stroke-linecap="round"/></svg>
+            <input placeholder="搜索文件名、域名或链接">
+          </div>
+          <button class="btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="3" width="8" height="18" rx="2"/></svg>
+            粘贴链接
+          </button>
+          <button class="btn primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            新建下载
+          </button>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="k">当前总速度</div>
+          <div class="v" id="statSpeed">30.2 <span>MB/s</span></div>
+          <div class="d" style="color:var(--ok)">↑ 较 5 分钟前 +12%</div>
+          <div class="u"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v13"/><path d="m6.5 11.5 5.5 5 5.5-5"/><path d="M4 20h16"/></svg></div>
+        </div>
+        <div class="stat">
+          <div class="k">活跃连接</div>
+          <div class="v">32 <span>/ 32 上限</span></div>
+          <div class="d">每主机 ≤ 6 · 无节流触发</div>
+          <div class="u"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 12h8M12 8v8"/><circle cx="12" cy="12" r="9"/></svg></div>
+        </div>
+        <div class="stat">
+          <div class="k">今日完成</div>
+          <div class="v">14 <span>个任务</span></div>
+          <div class="d">18.4 GB · 全部校验通过</div>
+          <div class="u"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg></div>
+        </div>
+        <div class="stat">
+          <div class="k">引擎内存</div>
+          <div class="v">74.2 <span>MB</span></div>
+          <div class="d">预算 160 MB · 每任务 ≤ 4 MB 缓冲</div>
+          <div class="u"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M10 3v2M14 3v2M10 19v2M14 19v2M3 10h2M3 14h2M19 10h2M19 14h2" stroke-linecap="round"/></svg></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="chip on" data-fchip="all">全部 <span class="c">128</span></button>
+        <button class="chip" data-fchip="downloading">下载中 <span class="c">4</span></button>
+        <button class="chip" data-fchip="queued">排队 <span class="c">6</span></button>
+        <button class="chip" data-fchip="done">已完成 <span class="c">112</span></button>
+        <button class="chip" data-fchip="failed">失败 <span class="c">2</span></button>
+        <div class="grow"></div>
+        <button class="btn sm ghost hide-s">全部开始</button>
+        <button class="btn sm ghost hide-s">全部暂停</button>
+        <div class="sort-ctl">
+          <span class="lbl">排序</span>
+          <select class="mini-select" id="sortKey" style="height:27px" aria-label="排序字段">
+            <option value="added">添加时间</option>
+            <option value="size">文件大小</option>
+            <option value="speed">下载速度</option>
+            <option value="eta">剩余时间</option>
+          </select>
+          <button class="btn sm" id="sortDir" title="切换升序 / 降序">
+            <i class="ar">↓</i><span class="lbl2">降序</span>
+          </button>
+        </div>
+        <button class="btn sm ghost" id="selDoneBtn">选中已完成</button>
+      </div>
+
+      <div class="list-head">
+        <span class="t-cb"><span class="cb" id="selAll" title="全选"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></span>
+        <span></span>
+        <span>名称</span>
+        <button class="hbtn h-size" data-sort="size"><span>大小</span><i class="ar">↓</i></button>
+        <button class="hbtn h-speed" data-sort="speed"><span>速度</span><i class="ar">↓</i></button>
+        <span>状态</span>
+        <span style="text-align:right">操作</span>
+        <span></span>
+      </div>
+
+      <div id="taskList">
+        <div class="task" data-status="downloading" data-kind="video" data-added="0" data-bytes="12923" data-speed="28.4" data-eta="252">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m10 9.5 4.5 2.5-4.5 2.5z" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">Interstellar.2014.2160p.HDR.x265.mkv <span class="tag hls">HLS</span></div>
+            <div class="t-sub">cdn.media-cdn.net <span class="sep"></span> 16 段 <span class="sep"></span> 剩余 4 分 12 秒 <span class="nw nw-size">12.62 GB</span> <span class="nw nw-speed">28.4 MB/s</span></div>
+            <div class="t-bar"><div class="bar ticks"><i style="width:78%"></i></div><span class="pct">78%</span></div>
+          </div>
+          <div class="t-size"><b>9.84 GB</b><small>/ 12.62 GB</small></div>
+          <div class="t-speed" data-live="1">28.4 MB/s<small>8 连接</small></div>
+          <div><span class="st dl"><span class="d"></span>下载中</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="pause" title="暂停"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg></button>
+            <button class="tbtn err" data-act="cancel" title="取消"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="downloading" data-kind="archive" data-added="2" data-bytes="4833" data-speed="6.4" data-eta="401">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb d">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3.5 7h17v12.5a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M3.5 7 5.5 3.5h13L20.5 7"/><path d="M10 11h4"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">ubuntu-24.04.1-desktop-amd64.iso <span class="tag">预分配</span></div>
+            <div class="t-sub">mirrors.aliyun.com <span class="sep"></span> 16 段 <span class="sep"></span> 剩余 6 分 41 秒 <span class="nw nw-size">4.72 GB</span> <span class="nw nw-speed">6.4 MB/s</span></div>
+            <div class="t-bar"><div class="bar ticks"><i style="width:64%"></i></div><span class="pct">64%</span></div>
+          </div>
+          <div class="t-size"><b>3.02 GB</b><small>/ 4.72 GB</small></div>
+          <div class="t-speed" data-live="2">6.4 MB/s<small>12 连接</small></div>
+          <div><span class="st dl"><span class="d"></span>下载中</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="pause" title="暂停"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg></button>
+            <button class="tbtn err" data-act="cancel" title="取消"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="downloading" data-kind="video" data-added="4" data-bytes="448" data-speed="4.1" data-eta="68">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m10 9.5 4.5 2.5-4.5 2.5z" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">How Engines Work — 1080p · H.264 · 30fps.mp4 <span class="tag yt">解析器</span></div>
+            <div class="t-sub">由 yt-dlp 接管 · 无分段限速 <span class="sep"></span> 剩余 1 分 08 秒 <span class="nw nw-size">448 MB</span> <span class="nw nw-speed">4.1 MB/s</span></div>
+            <div class="t-bar"><div class="bar ticks"><i style="width:41%"></i></div><span class="pct">41%</span></div>
+          </div>
+          <div class="t-size"><b>184 MB</b><small>/ 448 MB</small></div>
+          <div class="t-speed" data-live="3">4.1 MB/s<small>单连接</small></div>
+          <div><span class="st dl"><span class="d"></span>下载中</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="pause" title="暂停"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg></button>
+            <button class="tbtn err" data-act="cancel" title="取消"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="downloading" data-kind="image" data-added="6" data-bytes="238" data-speed="1.3" data-eta="18">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb i">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="m4.5 17 4.5-4.5 3.5 3.5 3-2.5 4 3.5"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">批量图片 · 42 项（嗅探批次） <span class="tag">批次</span></div>
+            <div class="t-sub">photos.example.com <span class="sep"></span> 38/42 完成 <span class="sep"></span> 4 项排队 <span class="nw nw-size">238 MB</span> <span class="nw nw-speed">1.3 MB/s</span></div>
+            <div class="t-bar"><div class="bar ticks"><i style="width:90%"></i></div><span class="pct">90%</span></div>
+          </div>
+          <div class="t-size"><b>214 MB</b><small>/ 238 MB</small></div>
+          <div class="t-speed" data-live="4">1.3 MB/s<small>2 连接</small></div>
+          <div><span class="st dl"><span class="d"></span>下载中</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="pause" title="暂停"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.5" height="14" rx="1"/><rect x="13.5" y="5" width="3.5" height="14" rx="1"/></svg></button>
+            <button class="tbtn err" data-act="cancel" title="取消"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="queued" data-kind="doc" data-added="20" data-bytes="13">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb d">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">2026-Q4-architecture-review.pdf</div>
+            <div class="t-sub">intranet.example.com <span class="sep"></span> 等待连接额度 · 位置 3 <span class="nw nw-size">12.8 MB</span> <span class="nw nw-speed">—</span></div>
+            <div class="t-bar"><div class="bar" style="opacity:.4"></div></div>
+          </div>
+          <div class="t-size"><b>—</b><small>/ 12.8 MB</small></div>
+          <div class="t-speed"><span style="color:var(--fg-3)">—</span><small>排队</small></div>
+          <div><span class="st wait"><span class="d"></span>排队中</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="start" title="开始"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+            <button class="tbtn err" data-act="cancel" title="取消"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="failed" data-kind="audio" data-added="40" data-bytes="94">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb a">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">Podcast Ep.214 · 160k opus.webm <span class="tag hls">HLS</span></div>
+            <div class="t-sub" style="color:var(--err)">分片 118 失败 · HTTP 403 签名过期 · 已重解析 3 次 <span class="nw nw-size">94 MB</span></div>
+            <div class="t-bar"><div class="bar ticks"><i style="width:62%;background:var(--err)"></i></div><span class="pct">62%</span></div>
+          </div>
+          <div class="t-size"><b>58 MB</b><small>/ 94 MB</small></div>
+          <div class="t-speed"><span style="color:var(--fg-3)">已暂停</span><small>需处理</small></div>
+          <div><span class="st err"><span class="d"></span>需处理</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="retry" title="重试"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/></svg></button>
+            <button class="tbtn err" data-act="remove" title="移除"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="paused" data-kind="audio" data-added="12" data-bytes="640">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb a">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">Audiobook-Part-02.m4b <span class="tag">已暂停</span></div>
+            <div class="t-sub">cdn.example.com <span class="sep"></span> 用户暂停 · 断点已保存 <span class="nw nw-size">640 MB</span> <span class="nw nw-speed">—</span></div>
+            <div class="t-bar"><div class="bar ticks"><i style="width:35%;opacity:.55"></i></div><span class="pct">35%</span></div>
+          </div>
+          <div class="t-size"><b>224 MB</b><small>/ 640 MB</small></div>
+          <div class="t-speed"><span style="color:var(--fg-3)">已暂停</span><small>—</small></div>
+          <div><span class="st wait"><span class="d"></span>已暂停</span></div>
+          <div class="t-acts">
+            <button class="tbtn" data-act="start" title="继续下载"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+            <button class="tbtn err" data-act="cancel" title="取消"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="done" data-kind="video" data-added="60" data-bytes="1310" data-speed="9.8">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m10 9.5 4.5 2.5-4.5 2.5z" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">Keynote-2026-1080p-H264.mp4</div>
+            <div class="t-sub">cdn.example.com <span class="sep"></span> 用时 02:14 <span class="sep"></span> SHA256 已校验 <span class="nw nw-size">1.28 GB</span> <span class="nw nw-speed">9.8 MB/s</span></div>
+            <div class="t-bar"><div class="bar"><i class="done" style="width:100%"></i></div><span class="pct">100%</span></div>
+          </div>
+          <div class="t-size"><b>1.28 GB</b><small>已完成</small></div>
+          <div class="t-speed"><span style="color:var(--ok)">✓</span><small>9.8 MB/s 均速</small></div>
+          <div><span class="st ok"><span class="d"></span>已完成</span></div>
+          <div class="t-acts">
+            <button class="tbtn ok" data-act="open" title="用默认程序打开"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8 8"/><path d="M18 14v5a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V7.5A1.5 1.5 0 0 1 5 6h5"/></svg><span class="lbl">打开</span></button>
+            <button class="tbtn ok ghost" data-act="folder" title="打开所在文件夹"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2.5h8A1.5 1.5 0 0 1 20.5 10v8A1.5 1.5 0 0 1 19 19.5H5A1.5 1.5 0 0 1 3.5 18z"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+
+        <div class="task" data-status="done" data-kind="video" data-added="61" data-bytes="512" data-speed="7.2">
+          <div class="t-cb"><span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span></div>
+          <div class="thumb v">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m10 9.5 4.5 2.5-4.5 2.5z" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="t-main">
+            <div class="t-name">Design-System-Walkthrough-1080p.mp4</div>
+            <div class="t-sub">cdn.example.com <span class="sep"></span> 用时 01:11 <span class="sep"></span> SHA256 已校验 <span class="nw nw-size">512 MB</span> <span class="nw nw-speed">7.2 MB/s</span></div>
+            <div class="t-bar"><div class="bar"><i class="done" style="width:100%"></i></div><span class="pct">100%</span></div>
+          </div>
+          <div class="t-size"><b>512 MB</b><small>已完成</small></div>
+          <div class="t-speed"><span style="color:var(--ok)">✓</span><small>7.2 MB/s 均速</small></div>
+          <div><span class="st ok"><span class="d"></span>已完成</span></div>
+          <div class="t-acts">
+            <button class="tbtn ok" data-act="open" title="用默认程序打开"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-8 8"/><path d="M18 14v5a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V7.5A1.5 1.5 0 0 1 5 6h5"/></svg><span class="lbl">打开</span></button>
+            <button class="tbtn ok ghost" data-act="folder" title="打开所在文件夹"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2.5h8A1.5 1.5 0 0 1 20.5 10v8A1.5 1.5 0 0 1 19 19.5H5A1.5 1.5 0 0 1 3.5 18z"/></svg></button>
+          </div>
+          <div><button class="ico" title="更多"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="task-bulk" id="taskBulk" hidden>
+      <span class="sum">已选 <b id="selN">0</b> 项 · 其中已完成 <b id="selDone">0</b> 项</span>
+      <span class="dim" id="selHint">进行中的任务可批量暂停或取消</span>
+      <div class="right">
+        <button class="btn sm" id="bulkFolder" data-bulk="folder">打开所在文件夹</button>
+        <button class="btn sm ok" id="bulkOpen" data-bulk="open">打开</button>
+        <button class="btn sm" id="bulkPause" data-bulk="pause">暂停</button>
+        <button class="btn sm ghost" id="bulkCancel" data-bulk="cancel">取消</button>
+        <button class="btn sm ghost" id="bulkClear">清空选择</button>
+      </div>
+    </div>
+
+    <!-- ===================== 任务详情（双击任务行弹出，覆盖在列表上） ===================== -->
+    <div class="modal" id="detailModal" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-label="任务详情">
+        <div class="modal-bar">
+          <span class="t">任务详情</span>
+          <span class="dim" id="modalSub">双击任务行打开 · Esc 关闭</span>
+          <button class="modal-x" id="modalClose" title="关闭（Esc）">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+
+      <div class="det-head">
+        <div class="det-icon thumb d" style="width:52px;height:52px;border-radius:12px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+        </div>
+        <div style="min-width:0">
+          <div class="det-title">
+            <span id="detName">ubuntu-24.04.1-desktop-amd64.iso</span>
+            <span class="st dl" id="detStatus"><span class="d"></span>下载中</span>
+            <span class="tag">16 段</span>
+            <span class="tag hls">HTTP Range</span>
+          </div>
+          <div class="det-url" id="detUrl">https://mirrors.aliyun.com/ubuntu-releases/24.04.1/ubuntu-24.04.1-desktop-amd64.iso</div>
+        </div>
+        <div class="det-actions" id="detActions">
+          <button class="btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5v14M15 5v14" stroke-linecap="round"/></svg>暂停</button>
+          <button class="btn">打开文件夹</button>
+          <button class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="big-speed" id="heroSpeed">6.42<span>MB/s</span></div>
+            <div class="dim" id="heroSub" style="margin-top:2px">分块 512 KB · 已用 12/16 连接 · 磁盘无合并回填</div>
+          </div>
+          <div class="hero-meta">
+            <div class="m">已下载<b id="mDone">3.02 GB</b></div>
+            <div class="m">总大小<b id="mTotal">4.72 GB</b></div>
+            <div class="m">剩余时间<b id="mEta">06:41</b></div>
+            <div class="m">校验<b id="mVerify" style="color:var(--warn)">排队中</b></div>
+          </div>
+        </div>
+        <div class="bar ticks" style="height:7px"><i id="heroBar" style="width:64%"></i></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10.5px;color:var(--fg-3)">
+          <span>0 B</span><span id="heroPct" style="color:var(--fg-2);font-weight:600">64%</span><span id="heroMax">4.72 GB</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-h">
+          <div class="h2">分段进度图</div>
+          <div class="row" style="gap:8px">
+            <span class="dim">预分配稀疏文件 · 每段独占区间 · 定位写</span>
+            <span class="tag">无临时分片合并</span>
+          </div>
+        </div>
+        <div class="card-b">
+          <div class="segmap" id="segmap"></div>
+          <div class="seg-legend">
+            <span><b style="background:linear-gradient(180deg,var(--accent),var(--accent-2))"></b>已写入</span>
+            <span><b style="background:color-mix(in srgb,var(--accent) 60%,var(--panel-3))"></b>传输中</span>
+            <span><b style="background:var(--panel-3)"></b>未开始</span>
+            <span style="margin-left:auto">每段 295 MB · 6 个分块</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="card" id="connCard">
+          <div class="card-h"><div class="h2">连接明细</div><span class="dim" id="connMeta">12 / 16</span></div>
+          <div class="card-b" id="connBody" style="padding-top:6px">
+            <div class="conn-row"><span class="id">01</span><div class="bar"><i style="width:88%"></i></div><span class="sp">0.72 MB/s</span></div>
+            <div class="conn-row"><span class="id">02</span><div class="bar"><i style="width:81%"></i></div><span class="sp">0.68 MB/s</span></div>
+            <div class="conn-row"><span class="id">03</span><div class="bar"><i style="width:74%"></i></div><span class="sp">0.61 MB/s</span></div>
+            <div class="conn-row"><span class="id">04</span><div class="bar"><i style="width:66%"></i></div><span class="sp">0.55 MB/s</span></div>
+            <div class="conn-row"><span class="id">05</span><div class="bar"><i style="width:52%"></i></div><span class="sp">0.44 MB/s</span></div>
+            <div class="conn-row"><span class="id">06</span><div class="bar"><i style="width:47%"></i></div><span class="sp">0.41 MB/s</span></div>
+            <div class="conn-row"><span class="id">07-16</span><div class="bar" style="opacity:.4"></div><span class="sp" style="color:var(--fg-3)">待分配</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><div class="h2">引擎与写盘</div><span class="dim">实时</span></div>
+          <div class="card-b" style="padding-top:8px">
+            <div class="kv"><span class="k">写盘方式</span><span class="v">预分配 + 定位写</span></div>
+            <div class="kv"><span class="k">在途缓冲</span><span class="v">4.0 MB / 任务（上限 4 MB）</span></div>
+            <div class="kv"><span class="k">fsync 策略</span><span class="v">仅 checkpoint（2s / 32MB）</span></div>
+            <div class="kv"><span class="k">并发闸门</span><span class="v">全局 32 · 本任务 16 · 主机 6</span></div>
+            <div class="kv"><span class="k">调度算法</span><span class="v">DRR · 100ms tick</span></div>
+            <div class="kv"><span class="k">介质</span><span class="v">NVMe · 分段上限 16</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div class="h2">事件日志</div><div class="row" style="gap:6px"><span class="tag">仅本地</span><span class="dim">最近 200 条</span></div></div>
+        <div class="card-b">
+          <div class="log">
+<b>12:41:02</b> <span class="g">INFO</span> 预分配完成 4,720,588,800 bytes（稀疏，耗时 3ms）<br>
+<b>12:41:02</b> <span class="g">INFO</span> 16 个区间已注册，调度器接管<br>
+<b>12:41:03</b> <span class="b">CONN</span> 连接 01-08 建立 · Range 请求已发送<br>
+<b>12:41:05</b> <span class="g">INFO</span> 分块校验通过，写入偏移 0x00000000<br>
+<b>12:44:18</b> <span class="b">CONN</span> 连接 09-12 追加（链路余量充足）<br>
+<b>12:48:33</b> <span class="y">WARN</span> 主机节流：每主机连接数已达上限 6，仅扩至 12<br>
+<b>12:52:01</b> <span class="g">INFO</span> checkpoint 写入分段位图（32 MB）<br>
+<b>12:53:40</b> <span class="b">CONN</span> 连接 03 重连 · 从最后成功字节续传<br>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 视频格式选择 ===================== -->
+    <section class="view" data-view="video" hidden>
+      <div class="head-row">
+        <div>
+          <div class="h1">视频下载</div>
+          <div class="muted" style="margin-top:3px">格式清单由本地 yt-dlp 解析器提供 · 受 DRM 保护的内容将被拒绝</div>
+        </div>
+        <div class="head-actions">
+          <div class="field w240">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+            <input value="https://www.example.com/watch?v=abc123">
+          </div>
+          <button class="btn primary">解析链接</button>
+        </div>
+      </div>
+
+      <div class="vid-top">
+        <div class="poster">
+          <div class="res">4K · HDR</div>
+          <div class="play">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M9 6.5v11l9-5.5z"/></svg>
+          </div>
+          <div class="dur">00:18:42</div>
+        </div>
+        <div class="vid-info">
+          <h2>How a Download Engine Actually Works — 分段、缓冲与磁盘</h2>
+          <div class="muted">示例频道 · 1.2M 订阅 · 发布于 3 天前</div>
+          <div class="vid-chips">
+            <span class="tag" style="color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)">✓ 解析成功 · 48 个格式</span>
+            <span class="tag">时长 18:42</span>
+            <span class="tag">协议 https / dash</span>
+            <span class="tag">无 DRM</span>
+            <span class="tag">字幕 12 种</span>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn sm">下载字幕</button>
+            <button class="btn sm">仅音频</button>
+            <button class="btn sm">复制直链</button>
+            <button class="btn sm ghost">重新解析</button>
+          </div>
+          <div class="dim" style="margin-top:12px;line-height:1.7">
+            直链有效期约 6 小时且绑定当前会话。若队列等待较久，续传前会自动重新解析一次，避免 403。
+          </div>
+        </div>
+      </div>
+
+      <div class="vid-grid">
+        <div class="card">
+          <div class="card-h">
+            <div class="seg-tabs">
+              <button class="on">视频 <span style="opacity:.55;font-size:10.5px">26</span></button>
+              <button>音频 <span style="opacity:.55;font-size:10.5px">14</span></button>
+              <button>字幕 <span style="opacity:.55;font-size:10.5px">8</span></button>
+            </div>
+            <div class="row" style="gap:8px">
+              <span class="dim">按体积排序</span>
+              <button class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"/></svg></button>
+            </div>
+          </div>
+          <div class="card-b" style="padding:12px 8px 8px">
+            <table class="fmt" id="fmtTable">
+              <thead>
+                <tr>
+                  <th style="width:34px"></th>
+                  <th>分辨率</th><th>编码</th><th>帧率</th><th>容器</th>
+                  <th class="r">码率</th><th class="r">体积</th><th>兼容 / 备注</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-fmt="v1">
+                  <td><span class="radio"></span></td>
+                  <td><b>2160p</b> <span class="dim">3840×2160</span></td>
+                  <td class="mono">av01.0.08M</td><td class="mono">60</td><td class="mono">mp4</td>
+                  <td class="r mono">4.2 Mbps</td><td class="r mono" data-size="1310">1.31 GB</td>
+                  <td><span class="q-badge warn">剪辑软件不支持</span> <span class="q-badge">HDR</span></td>
+                </tr>
+                <tr data-fmt="v2">
+                  <td><span class="radio"></span></td>
+                  <td><b>2160p</b> <span class="dim">3840×2160</span></td>
+                  <td class="mono">vp09.02</td><td class="mono">60</td><td class="mono">webm</td>
+                  <td class="r mono">3.6 Mbps</td><td class="r mono" data-size="1120">1.12 GB</td>
+                  <td><span class="q-badge warn">Safari 不支持</span></td>
+                </tr>
+                <tr data-fmt="v3" class="on">
+                  <td><span class="radio on"></span></td>
+                  <td><b>1080p</b> <span class="dim">1920×1080</span></td>
+                  <td class="mono">avc1.64002a</td><td class="mono">60</td><td class="mono">mp4</td>
+                  <td class="r mono">2.1 Mbps</td><td class="r mono" data-size="655">655 MB</td>
+                  <td><span class="q-badge best">推荐</span> <span class="q-badge">H.264 通用</span></td>
+                </tr>
+                <tr data-fmt="v4">
+                  <td><span class="radio"></span></td>
+                  <td><b>1080p</b> <span class="dim">1920×1080</span></td>
+                  <td class="mono">avc1.64002a</td><td class="mono">30</td><td class="mono">mp4</td>
+                  <td class="r mono">1.4 Mbps</td><td class="r mono" data-size="437">437 MB</td>
+                  <td><span class="q-badge">省空间</span></td>
+                </tr>
+                <tr data-fmt="v5">
+                  <td><span class="radio"></span></td>
+                  <td><b>720p</b> <span class="dim">1280×720</span></td>
+                  <td class="mono">avc1.4d401f</td><td class="mono">30</td><td class="mono">mp4</td>
+                  <td class="r mono">900 Kbps</td><td class="r mono" data-size="281">281 MB</td>
+                  <td></td>
+                </tr>
+                <tr data-fmt="v6">
+                  <td><span class="radio"></span></td>
+                  <td><b>480p</b> <span class="dim">854×480</span></td>
+                  <td class="mono">avc1.4d401e</td><td class="mono">30</td><td class="mono">mp4</td>
+                  <td class="r mono">520 Kbps</td><td class="r mono" data-size="162">162 MB</td>
+                  <td></td>
+                </tr>
+                <tr data-fmt="v7" class="off">
+                  <td><span class="radio"></span></td>
+                  <td><b>2160p</b> <span class="dim">3840×2160</span></td>
+                  <td class="mono">hev1.2</td><td class="mono">60</td><td class="mono">mp4</td>
+                  <td class="r mono">—</td><td class="r mono">—</td>
+                  <td><span class="q-badge warn">受 DRM 保护 · 不可下载</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card out-card">
+          <div class="card-h"><div class="h2">输出组合</div><span class="dim">可自由改</span></div>
+          <div class="card-b">
+            <div class="out-item">
+              <span class="k">视频</span>
+              <span class="v" id="outVideo">1080p · H.264 · 60fps</span>
+              <span class="x" id="outVSize">655 MB</span>
+            </div>
+            <div class="out-plus">＋</div>
+            <div class="out-item" style="margin-bottom:0">
+              <span class="k">音频</span>
+              <span class="v">m4a · AAC · 128kbps</span>
+              <span class="x">39 MB</span>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin:14px 0 10px">
+              <span class="dim">估算总体积</span>
+              <span style="font-size:18px;font-weight:600" id="outTotal">694 MB</span>
+            </div>
+
+            <div class="row" style="justify-content:space-between;margin-bottom:9px">
+              <span class="dim">容器</span>
+              <select class="mini-select" style="flex:0 0 130px">
+                <option>MP4（推荐）</option><option>MKV</option><option>保持原始</option>
+              </select>
+            </div>
+            <div class="row" style="justify-content:space-between;margin-bottom:9px">
+              <span class="dim">转封装（不重编码）</span>
+              <span class="sw on" style="width:32px;height:18px"></span>
+            </div>
+            <div class="row" style="justify-content:space-between;margin-bottom:9px">
+              <span class="dim">完成后 SHA256 校验</span>
+              <span class="sw" style="width:32px;height:18px"></span>
+            </div>
+
+            <div class="compat">
+              <span class="cv ok">Premiere ✓</span>
+              <span class="cv ok">Safari ✓</span>
+              <span class="cv ok">电视盒子 ✓</span>
+              <span class="cv">体积 +0%</span>
+            </div>
+
+            <button class="btn primary" style="width:100%;margin-top:14px;height:36px">加入队列并下载</button>
+            <div class="dim" style="margin-top:9px;line-height:1.65">
+              直连地址可用时走本机引擎（支持 16 段 + 续传）；否则由解析器接管，单连接下载。
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 嗅探与批量选择 ===================== -->
+    <section class="view" data-view="sniff" hidden>
+      <div class="head-row">
+        <div>
+          <div class="h1">资源嗅探</div>
+          <div class="muted" style="margin-top:3px">会话 #4821 · 12:34 开始 · 已去重 3 项 · 数据仅存本机</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn">重新嗅探</button>
+          <button class="btn">结束会话</button>
+        </div>
+      </div>
+
+      <div class="sniff-head">
+        <div style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--panel-3);color:var(--fg-2);flex:0 0 auto">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        </div>
+        <div style="min-width:0">
+          <div class="sniff-url">https://example.com/gallery/2026-autumn</div>
+          <div class="dim" style="margin-top:2px">Chrome · 扩展已连接 · 抓取 214 个请求 → 筛出 47 个可下载资源</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px;flex:0 0 auto;align-items:center">
+          <span class="st ok"><span class="d"></span>扩展在线</span>
+          <span class="tag">Native Messaging</span>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <button class="chip on" data-schip="all">全部 <span class="c">47</span></button>
+        <button class="chip" data-schip="video">视频 <span class="c">9</span></button>
+        <button class="chip" data-schip="audio">音频 <span class="c">4</span></button>
+        <button class="chip" data-schip="image">图片 <span class="c">26</span></button>
+        <button class="chip" data-schip="doc">文档 <span class="c">3</span></button>
+        <button class="chip" data-schip="stream">流媒体 <span class="c">5</span></button>
+        <div class="grow" style="flex:1"></div>
+        <select class="mini-select"><option>最小体积：不限</option><option>≥ 1 MB</option><option>≥ 10 MB</option></select>
+        <select class="mini-select"><option>全部域名</option><option>cdn.example.com</option><option>img.example.com</option></select>
+        <div class="field" style="width:170px;height:29px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4" stroke-linecap="round"/></svg>
+          <input placeholder="关键词 / 扩展名">
+        </div>
+        <button class="chip on" id="hideAds">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18" stroke-linecap="round"/><circle cx="12" cy="12" r="8.5"/></svg>
+          隐藏埋点
+        </button>
+      </div>
+
+      <!-- 媒体族组 -->
+      <div class="grp" data-kind="stream">
+        <div class="grp-h">
+          <span style="width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:color-mix(in srgb,var(--info) 16%,transparent);color:var(--info)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 8h16M4 12h16M4 16h16"/></svg>
+          </span>
+          <span class="t">媒体族 #1 · 主清单</span>
+          <span class="c">同一 M3U8 派生，已合并 3 个变体</span>
+          <div class="acts"><button class="btn sm ghost" data-group="g1">全选本组</button></div>
+        </div>
+        <div class="grp-body" data-group-body="g1">
+          <div class="sn" data-bytes="819200">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g1"></div><span class="mini">1080</span></div>
+            <div style="min-width:0">
+              <div class="sn-name">variant-1080p.m3u8 · 主媒体流</div>
+              <div class="sn-url">/hls/master.m3u8?token=…&amp;variant=1080</div>
+            </div>
+            <div class="sn-size">800 MB</div>
+            <div class="sn-badges"><span class="tag hls">HLS</span><span class="tag">H.264</span></div>
+            <div class="sn-act">2,140 分片</div>
+          </div>
+          <div class="sn" data-bytes="420000">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g1"></div><span class="mini">720</span></div>
+            <div style="min-width:0">
+              <div class="sn-name">variant-720p.m3u8</div>
+              <div class="sn-url">/hls/master.m3u8?token=…&amp;variant=720</div>
+            </div>
+            <div class="sn-size">410 MB</div>
+            <div class="sn-badges"><span class="tag hls">HLS</span><span class="tag">H.264</span></div>
+            <div class="sn-act">2,140 分片</div>
+          </div>
+          <div class="sn" data-bytes="185000">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g1"></div><span class="mini">480</span></div>
+            <div style="min-width:0">
+              <div class="sn-name">variant-480p.m3u8</div>
+              <div class="sn-url">/hls/master.m3u8?token=…&amp;variant=480</div>
+            </div>
+            <div class="sn-size">185 MB</div>
+            <div class="sn-badges"><span class="tag hls">HLS</span><span class="tag">H.264</span></div>
+            <div class="sn-act">2,140 分片</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 独立视频 -->
+      <div class="grp" data-kind="video">
+        <div class="grp-h">
+          <span class="t">视频文件</span><span class="c">3 项 · 2.1 GB</span>
+          <div class="acts"><button class="btn sm ghost" data-group="g2">全选本组</button></div>
+        </div>
+        <div class="grp-body" data-group-body="g2">
+          <div class="sn on" data-bytes="1260000">
+            <span class="cb on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g1"></div><span class="mini">▶</span></div>
+            <div style="min-width:0">
+              <div class="sn-name">2026-autumn-recap-4k.mp4</div>
+              <div class="sn-url">cdn.example.com/media/recap/2026-autumn-4k.mp4</div>
+            </div>
+            <div class="sn-size">1.19 GB</div>
+            <div class="sn-badges"><span class="tag">MP4</span><span class="tag">4K</span><span class="tag">HEVC</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+          <div class="sn on" data-bytes="420000">
+            <span class="cb on"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g1"></div><span class="mini">▶</span></div>
+            <div style="min-width:0">
+              <div class="sn-name">behind-the-scenes-1080p.webm</div>
+              <div class="sn-url">cdn.example.com/media/bts-1080.webm</div>
+            </div>
+            <div class="sn-size">402 MB</div>
+            <div class="sn-badges"><span class="tag">WEBM</span><span class="tag">VP9</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+          <div class="sn" data-bytes="98000">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g1"></div><span class="mini">▶</span></div>
+            <div style="min-width:0">
+              <div class="sn-name">teaser-30s.mp4</div>
+              <div class="sn-url">cdn.example.com/media/teaser.mp4</div>
+            </div>
+            <div class="sn-size">96 MB</div>
+            <div class="sn-badges"><span class="tag">MP4</span><span class="tag">H.264</span><span class="dup">疑似重复</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 音频 -->
+      <div class="grp" data-kind="audio">
+        <div class="grp-h"><span class="t">音频</span><span class="c">4 项 · 132 MB</span>
+          <div class="acts"><button class="btn sm ghost" data-group="g3">全选本组</button></div>
+        </div>
+        <div class="grp-body" data-group-body="g3">
+          <div class="sn" data-bytes="39000">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g2"></div><span class="mini">♪</span></div>
+            <div style="min-width:0"><div class="sn-name">soundtrack.m4a</div><div class="sn-url">/audio/soundtrack.m4a</div></div>
+            <div class="sn-size">38 MB</div>
+            <div class="sn-badges"><span class="tag">M4A</span><span class="tag">AAC</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+          <div class="sn" data-bytes="48000">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g2"></div><span class="mini">♪</span></div>
+            <div style="min-width:0"><div class="sn-name">commentary.opus.webm</div><div class="sn-url">/audio/commentary-160k.webm</div></div>
+            <div class="sn-size">47 MB</div>
+            <div class="sn-badges"><span class="tag">WEBM</span><span class="tag">OPUS</span><span class="tag">160k</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 图片 -->
+      <div class="grp" data-kind="image">
+        <div class="grp-h"><span class="t">图片</span><span class="c">26 项 · 214 MB</span>
+          <div class="acts">
+            <span class="dim">已按内容指纹去重 2 项</span>
+            <button class="btn sm ghost" data-group="g4">全选本组</button>
+          </div>
+        </div>
+        <div class="grp-body" data-group-body="g4">
+          <div class="sn" data-bytes="8400">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g3"></div></div>
+            <div style="min-width:0"><div class="sn-name">DSCF2041.jpg</div><div class="sn-url">img.example.com/gallery/full/dscf2041.jpg</div></div>
+            <div class="sn-size">8.2 MB</div>
+            <div class="sn-badges"><span class="tag">JPG</span><span class="tag">6000×4000</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+          <div class="sn" data-bytes="7200">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g3"></div></div>
+            <div style="min-width:0"><div class="sn-name">DSCF2042.jpg</div><div class="sn-url">img.example.com/gallery/full/dscf2042.jpg</div></div>
+            <div class="sn-size">7.1 MB</div>
+            <div class="sn-badges"><span class="tag">JPG</span><span class="tag">6000×4000</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+          <div class="sn" data-bytes="6900">
+            <span class="cb"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="m5 13 4 4L19 7"/></svg></span>
+            <div class="sn-thumb"><div class="g3"></div></div>
+            <div style="min-width:0"><div class="sn-name">DSCF2043.jpg</div><div class="sn-url">img.example.com/gallery/full/dscf2043.jpg</div></div>
+            <div class="sn-size">6.8 MB</div>
+            <div class="sn-badges"><span class="tag">JPG</span><span class="tag">6000×4000</span></div>
+            <div class="sn-act">直链</div>
+          </div>
+          <div class="sn" style="justify-content:center;color:var(--fg-3);font-size:11.5px;grid-template-columns:1fr">
+            展开剩余 23 项（含 3 个低于 1 MB 的缩略图）
+          </div>
+        </div>
+      </div>
+
+      <!-- 已隐藏 -->
+      <div class="grp">
+        <div class="grp-h" style="border-bottom:0">
+          <span class="t" style="color:var(--fg-3)">已隐藏 8 项</span>
+          <span class="c">广告 / 埋点 / 统计像素（1×1 GIF 等）</span>
+          <div class="acts"><button class="btn sm ghost">显示</button></div>
+        </div>
+      </div>
+
+      <div class="bulk-bar">
+        <span class="sum">已选 <b id="selCount">2</b> 项 · 合计 <b id="selSize">1.57 GB</b></span>
+        <span class="dim">其中 1 项来自媒体族</span>
+        <div class="right">
+          <button class="btn sm">预设：视频 ≥720p</button>
+          <button class="btn sm">清空选择</button>
+          <button class="btn primary">加入队列（2）</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 设置 ===================== -->
+    <section class="view" data-view="settings" hidden>
+      <div class="head-row">
+        <div>
+          <div class="h1">设置</div>
+          <div class="muted" style="margin-top:3px">改动即时保存 · 配置文件位于系统用户目录</div>
+        </div>
+        <div class="head-actions">
+          <span class="dim">已自动保存</span>
+          <button class="btn sm">导出配置</button>
+        </div>
+      </div>
+
+      <div class="set-wrap">
+        <nav class="set-nav">
+          <a class="on" data-jump="s1">常规</a>
+          <a data-jump="s2">下载引擎</a>
+          <a data-jump="s3">网络</a>
+          <a data-jump="s4">嗅探</a>
+          <a data-jump="s5">视频解析</a>
+          <a data-jump="s6">外观</a>
+          <a data-jump="s7">隐私与合规</a>
+        </nav>
+
+        <div>
+          <div class="sec" id="s1">
+            <div class="sec-h">常规</div>
+            <div class="sec-d">启动与系统集成</div>
+            <div class="card">
+              <div class="set-row">
+                <div class="lab">开机自动启动<small>登录时在后台启动，不弹窗</small></div>
+                <div class="ctl"><span class="sw"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">启动后最小化到托盘<small>避免每次打开都抢焦点</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">关闭窗口时保持后台运行<small>下载继续，托盘图标显示总进度</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">监听剪贴板链接<small>复制下载链接后自动弹出新建任务</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">完成通知<small>仅在有失败或全部完成时提示</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">界面语言</div>
+                <div class="ctl"><select class="mini-select"><option>简体中文</option><option>English</option><option>日本語</option></select></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec" id="s2">
+            <div class="sec-h">下载引擎</div>
+            <div class="sec-d">分段、连接与写盘策略；默认值已针对"低占用 + 不卡"调优</div>
+            <div class="card">
+              <div class="set-row">
+                <div class="lab">默认分段数<small>机械硬盘会自动降到 4 段</small></div>
+                <div class="ctl"><input class="slider" type="range" min="1" max="32" value="16" data-out="segOut"><span class="mono" id="segOut" style="width:22px;text-align:right">16</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">每任务最大连接<small>超过 16 对多数站点收益递减</small></div>
+                <div class="ctl"><input class="slider" type="range" min="1" max="16" value="8" data-out="connOut"><span class="mono" id="connOut" style="width:22px;text-align:right">8</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">全局连接上限<small>所有任务共享，防止把系统拖垮</small></div>
+                <div class="ctl"><input class="slider" type="range" min="8" max="64" value="32" data-out="globalOut"><span class="mono" id="globalOut" style="width:22px;text-align:right">32</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">同时下载任务数<small>其余任务排队，按 DRR 轮转</small></div>
+                <div class="ctl"><select class="mini-select"><option>4（推荐）</option><option>2</option><option>8</option><option>不限</option></select></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">写盘预分配<small>开启后完成瞬间无合并步骤</small></div>
+                <div class="ctl"><span class="sw on"></span><span class="tag" style="color:var(--ok)">推荐</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">完成后校验<small>SHA256 在低优先级线程执行，不阻塞 UI</small></div>
+                <div class="ctl"><select class="mini-select"><option>仅大于 1 GB</option><option>始终</option><option>从不</option></select></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec" id="s3">
+            <div class="sec-h">网络</div>
+            <div class="sec-d">限速与超时</div>
+            <div class="card">
+              <div class="set-row">
+                <div class="lab">全局限速<small>令牌桶实现，不阻塞线程</small></div>
+                <div class="ctl"><input class="slider" type="range" min="0" max="120" value="42" data-out="limitOut" style="width:180px"><span class="mono" id="limitOut" style="width:66px;text-align:right">42 MB/s</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">连接超时 / 读取超时</div>
+                <div class="ctl"><select class="mini-select"><option>10s / 30s</option><option>5s / 15s</option><option>20s / 60s</option></select></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">HTTP 代理</div>
+                <div class="ctl"><select class="mini-select"><option>跟随系统</option><option>不使用</option><option>自定义…</option></select></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">每主机连接上限<small>对齐浏览器惯例，避免被站点限流</small></div>
+                <div class="ctl"><select class="mini-select"><option>6（推荐）</option><option>4</option><option>10</option></select></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec" id="s4">
+            <div class="sec-h">嗅探</div>
+            <div class="sec-d">浏览器扩展与可选的高级代理模式</div>
+            <div class="card" style="margin-bottom:12px">
+              <div class="set-row">
+                <div class="lab">浏览器扩展<small>Chrome / Edge / Firefox</small></div>
+                <div class="ctl"><span class="st ok"><span class="d"></span>已连接</span><span class="dim">v1.2.0</span><button class="btn sm">管理</button></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">自动嗅探当前标签页<small>打开详情面板时静默开始</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">媒体族自动合并<small>同一主清单的多个变体折叠为一组</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">隐藏广告与埋点资源</div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">嗅探记录保留时长</div>
+                <div class="ctl"><select class="mini-select"><option>24 小时</option><option>7 天</option><option>直到手动清除</option></select></div>
+              </div>
+            </div>
+
+            <div class="warn-box" style="margin-bottom:12px">
+              <span class="t">本地证书代理（高级模式，默认关闭）</span>
+              开启后本机会运行一个中间人代理并安装根证书，用于抓取<b>非浏览器应用</b>的流量。这会把"下载工具"变成"能看到全部 HTTPS 流量的中间人"：证书私钥存在系统钥匙串、可随时删除，但一旦泄露风险很高；受管企业设备与部分杀软会直接拦截。
+              <br>默认仅对用户加入的域名白名单生效，不记录响应体与 Cookie。
+            </div>
+            <div class="card">
+              <div class="set-row">
+                <div class="lab">启用本地证书代理<small>需要安装根证书 · 建议只在必要时开启</small></div>
+                <div class="ctl"><span class="sw danger"></span><button class="btn sm">查看风险说明</button></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">代理白名单<small>仅这些域名会被解密</small></div>
+                <div class="ctl"><span class="dim">0 个域名</span><button class="btn sm">编辑</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec" id="s5">
+            <div class="sec-h">视频解析</div>
+            <div class="sec-d">解析器以独立子进程运行，可独立热更新</div>
+            <div class="card">
+              <div class="set-row">
+                <div class="lab">解析器版本<small>yt-dlp sidecar · SHA256 已校验</small></div>
+                <div class="ctl"><span class="mono">2026.11.05</span><button class="btn sm">检查更新</button></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">自动更新解析器<small>灰度发布，可在 24 小时内回滚</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">转封装工具<small>ffmpeg · 仅 -c copy，不重编码</small></div>
+                <div class="ctl"><span class="st ok"><span class="d"></span>可用</span><span class="dim">6.1</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">首选组合<small>默认推荐兼容性优先，而非最高画质</small></div>
+                <div class="ctl"><select class="mini-select"><option>1080p · H.264 · MP4</option><option>最高画质（任意编码）</option><option>最小体积</option></select></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">受 DRM 保护的内容</div>
+                <div class="ctl"><span class="st err"><span class="d"></span>始终拒绝</span><span class="dim">不可修改</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec" id="s6">
+            <div class="sec-h">外观</div>
+            <div class="sec-d">个性化 · 所有选项即时生效</div>
+            <div class="card">
+              <div class="set-row">
+                <div class="lab">主题</div>
+                <div class="ctl">
+                  <div class="seg-tabs">
+                    <button data-theme-set="dark" class="on">深色</button>
+                    <button data-theme-set="light">浅色</button>
+                    <button data-theme-set="system">跟随系统</button>
+                  </div>
+                </div>
+              </div>
+              <div class="set-row">
+                <div class="lab">强调色</div>
+                <div class="ctl">
+                  <div class="swatches" id="swatches">
+                    <span class="sw-dot on" data-accent="#6C8CFF" style="background:#6C8CFF"></span>
+                    <span class="sw-dot" data-accent="#9B7BFF" style="background:#9B7BFF"></span>
+                    <span class="sw-dot" data-accent="#2BC9C0" style="background:#2BC9C0"></span>
+                    <span class="sw-dot" data-accent="#F2A03D" style="background:#F2A03D"></span>
+                    <span class="sw-dot" data-accent="#FF6B8A" style="background:#FF6B8A"></span>
+                    <span class="sw-dot" data-accent="#3ED47E" style="background:#3ED47E"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="set-row">
+                <div class="lab">列表密度</div>
+                <div class="ctl">
+                  <div class="seg-tabs">
+                    <button data-density-set="comfortable" class="on">舒适</button>
+                    <button data-density-set="compact">紧凑</button>
+                  </div>
+                </div>
+              </div>
+              <div class="set-row">
+                <div class="lab">进度条分段刻度<small>直观看到每个分段是否在推进</small></div>
+                <div class="ctl"><span class="sw on"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">减弱动效<small>低配设备或晕动敏感时开启</small></div>
+                <div class="ctl"><span class="sw"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec" id="s7">
+            <div class="sec-h">隐私与合规</div>
+            <div class="sec-d">这些是产品边界，不是可选项</div>
+            <div class="card" style="margin-bottom:12px">
+              <div class="set-row">
+                <div class="lab">仅下载我有权获取的内容<small>使用前已确认，不可关闭</small></div>
+                <div class="ctl"><span class="sw on" style="opacity:.55;cursor:not-allowed"></span><span class="tag">锁定</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">DRM / 付费墙 / 访问控制绕过<small>不提供此类功能</small></div>
+                <div class="ctl"><span class="st err"><span class="d"></span>不实现</span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">遥测<small>仅匿名崩溃与解析失败计数，可完全关闭</small></div>
+                <div class="ctl"><span class="sw"></span></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">嗅探数据存储</div>
+                <div class="ctl"><span class="dim">仅本机 · 24h 自动清理</span><button class="btn sm">立即清除</button></div>
+              </div>
+            </div>
+            <div class="card danger-zone">
+              <div class="set-row">
+                <div class="lab">打开数据目录</div>
+                <div class="ctl"><button class="btn sm">在文件管理器中显示</button></div>
+              </div>
+              <div class="set-row">
+                <div class="lab">重置所有设置<small>不影响已下载文件与任务历史</small></div>
+                <div class="ctl"><button class="btn sm" style="color:var(--err);border-color:color-mix(in srgb,var(--err) 35%,transparent)">重置</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="statusbar">
+    <span>引擎就绪 · 调度 100ms tick</span>
+    <span style="color:var(--fg-3)">|</span>
+    <span>队列 0ms 延迟</span>
+    <svg class="spark" id="spark" viewBox="0 0 120 16" preserveAspectRatio="none"></svg>
+    <div class="right">
+      <span>内存 74.2 MB</span>
+      <span>CPU 3.1%</span>
+      <span>写盘 18 MB/s</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="vp-dock" id="vpDock">
+  <span class="tag-w">视口</span>
+  <button data-w="900">900</button>
+  <button data-w="1100">1100</button>
+  <button data-w="1400">1400</button>
+  <button data-w="1600">1600</button>
+  <button data-w="0" class="on">自适应</button>
+  <span class="now" id="vpNow">—</span>
+</div>
+<div class="minw-note">窗口宽度小于 900px：已低于设计最小值，布局按 S 档渲染，请把窗口拉宽到 900 以上</div>
+<div class="toast" id="toast"></div>
+<script>
+const root = document.documentElement;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const store = {
+  get(k, d) { try { return localStorage.getItem(k) ?? d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
+/* ---------- 主题 ---------- */
+const mq = window.matchMedia('(prefers-color-scheme: light)');
+let themePref = store.get('fetchweir-theme', 'dark');
+
+function paintTheme() {
+  const t = themePref === 'system' ? (mq.matches ? 'light' : 'dark') : themePref;
+  root.dataset.theme = t;
+  $$('[data-theme-set]').forEach(b => b.classList.toggle('on', b.dataset.themeSet === themePref));
+}
+mq.addEventListener('change', () => { if (themePref === 'system') paintTheme(); });
+paintTheme();
+
+$('#themeBtn').addEventListener('click', () => {
+  themePref = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  store.set('fetchweir-theme', themePref);
+  paintTheme();
+});
+$$('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
+  themePref = b.dataset.themeSet;
+  store.set('fetchweir-theme', themePref);
+  paintTheme();
+}));
+
+/* ---------- 视图切换 ---------- */
+function showView(v) {
+  $$('.view').forEach(s => { s.hidden = s.dataset.view !== v; });
+  $$('.sb').forEach(s => s.classList.remove('active'));
+  const nav = $$('.sb').find(s => s.dataset.nav === v && (!s.dataset.filter || s.dataset.filter === 'all'));
+  if (nav) nav.classList.add('active');
+  const view = $(`.view[data-view="${v}"]`);
+  if (view) view.scrollTop = 0;
+  updateSel();
+}
+
+/* ---------- 任务筛选 ---------- */
+function setFilter(f) {
+  $$('.task').forEach(t => {
+    const st = t.dataset.status, kind = t.dataset.kind;
+    let show = true;
+    if (f === 'downloading' || f === 'queued' || f === 'done' || f === 'failed') show = st === f;
+    else if (['video', 'audio', 'image', 'doc', 'archive'].includes(f)) show = kind === f;
+    t.style.display = show ? '' : 'none';
+  });
+  $$('.chip[data-fchip]').forEach(c => c.classList.toggle('on', c.dataset.fchip === f));
+  updateSel();
+}
+
+$$('[data-nav]').forEach(el => el.addEventListener('click', () => {
+  const v = el.dataset.nav;
+  showView(v);
+  if (v === 'main') {
+    const f = el.dataset.filter || 'all';
+    if (el.classList.contains('sb')) {
+      $$('.sb').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
+    }
+    setFilter(f);
+  }
+}));
+
+$$('.chip[data-fchip]').forEach(c => c.addEventListener('click', () => setFilter(c.dataset.fchip)));
+
+/* 行点击 = 选中（不跳转）；双击 = 打开详情弹窗；按钮/复选框不参与 */
+$$('.task').forEach(t => t.addEventListener('click', e => {
+  if (e.target.closest('button, .t-cb, .cb')) return;
+  if (t.classList.contains('sel')) return;
+  $$('.task').forEach(x => setSel(x, false));
+  setSel(t, true);
+  updateSel();
+}));
+$$('.task').forEach(t => t.addEventListener('dblclick', e => {
+  if (e.target.closest('button, .t-cb, .cb')) return;
+  openDetail(t);
+}));
+
+/* ---------- 速度曲线 ---------- */
+(function spark() {
+  const el = $('#spark'), n = 24, w = 120, h = 16;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const v = 9 + Math.sin(i / 2.3) * 3.4 + Math.sin(i / 1.1) * 1.2 + (i > 17 ? 2.2 : 0);
+    pts.push([i / (n - 1) * w, h - Math.min(14, Math.max(2, v)) - 1]);
+  }
+  el.innerHTML = `<polyline fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"
+    points="${pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}" opacity=".65"/>`;
+})();
+
+/* ---------- 分段进度图 ---------- */
+(function segmap() {
+  const box = $('#segmap');
+  if (!box) return;
+  const N = 16, CH = 6;
+  for (let s = 0; s < N; s++) {
+    const col = document.createElement('div');
+    col.className = 'seg';
+    const frac = Math.max(0, Math.min(1, 0.92 - s * 0.048 + (Math.random() * 0.08 - 0.04)));
+    const filled = Math.floor(frac * CH);
+    for (let i = 0; i < CH; i++) {
+      const b = document.createElement('i');
+      if (i < filled) b.className = 'f';
+      else if (i === filled && s < 12) b.className = 'a';
+      col.appendChild(b);
+    }
+    box.appendChild(col);
+  }
+})();
+
+/* ---------- 视频格式选择 ---------- */
+const codecName = c => c.startsWith('av01') ? 'AV1' : c.startsWith('vp09') ? 'VP9' : c.startsWith('hev1') ? 'HEVC' : c.startsWith('avc1') ? 'H.264' : c;
+const fmtSize = mb => mb >= 1000 ? (mb / 1000).toFixed(2) + ' GB' : Math.round(mb) + ' MB';
+
+$$('#fmtTable tbody tr').forEach(tr => {
+  if (tr.classList.contains('off')) return;
+  tr.addEventListener('click', () => {
+    $$('#fmtTable tbody tr').forEach(x => {
+      x.classList.remove('on');
+      const r = x.querySelector('.radio');
+      if (r) r.classList.remove('on');
+    });
+    tr.classList.add('on');
+    tr.querySelector('.radio').classList.add('on');
+
+    const cells = tr.children;
+    const res = cells[1].querySelector('b').textContent.trim();
+    const codec = codecName(cells[2].textContent.trim());
+    const fps = cells[3].textContent.trim();
+    const mb = Number(cells[6].dataset.size || 0);
+
+    $('#outVideo').textContent = `${res} · ${codec} · ${fps}fps`;
+    $('#outVSize').textContent = fmtSize(mb);
+    $('#outTotal').textContent = fmtSize(mb + 39);
+  });
+});
+
+/* ---------- 嗅探选择 ---------- */
+function updateBulk() {
+  const rows = $$('.sn.on');
+  const kb = rows.reduce((a, r) => a + Number(r.dataset.bytes || 0), 0);
+  const count = $('#selCount'), size = $('#selSize');
+  if (count) count.textContent = rows.length;
+  if (size) size.textContent = kb >= 1048576 ? (kb / 1048576).toFixed(2) + ' GB' : Math.max(0, Math.round(kb / 1024)) + ' MB';
+  const btn = $$('.bulk-bar .btn.primary')[0];
+  if (btn) btn.textContent = `加入队列（${rows.length}）`;
+}
+
+$$('.sn').forEach(row => {
+  if (!row.querySelector('.cb')) return;
+  row.addEventListener('click', e => {
+    if (e.target.closest('button')) return;
+    row.classList.toggle('on');
+    row.querySelector('.cb').classList.toggle('on');
+    updateBulk();
+  });
+});
+
+$$('[data-group]').forEach(btn => btn.addEventListener('click', e => {
+  e.stopPropagation();
+  const body = $(`[data-group-body="${btn.dataset.group}"]`);
+  if (!body) return;
+  $$('.sn', body).filter(r => r.querySelector('.cb')).forEach(r => {
+    r.classList.add('on');
+    r.querySelector('.cb').classList.add('on');
+  });
+  updateBulk();
+}));
+
+$$('.chip[data-schip]').forEach(c => c.addEventListener('click', () => {
+  $$('.chip[data-schip]').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  const kind = c.dataset.schip;
+  $$('.grp[data-kind]').forEach(g => {
+    g.style.display = (kind === 'all' || g.dataset.kind === kind) ? '' : 'none';
+  });
+}));
+
+$$('.bulk-bar .btn.sm').forEach(b => {
+  if (b.textContent.includes('清空')) b.addEventListener('click', () => {
+    $$('.sn').forEach(r => { r.classList.remove('on'); const c = r.querySelector('.cb'); if (c) c.classList.remove('on'); });
+    updateBulk();
+  });
+});
+updateBulk();
+
+/* ---------- 开关 / 强调色 / 密度 / 滑杆 ---------- */
+$$('.sw').forEach(sw => sw.addEventListener('click', () => {
+  if (sw.style.cursor === 'not-allowed') return;
+  sw.classList.toggle('on');
+}));
+
+const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const lighten = (hex, amt) => {
+  const [r, g, b] = hex2rgb(hex);
+  const f = v => Math.round(v + (255 - v) * amt);
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+};
+$$('.sw-dot').forEach(d => d.addEventListener('click', () => {
+  $$('.sw-dot').forEach(x => x.classList.remove('on'));
+  d.classList.add('on');
+  root.style.setProperty('--accent', d.dataset.accent);
+  root.style.setProperty('--accent-2', lighten(d.dataset.accent, 0.22));
+  store.set('fetchweir-accent', d.dataset.accent);
+}));
+const savedAccent = store.get('fetchweir-accent', '');
+if (savedAccent) {
+  const dot = $$('.sw-dot').find(d => d.dataset.accent === savedAccent);
+  if (dot) dot.click();
+}
+
+$$('[data-density-set]').forEach(b => b.addEventListener('click', () => {
+  $$('[data-density-set]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  root.dataset.density = b.dataset.densitySet;
+}));
+
+$$('.slider').forEach(sl => sl.addEventListener('input', () => {
+  const out = document.getElementById(sl.dataset.out);
+  if (!out) return;
+  out.textContent = sl.dataset.out === 'limitOut' ? sl.value + ' MB/s' : sl.value;
+}));
+
+/* ---------- 视口档位演示（容器查询按 .vp-frame 实际宽度换档） ---------- */
+const vpFrame = $('#vpFrame'), vpNow = $('#vpNow');
+let pinW = 0;
+const bandOf = w => w >= 1440 ? 'XL ≥1440' : w >= 1200 ? 'L 1200–1439' : w >= 1040 ? 'M 1040–1199' : 'S 900–1039';
+function paintDock() {
+  const w = vpFrame.clientWidth;
+  vpNow.textContent = w + 'px · ' + bandOf(w);
+  $$('#vpDock button[data-w]').forEach(b => b.classList.toggle('on', Number(b.dataset.w) === pinW));
+}
+function applyPin() {
+  if (!pinW) {
+    vpFrame.style.width = ''; vpFrame.style.zoom = '';
+    vpFrame.classList.remove('pinned');
+  } else {
+    const avail = document.documentElement.clientWidth;
+    vpFrame.style.width = pinW + 'px';
+    const z = Math.min(1, avail / pinW);
+    vpFrame.style.zoom = z < 1 ? String(Math.floor(z * 1000) / 1000) : '';
+    vpFrame.classList.add('pinned');
+  }
+  requestAnimationFrame(paintDock);
+}
+$$('#vpDock button[data-w]').forEach(b => b.addEventListener('click', () => {
+  pinW = Number(b.dataset.w);
+  applyPin();
+}));
+window.addEventListener('resize', applyPin);
+
+/* ---------- 轻提示 ---------- */
+let toastTimer = 0;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1900);
+}
+
+/* ---------- 任务排序 ---------- */
+const taskList = $('#taskList');
+const sortState = { key: 'added', dir: 'desc' };
+const sortVal = (el, k) => {
+  if (k === 'added') return el.dataset.added === undefined ? null : -Number(el.dataset.added);
+  const attr = k === 'size' ? 'bytes' : k;
+  const v = el.dataset[attr];
+  return (v === undefined || v === '') ? null : Number(v);
+};
+function paintSort() {
+  $('#sortKey').value = sortState.key;
+  const d = $('#sortDir');
+  d.querySelector('.ar').textContent = sortState.dir === 'asc' ? '↑' : '↓';
+  d.querySelector('.lbl2').textContent = sortState.dir === 'asc' ? '升序' : '降序';
+  $$('.list-head .hbtn').forEach(h => {
+    h.classList.toggle('on', h.dataset.sort === sortState.key);
+    const ar = h.querySelector('.ar');
+    if (ar) ar.textContent = sortState.dir === 'asc' ? '↑' : '↓';
+  });
+}
+function sortTasks() {
+  const rows = $$('.task', taskList);
+  const mul = sortState.dir === 'asc' ? 1 : -1;
+  rows.sort((a, b) => {
+    const va = sortVal(a, sortState.key), vb = sortVal(b, sortState.key);
+    if (va === null && vb === null) return 0;
+    if (va === null) return 1;   // 无值的行（排队/失败/已完成）永远沉底
+    if (vb === null) return -1;
+    return (va - vb) * mul;
+  });
+  const frag = document.createDocumentFragment();
+  rows.forEach(r => frag.appendChild(r));
+  taskList.appendChild(frag);
+  paintSort();
+  updateSel();
+}
+$('#sortKey').addEventListener('change', e => {
+  sortState.key = e.target.value;
+  sortState.dir = sortState.key === 'eta' ? 'asc' : 'desc';
+  sortTasks();
+});
+$('#sortDir').addEventListener('click', () => {
+  sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+  sortTasks();
+});
+$$('.list-head .hbtn').forEach(h => h.addEventListener('click', () => {
+  if (sortState.key === h.dataset.sort) sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+  else { sortState.key = h.dataset.sort; sortState.dir = 'desc'; }
+  sortTasks();
+}));
+
+/* ---------- 任务多选 / 批量操作 ---------- */
+const taskBulk = $('#taskBulk');
+function setSel(el, on) {
+  el.classList.toggle('sel', on);
+  const cb = el.querySelector('.t-cb .cb');
+  if (cb) cb.classList.toggle('on', on);
+}
+function updateSel() {
+  const rows = $$('.task', taskList);
+  const visible = rows.filter(r => r.style.display !== 'none');
+  const sel = visible.filter(r => r.classList.contains('sel'));
+  const done = sel.filter(r => r.dataset.status === 'done');
+  const allDone = sel.length > 0 && done.length === sel.length;
+  const onMain = !$('.view[data-view="main"]').hidden;
+  taskBulk.hidden = sel.length === 0 || !onMain;
+  $('.main').classList.toggle('has-sel', !taskBulk.hidden);
+  $('#selN').textContent = sel.length;
+  $('#selDone').textContent = done.length;
+  $('#selHint').textContent = sel.length === 0 ? '' : allDone ? '所选均为已完成项，可直接打开' : '含进行中任务：可批量暂停或取消';
+  $('#bulkOpen').disabled = $('#bulkFolder').disabled = !allDone;
+  $('#bulkPause').disabled = $('#bulkCancel').disabled = allDone;
+  const sa = $('#selAll');
+  const n = sel.length;
+  sa.classList.toggle('on', n === visible.length && n > 0);
+  sa.classList.toggle('half', n > 0 && n < visible.length);
+}
+$$('.task', taskList).forEach(t => {
+  t.querySelector('.t-cb').addEventListener('click', e => {
+    e.stopPropagation();
+    setSel(t, !t.classList.contains('sel'));
+    updateSel();
+  });
+});
+$('#selAll').addEventListener('click', () => {
+  const on = !$('#selAll').classList.contains('on');
+  $$('.task', taskList).filter(r => r.style.display !== 'none').forEach(t => setSel(t, on));
+  updateSel();
+});
+$('#selDoneBtn').addEventListener('click', () => {
+  $$('.task', taskList).forEach(t => setSel(t, false));
+  $$('.task', taskList).filter(r => r.dataset.status === 'done' && r.style.display !== 'none').forEach(t => setSel(t, true));
+  updateSel();
+});
+$('#bulkClear').addEventListener('click', () => {
+  $$('.task', taskList).forEach(t => setSel(t, false));
+  updateSel();
+});
+
+/* ---------- 行内操作 ---------- */
+const actText = { open: '打开文件', folder: '打开所在文件夹', pause: '已暂停', cancel: '已取消', start: '已开始', retry: '重新解析并重试', remove: '已移除' };
+$$('.task', taskList).forEach(t => {
+  $$('[data-act]', t).forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const name = t.querySelector('.t-name').textContent.trim().split('  ')[0];
+    toast(actText[b.dataset.act] + '：' + name.slice(0, 34));
+  }));
+});
+$$('[data-bulk]').forEach(b => b.addEventListener('click', () => {
+  const sel = $$('.task', taskList).filter(r => r.classList.contains('sel'));
+  const n = sel.length;
+  const msg = { open: `已批量打开 ${n} 个文件`, folder: `已打开 ${n} 个文件所在文件夹`, pause: `已暂停 ${n} 项`, cancel: `已取消 ${n} 项` };
+  toast(msg[b.dataset.bulk] || '');
+}));
+
+/* ---------- 任务详情弹窗 ---------- */
+const modal = $('#detailModal'), modalBody = $('#modalBody');
+const statusText = { downloading: '下载中', queued: '排队中', paused: '已暂停', failed: '需处理', done: '已完成' };
+const connBody = $('#connBody'), connMeta = $('#connMeta');
+const connDefault = connBody.innerHTML;
+function openDetail(t) {
+  const st = t.dataset.status;
+  const nm = t.querySelector('.t-name').cloneNode(true);
+  nm.querySelectorAll('.tag').forEach(x => x.remove());
+  $('#detName').textContent = nm.textContent.trim();
+  $('#modalSub').textContent = (statusText[st] || '') + ' · Esc 或点击遮罩关闭';
+  const pill = $('#detStatus');
+  pill.className = 'st ' + (st === 'done' ? 'ok' : st === 'failed' ? 'err' : st === 'downloading' ? 'dl' : 'wait');
+  pill.innerHTML = '<span class="d"></span>' + (statusText[st] || '');
+  $('#detUrl').textContent = t.querySelector('.t-sub').textContent.replace(/\s+/g, ' ').split(' · ')[0].trim();
+  /* 详情数值按行数据回填，避免状态与数字对不上 */
+  const total = Number(t.dataset.bytes) || 0;
+  const barEl = t.querySelector('.bar i');
+  const pct = barEl ? Math.round(parseFloat(barEl.style.width) || 0) : 0;
+  const sp = Number(t.dataset.speed) || 0;
+  const eta = Number(t.dataset.eta);
+  const fmtMB = mb => mb >= 1024 ? (mb / 1024).toFixed(2) + ' GB' : Math.round(mb) + ' MB';
+  const fmtEta = s => s > 0 ? String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0') : '—';
+  $('#heroSpeed').innerHTML = st === 'done' ? '100<span>%</span>'
+    : st === 'downloading' ? sp.toFixed(1) + '<span>MB/s</span>'
+    : '—<span></span>';
+  $('#mDone').textContent = fmtMB(total * pct / 100);
+  $('#mTotal').textContent = fmtMB(total);
+  $('#mEta').textContent = st === 'downloading' ? fmtEta(eta) : '—';
+  $('#mVerify').textContent = st === 'done' ? 'SHA256 通过' : '下载后校验';
+  $('#mVerify').style.color = st === 'done' ? 'var(--ok)' : 'var(--fg-2)';
+  $('#heroBar').style.width = pct + '%';
+  $('#heroPct').textContent = pct + '%';
+  $('#heroMax').textContent = fmtMB(total);
+  $('#heroSub').textContent = ({
+    downloading: '分块 512 KB · 已用 12/16 连接 · 磁盘无合并回填',
+    queued: '等待连接额度 · 尚未写入磁盘',
+    paused: '分块 512 KB · 断点已保存 · 连接已释放',
+    failed: '分片失败 · 断点保留 · 等待重试',
+    done: '分块 512 KB · 全部分段完成 · 无临时分片合并'
+  })[st];
+  /* 分段图与连接明细跟随状态：已完成不再显示活动连接 */
+  const segBox = $('#segmap');
+  if (segBox) {
+    const N = 16, CH = 6;
+    segBox.innerHTML = '';
+    for (let s = 0; s < N; s++) {
+      const col = document.createElement('div');
+      col.className = 'seg';
+      const base = st === 'done' ? 1 : st === 'queued' ? 0 : Math.min(1, pct / 100);
+      const frac = st === 'done' ? 1 : Math.max(0, Math.min(1, base - s * 0.015));
+      const filled = Math.floor(frac * CH);
+      for (let i = 0; i < CH; i++) {
+        const b = document.createElement('i');
+        if (i < filled) b.className = 'f';
+        else if (i === filled && st === 'downloading' && s < 12) b.className = 'a';
+        col.appendChild(b);
+      }
+      segBox.appendChild(col);
+    }
+  }
+  if (st === 'downloading') {
+    connBody.innerHTML = connDefault;
+    connMeta.textContent = '12 / 16';
+  } else {
+    connMeta.textContent = st === 'done' ? '已全部释放' : st === 'paused' ? '已释放' : st === 'failed' ? '已关闭' : '未建立';
+    connBody.innerHTML = '<div class="dim" style="padding:12px 0">' + ({
+      done: '任务已完成 · 16 个连接全部关闭，无残留句柄',
+      paused: '任务已暂停 · 连接已释放，续传时按需重建',
+      failed: '任务失败 · 连接已关闭，重试时重新协商 Range',
+      queued: '尚未获得连接额度 · 调度器排队中'
+    }[st] || '') + '</div>';
+  }
+  const acts = $('#detActions');
+  if (st === 'done') {
+    acts.innerHTML = '<button class="btn ok" data-act="open">用默认程序打开</button><button class="btn" data-act="folder">打开所在文件夹</button>';
+  } else if (st === 'paused' || st === 'queued') {
+    acts.innerHTML = '<button class="btn primary" data-act="start">开始</button><button class="btn" data-act="cancel">取消任务</button>';
+  } else if (st === 'failed') {
+    acts.innerHTML = '<button class="btn primary" data-act="retry">重试</button><button class="btn" data-act="remove">移除</button>';
+  } else {
+    acts.innerHTML = '<button class="btn" data-act="pause">暂停</button><button class="btn" data-act="folder">打开文件夹</button>';
+  }
+  $$('[data-act]', acts).forEach(b => b.addEventListener('click', () => toast(actText[b.dataset.act] + '：' + $('#detName').textContent)));
+  modal.hidden = false;
+  $('.app').classList.add('modal-open');
+  modalBody.scrollTop = 0;
+}
+function closeDetail() { modal.hidden = true; $('.app').classList.remove('modal-open'); }
+$('#modalClose').addEventListener('click', closeDetail);
+modal.addEventListener('click', e => { if (e.target === modal) closeDetail(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeDetail(); });
+
+sortTasks();
+updateSel();
+applyPin();
+
+/* ---------- 设置页锚点 ---------- */
+$$('.set-nav a').forEach(a => a.addEventListener('click', () => {
+  $$('.set-nav a').forEach(x => x.classList.remove('on'));
+  a.classList.add('on');
+  const sec = document.getElementById(a.dataset.jump);
+  if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+
+</script>
+</body>
+</html>

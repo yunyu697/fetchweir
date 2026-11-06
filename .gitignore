@@ -1,0 +1,16 @@
+# 构建产物
+/target/
+/src-tauri/target/
+/src-tauri/gen/schemas/
+node_modules/
+dist/
+
+# 本地产物
+*.part
+*.fwstate.json
+.screenshots/
+.trae-html-share-packages/
+
+# 系统文件
+.DS_Store
+Thumbs.db
