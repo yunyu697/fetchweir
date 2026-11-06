@@ -73,6 +73,8 @@ fn link_manifest_to_all_targets() {
 </assembly>
 "#;
         if std::fs::write(&manifest, xml).is_ok() {
+            // LNK1220：/MANIFESTINPUT 必须与 /MANIFEST:EMBED 一起使用
+            println!("cargo:rustc-link-arg=/MANIFEST:EMBED");
             println!("cargo:rustc-link-arg=/MANIFESTINPUT:{}", manifest.display());
         }
     }
