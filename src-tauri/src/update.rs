@@ -164,10 +164,16 @@ fn parse_ver(raw: &str) -> Option<Ver> {
 
 #[cfg(target_os = "windows")]
 fn pick_asset(assets: &[GhAsset]) -> Option<&GhAsset> {
-    assets.iter().find(|a| {
-        let n = a.name.to_ascii_lowercase();
-        n.ends_with("-setup.exe")
-    })
+    // 所有用户安装必须更新为 perMachine 包，否则会静默装出第二份用户级副本。
+    let per_machine = crate::platform::install_info().scope == "perMachine";
+    let suffix = if per_machine {
+        "-setup-allusers.exe"
+    } else {
+        "-setup.exe"
+    };
+    assets
+        .iter()
+        .find(|a| a.name.to_ascii_lowercase().ends_with(suffix))
 }
 
 #[cfg(target_os = "macos")]

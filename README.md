@@ -30,6 +30,7 @@ pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask check    # 编译检查（含�
 pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask test     # 引擎集成测试（本地回环，无 GUI）
 pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask build    # 调试二进制
 pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle   # 安装包（Windows 产出 NSIS）
+pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle -FwScope perMachine   # 额外产出 *-setup-allusers.exe
 ```
 
 无头验证：

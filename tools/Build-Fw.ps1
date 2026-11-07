@@ -8,12 +8,14 @@
 .EXAMPLE
   pwsh -File .\tools\Build-Fw.ps1 -FwTask test
 .EXAMPLE
-  pwsh -File .\tools\Build-Fw.ps1 -FwTask bundle
+  pwsh -File .\tools\Build-Fw.ps1 -FwTask bundle -FwScope perMachine   # 额外产出 *-setup-allusers.exe
 #>
 [CmdletBinding()]
 param(
     [ValidateSet('check', 'test', 'build', 'bundle', 'dev')]
-    [string]$FwTask = 'build'
+    [string]$FwTask = 'build',
+    [ValidateSet('currentUser', 'perMachine')]
+    [string]$FwScope = 'currentUser'
 )
 
 Set-StrictMode -Version Latest
@@ -53,7 +55,24 @@ switch ($FwTask) {
     'check' { & cargo check @FwCargoArgs --all-targets }
     'test' { & cargo test @FwCargoArgs --all-targets }
     'build' { & cargo build @FwCargoArgs }
-    'bundle' { & npm run build --prefix $FwRepoRoot }
+    'bundle' {
+        if ($FwScope -eq 'perMachine') {
+            # 覆盖 NSIS 安装范围，安装到 Program Files 并写 HKLM 卸载项；
+            # 产物改名带 -setup-allusers 后缀，供更新器按安装范围匹配。
+            $FwJson = '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}'
+            & npm run build --prefix $FwRepoRoot -- --config $FwJson
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            $FwVer = (Get-Content (Join-Path $FwRepoRoot 'version.json') -Raw | ConvertFrom-Json).version
+            $FwBundleRoot = if ($env:CARGO_TARGET_DIR) { $env:CARGO_TARGET_DIR } else { Join-Path $FwRepoRoot 'src-tauri\target' }
+            $FwSetup = Join-Path $FwBundleRoot "release\bundle\nsis\Fetchweir_${FwVer}_x64-setup.exe"
+            if (-not (Test-Path $FwSetup)) { throw "未找到 perMachine 安装包：$FwSetup" }
+            $FwAllUsers = $FwSetup -replace '-setup\.exe$', '-setup-allusers.exe'
+            Copy-Item $FwSetup $FwAllUsers -Force
+            Write-Host "perMachine 安装包：$FwAllUsers"
+        } else {
+            & npm run build --prefix $FwRepoRoot
+        }
+    }
     'dev' { & npm run dev --prefix $FwRepoRoot }
 }
 
