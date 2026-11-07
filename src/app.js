@@ -1225,7 +1225,10 @@
     if (!u) return;
     state.update = u;
     const hasLatest = !!u.latestVersion;
-    $('updatePanel').hidden = !hasLatest;
+    // 只有真的存在可更新版本时才展开详情；「已是最新」仍展示版本块和「更新」按钮，
+    // 会让用户以为还有更新（v1.0.2 实测反馈）。
+    const showDetail = hasLatest && ['updateAvailable', 'downloading', 'downloaded', 'installing', 'failed'].includes(u.stage);
+    $('updatePanel').hidden = !showDetail;
     const hint = $('updateHint');
     let hintText = UPDATE_STAGE_TEXT[u.stage] || u.stage || '尚未检查';
     if (u.stage === 'updateAvailable' && u.latestVersion) hintText = `发现新版本 v${u.latestVersion}`;

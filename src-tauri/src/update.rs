@@ -98,6 +98,9 @@ struct GhRelease {
     body: Option<String>,
     #[serde(default)]
     draft: bool,
+    /// GitHub 的「预发布」标记；看板上的 alpha/beta 包不应推给正式版用户。
+    #[serde(default)]
+    prerelease: bool,
     #[serde(default)]
     published_at: Option<String>,
     #[serde(default)]
@@ -113,28 +116,31 @@ struct GhAsset {
     size: u64,
 }
 
-/// 只比第一种版本格式 <major>.<minor>.<patch>[-alphaN]。
+/// 语义化版本：<major>.<minor>.<patch>[-pre][+build]。
+/// 各段一律按数字比较（因此 1.0.10 > 1.0.9）；预发布按 semver 规则逐段比较，
+/// 且同号预发布永远低于正式版。
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Ver {
     major: u64,
     minor: u64,
     patch: u64,
-    alpha: Option<u64>,
+    /// 预发布标识符，空表示正式版。
+    pre: Vec<String>,
+}
+
+impl Ver {
+    fn is_prerelease(&self) -> bool {
+        !self.pre.is_empty()
+    }
 }
 
 impl Ord for Ver {
     fn cmp(&self, other: &Self) -> Ordering {
         self.major
             .cmp(&other.major)
-            .then(self.minor.cmp(&other.minor))
-            .then(self.patch.cmp(&other.patch))
-            .then(match (&self.alpha, &other.alpha) {
-                (None, None) => Ordering::Equal,
-                // 正式版大于同号预发布
-                (None, Some(_)) => Ordering::Greater,
-                (Some(_), None) => Ordering::Less,
-                (Some(a), Some(b)) => a.cmp(b),
-            })
+            .then_with(|| self.minor.cmp(&other.minor))
+            .then_with(|| self.patch.cmp(&other.patch))
+            .then_with(|| cmp_prerelease(&self.pre, &other.pre))
     }
 }
 
@@ -144,21 +150,72 @@ impl PartialOrd for Ver {
     }
 }
 
+/// semver 预发布优先级：空串 > 非空；逐段数字优先于字母；前缀相同则段数少的更小。
+fn cmp_prerelease(a: &[String], b: &[String]) -> Ordering {
+    match (a.is_empty(), b.is_empty()) {
+        (true, true) => Ordering::Equal,
+        (true, false) => Ordering::Greater,
+        (false, true) => Ordering::Less,
+        (false, false) => {
+            for (x, y) in a.iter().zip(b.iter()) {
+                let ord = match (x.parse::<u64>(), y.parse::<u64>()) {
+                    (Ok(nx), Ok(ny)) => nx.cmp(&ny),
+                    (Ok(_), Err(_)) => Ordering::Less,
+                    (Err(_), Ok(_)) => Ordering::Greater,
+                    (Err(_), Err(_)) => cmp_alpha_ident(x, y),
+                };
+                if ord != Ordering::Equal {
+                    return ord;
+                }
+            }
+            a.len().cmp(&b.len())
+        }
+    }
+}
+
+/// 字母标识符的比较。本项目的预发布长期写成 `alpha1`/`alpha10`（无点号），
+/// 严格按 ASCII 字典序会得出 alpha10 < alpha9，历史 tag 会造成误判；
+/// 因此同前缀且都以数字结尾时按数值比较，其余情况仍按 semver 的字典序。
+fn cmp_alpha_ident(x: &str, y: &str) -> Ordering {
+    fn split(s: &str) -> (&str, Option<u64>) {
+        match s.find(|c: char| c.is_ascii_digit()) {
+            Some(i) if i > 0 && s[i..].chars().all(|c| c.is_ascii_digit()) => {
+                (&s[..i], s[i..].parse().ok())
+            }
+            _ => (s, None),
+        }
+    }
+    let (px, nx) = split(x);
+    let (py, ny) = split(y);
+    match (nx, ny) {
+        (Some(nx), Some(ny)) if px == py => nx.cmp(&ny),
+        _ => x.cmp(y),
+    }
+}
+
 fn parse_ver(raw: &str) -> Option<Ver> {
     let s = raw.trim().trim_start_matches(['v', 'V']);
-    let (num, alpha) = match s.split_once("-alpha") {
-        Some((n, a)) => (n, Some(a.parse::<u64>().ok()?)),
-        None => (s, None),
+    // 构建元数据（+build.7）不参与比较
+    let s = s.split_once('+').map(|(head, _)| head).unwrap_or(s);
+    let (num, pre) = match s.split_once('-') {
+        Some((n, p)) => {
+            let parts: Vec<String> = p.split('.').map(|x| x.to_string()).collect();
+            if parts.iter().any(|x| x.is_empty()) {
+                return None;
+            }
+            (n, parts)
+        }
+        None => (s, Vec::new()),
     };
     let parts: Vec<&str> = num.split('.').collect();
-    if parts.len() != 3 {
+    if parts.len() != 3 || parts.iter().any(|p| p.is_empty()) {
         return None;
     }
     Some(Ver {
         major: parts[0].parse().ok()?,
         minor: parts[1].parse().ok()?,
         patch: parts[2].parse().ok()?,
-        alpha,
+        pre,
     })
 }
 
@@ -357,13 +414,25 @@ impl Updater {
             Err(_) => return self.fail("更新源返回了非预期的数据格式。".to_string()),
         };
 
+        // 当前版本先算出来：预发布过滤与后面的「是否更新」都用同一份解析结果。
+        let current = parse_ver(VERSION).unwrap_or(Ver {
+            major: 0,
+            minor: 0,
+            patch: 0,
+            pre: Vec::new(),
+        });
+
         // 选「本平台有安装包」的最高版本；草稿与无法识别版本号的条目跳过。
+        // 预发布只有在当前版本本身是预发布时才参与比较，避免把 alpha/beta 推给正式版用户。
         let mut best: Option<(Ver, &GhRelease, &GhAsset)> = None;
         for r in &releases {
             if r.draft {
                 continue;
             }
             let Some(v) = parse_ver(&r.tag_name) else { continue };
+            if (r.prerelease || v.is_prerelease()) && !current.is_prerelease() {
+                continue;
+            }
             let Some(asset) = pick_asset(&r.assets) else { continue };
             if best.as_ref().map(|b| v > b.0).unwrap_or(true) {
                 best = Some((v, r, asset));
@@ -373,13 +442,6 @@ impl Updater {
         let Some((ver, release, asset)) = best else {
             return self.fail("更新源中没有适用于当前平台的安装包。".to_string());
         };
-
-        let current = parse_ver(VERSION).unwrap_or(Ver {
-            major: 0,
-            minor: 0,
-            patch: 0,
-            alpha: None,
-        });
 
         let latest = Latest {
             version: release
@@ -881,16 +943,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn version_ordering_handles_alpha_and_release() {
-        let a9 = parse_ver("v1.0.0-alpha9").unwrap();
-        let a10 = parse_ver("1.0.0-alpha10").unwrap();
-        let rel = parse_ver("1.0.0").unwrap();
-        assert!(a10 > a9);
-        assert!(rel > a10);
-        assert!(parse_ver("1.0.1-alpha1").unwrap() > rel);
-        assert_eq!(parse_ver("v1.2.3-alpha1"), parse_ver("1.2.3-alpha1"));
+    fn version_ordering_matches_semver() {
+        // 1) 当前 == 最新：相等，不应提示更新
+        assert_eq!(parse_ver("v1.0.2").unwrap(), parse_ver("1.0.2").unwrap());
+        assert!(!(parse_ver("1.0.2").unwrap() > parse_ver("v1.0.2").unwrap()));
+        // 2) 当前更高（本地开发版）
+        assert!(parse_ver("1.0.3").unwrap() > parse_ver("1.0.2").unwrap());
+        // 3) 最新为预发布：同号预发布低于正式版，但高于上一正式版
+        assert!(parse_ver("1.0.2-alpha2").unwrap() < parse_ver("1.0.2").unwrap());
+        assert!(parse_ver("1.0.3-alpha1").unwrap() > parse_ver("1.0.2").unwrap());
+        assert!(parse_ver("1.0.0-alpha10").unwrap() > parse_ver("1.0.0-alpha9").unwrap());
+        // 4) 两位数字按数值比较，不是字典序
+        assert!(parse_ver("1.0.10").unwrap() > parse_ver("1.0.9").unwrap());
+        assert!(parse_ver("1.10.0").unwrap() > parse_ver("1.9.0").unwrap());
+        // 构建元数据不参与比较
+        assert_eq!(parse_ver("1.0.3+build.7").unwrap(), parse_ver("1.0.3").unwrap());
+        // semver 预发布优先级：数字段低于字母段，数字段按数值比较
+        assert!(parse_ver("1.0.0-alpha.1").unwrap() < parse_ver("1.0.0-alpha.beta").unwrap());
+        assert!(parse_ver("1.0.0-beta.2").unwrap() < parse_ver("1.0.0-beta.11").unwrap());
+        // 非法输入不应被当成某个版本
         assert!(parse_ver("1.2").is_none());
-        assert!(parse_ver("1.0.0-beta1").is_none());
+        assert!(parse_ver("1.0.3-").is_none());
+        assert!(parse_ver("").is_none());
     }
 
     #[test]
