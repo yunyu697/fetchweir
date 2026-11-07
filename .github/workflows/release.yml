@@ -92,12 +92,21 @@ jobs:
           $fwVersion = (Get-Content version.json -Raw | ConvertFrom-Json).version
           $fwUser = Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1
           $fwUserHash = (Get-FileHash $fwUser.FullName -Algorithm SHA256).Hash
-          npm run build -- --bundles nsis --config '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}'
+          # 配置写文件再传路径：内联 JSON 的引号会被 pwsh 解析掉，tauri 收到的是无引号的非法 JSON。
+          $fwCfg = Join-Path $env:RUNNER_TEMP 'per-machine.json'
+          '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}' | Set-Content -Path $fwCfg -Encoding utf8
+          npm run tauri build -- --bundles nsis --config $fwCfg
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $fwSetup = Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1
+          $fwSetup = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
           $fwDst = Join-Path $fwSetup.Directory "Fetchweir_${fwVersion}_x64-setup-allusers.exe"
           Copy-Item $fwSetup.FullName $fwDst -Force
           if ((Get-FileHash $fwDst -Algorithm SHA256).Hash -eq $fwUserHash) {
             throw 'perMachine 包与用户级包字节相同，--config 未生效'
+          }
+          # 用安装包内嵌的清单执行级别复核：所有用户包必须要求管理员，用户级包必须不要求。
+          $fwAll = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($fwDst))
+          $fwMe = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($fwUser.FullName))
+          if ($fwAll -notmatch 'requireAdministrator' -or $fwMe -match 'requireAdministrator') {
+            throw '安装包执行级别与安装范围不符'
           }
           gh release upload "${{ github.ref_name }}" $fwDst --clobber
