@@ -606,6 +606,8 @@
   function setView(v) {
     state.view = v;
     if (v === 'video') checkParserState();
+    // 扩展状态在启动时可能早于宿主注册完成，进设置页时重新取一次，避免显示过期状态。
+    if (v === 'settings') loadExtensionInfo();
     $$('.view').forEach((s) => { s.hidden = s.dataset.view !== v; });
     $$('.sb').forEach((s) => { if (s.dataset.nav !== 'main') s.classList.toggle('active', s.dataset.nav === v); });
     const view = $(`.view[data-view="${v}"]`);
@@ -1138,7 +1140,7 @@
     reg.textContent = info.browsers.length ? `宿主已注册：${info.browsers.join('、')}` : '宿主未注册';
     if (guide) {
       guide.textContent = `扩展文件：${info.present ? '已随安装包提供' : '缺失'} · Native Messaging 宿主：${
-        info.hostRegistered ? `${info.browsers.join('、')}（HKCU，无需管理员）` : '未注册'
+        info.host_registered ? `${info.browsers.join('、')}（HKCU，无需管理员）` : '未注册'
       }`;
     }
     if (dirText) dirText.textContent = info.dir ? `扩展目录：${info.dir}` : '扩展目录 —';

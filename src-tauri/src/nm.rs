@@ -516,6 +516,7 @@ fn registry_value_matches(key: &str, expected: &std::path::Path) -> bool {
 pub fn register_hosts_async() {
     tauri::async_runtime::spawn_blocking(|| {
         let _ = register_hosts();
+        invalidate_registration_cache();
     });
 }
 
@@ -541,13 +542,26 @@ pub struct NmStatus {
 }
 
 /// 已注册宿主的浏览器列表。注册表查询要拉子进程，缓存 15 秒。
+#[cfg(target_os = "windows")]
+static REGISTRATION_CACHE: std::sync::Mutex<
+    Option<(std::time::Instant, Vec<(String, bool)>)>,
+> = std::sync::Mutex::new(None);
+
+/// 注册完成后立刻失效缓存，避免设置页读到注册前的旧结果。
+pub fn invalidate_registration_cache() {
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(mut guard) = REGISTRATION_CACHE.lock() {
+            *guard = None;
+        }
+    }
+}
+
 pub fn browser_registration() -> Vec<(String, bool)> {
     #[cfg(target_os = "windows")]
     {
-        use std::sync::Mutex;
         use std::time::{Duration, Instant};
-        static CACHE: Mutex<Option<(Instant, Vec<(String, bool)>)>> = Mutex::new(None);
-        if let Ok(guard) = CACHE.lock() {
+        if let Ok(guard) = REGISTRATION_CACHE.lock() {
             if let Some((at, list)) = guard.as_ref() {
                 if at.elapsed() < Duration::from_secs(15) {
                     return list.clone();
@@ -578,7 +592,7 @@ pub fn browser_registration() -> Vec<(String, bool)> {
                 firefox_file.as_path(),
             ),
         ));
-        if let Ok(mut guard) = CACHE.lock() {
+        if let Ok(mut guard) = REGISTRATION_CACHE.lock() {
             *guard = Some((Instant::now(), list.clone()));
         }
         list
