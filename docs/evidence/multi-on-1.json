@@ -1,0 +1,2655 @@
+{
+  "mode": "auto-on",
+  "tasks": 1,
+  "sizeMB": 100,
+  "sourcePort": 9471,
+  "created": [
+    {
+      "id": 1,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 8
+    }
+  ],
+  "samples": [
+    {
+      "at": 4,
+      "sumSpeed": 0,
+      "sumDone": 0,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 0,
+          "total": 104857600,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 411,
+      "sumSpeed": 0,
+      "sumDone": 180224,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 180224,
+          "total": 104857600,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 817,
+      "sumSpeed": 426008,
+      "sumDone": 311296,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 311296,
+          "total": 104857600,
+          "speed": 426008,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1234,
+      "sumSpeed": 386154,
+      "sumDone": 442368,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 442368,
+          "total": 104857600,
+          "speed": 386154,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1648,
+      "sumSpeed": 358248,
+      "sumDone": 573440,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 573440,
+          "total": 104857600,
+          "speed": 358248,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 2063,
+      "sumSpeed": 338807,
+      "sumDone": 704512,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 704512,
+          "total": 104857600,
+          "speed": 338807,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 2473,
+      "sumSpeed": 325739,
+      "sumDone": 835584,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 835584,
+          "total": 104857600,
+          "speed": 325739,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 2881,
+      "sumSpeed": 316342,
+      "sumDone": 966656,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 966656,
+          "total": 104857600,
+          "speed": 316342,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 3295,
+      "sumSpeed": 309357,
+      "sumDone": 1097728,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1097728,
+          "total": 104857600,
+          "speed": 309357,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 3702,
+      "sumSpeed": 304845,
+      "sumDone": 1228800,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1228800,
+          "total": 104857600,
+          "speed": 304845,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 4117,
+      "sumSpeed": 299018,
+      "sumDone": 1359872,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1359872,
+          "total": 104857600,
+          "speed": 299018,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 4533,
+      "sumSpeed": 296682,
+      "sumDone": 1490944,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1490944,
+          "total": 104857600,
+          "speed": 296682,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 4950,
+      "sumSpeed": 295657,
+      "sumDone": 1572864,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1572864,
+          "total": 104857600,
+          "speed": 295657,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 5365,
+      "sumSpeed": 295657,
+      "sumDone": 1622016,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1622016,
+          "total": 104857600,
+          "speed": 295657,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 5779,
+      "sumSpeed": 294088,
+      "sumDone": 1753088,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1753088,
+          "total": 104857600,
+          "speed": 294088,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 6192,
+      "sumSpeed": 293852,
+      "sumDone": 1884160,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1884160,
+          "total": 104857600,
+          "speed": 293852,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 6611,
+      "sumSpeed": 291948,
+      "sumDone": 2015232,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2015232,
+          "total": 104857600,
+          "speed": 291948,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 7023,
+      "sumSpeed": 292192,
+      "sumDone": 2146304,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2146304,
+          "total": 104857600,
+          "speed": 292192,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 7434,
+      "sumSpeed": 292646,
+      "sumDone": 2277376,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2277376,
+          "total": 104857600,
+          "speed": 292646,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 7849,
+      "sumSpeed": 292549,
+      "sumDone": 2408448,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2408448,
+          "total": 104857600,
+          "speed": 292549,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 8266,
+      "sumSpeed": 291481,
+      "sumDone": 2539520,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2539520,
+          "total": 104857600,
+          "speed": 291481,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 8680,
+      "sumSpeed": 292072,
+      "sumDone": 2670592,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2670592,
+          "total": 104857600,
+          "speed": 292072,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 9099,
+      "sumSpeed": 291020,
+      "sumDone": 2801664,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2801664,
+          "total": 104857600,
+          "speed": 291020,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 9515,
+      "sumSpeed": 291568,
+      "sumDone": 2932736,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2932736,
+          "total": 104857600,
+          "speed": 291568,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 9933,
+      "sumSpeed": 291383,
+      "sumDone": 3063808,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3063808,
+          "total": 104857600,
+          "speed": 291383,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 10350,
+      "sumSpeed": 291856,
+      "sumDone": 3145728,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3145728,
+          "total": 104857600,
+          "speed": 291856,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 10759,
+      "sumSpeed": 291856,
+      "sumDone": 3194880,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3194880,
+          "total": 104857600,
+          "speed": 291856,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 11165,
+      "sumSpeed": 292283,
+      "sumDone": 3325952,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3325952,
+          "total": 104857600,
+          "speed": 292283,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 11579,
+      "sumSpeed": 291151,
+      "sumDone": 3457024,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3457024,
+          "total": 104857600,
+          "speed": 291151,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 11983,
+      "sumSpeed": 291364,
+      "sumDone": 3588096,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3588096,
+          "total": 104857600,
+          "speed": 291364,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 12399,
+      "sumSpeed": 291327,
+      "sumDone": 3719168,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3719168,
+          "total": 104857600,
+          "speed": 291327,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 12815,
+      "sumSpeed": 291278,
+      "sumDone": 3784704,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3784704,
+          "total": 104857600,
+          "speed": 291278,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 13231,
+      "sumSpeed": 247250,
+      "sumDone": 3850240,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3850240,
+          "total": 104857600,
+          "speed": 247250,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 13648,
+      "sumSpeed": 216860,
+      "sumDone": 3915776,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3915776,
+          "total": 104857600,
+          "speed": 216860,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 14064,
+      "sumSpeed": 195757,
+      "sumDone": 3981312,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3981312,
+          "total": 104857600,
+          "speed": 195757,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 14479,
+      "sumSpeed": 180343,
+      "sumDone": 4046848,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4046848,
+          "total": 104857600,
+          "speed": 180343,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 14900,
+      "sumSpeed": 170142,
+      "sumDone": 4112384,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4112384,
+          "total": 104857600,
+          "speed": 170142,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 15312,
+      "sumSpeed": 162919,
+      "sumDone": 4128768,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4128768,
+          "total": 104857600,
+          "speed": 162919,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 15731,
+      "sumSpeed": 157571,
+      "sumDone": 4194304,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4194304,
+          "total": 104857600,
+          "speed": 157571,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 16146,
+      "sumSpeed": 157571,
+      "sumDone": 4243456,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4243456,
+          "total": 104857600,
+          "speed": 157571,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 16564,
+      "sumSpeed": 154268,
+      "sumDone": 4308992,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4308992,
+          "total": 104857600,
+          "speed": 154268,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 16976,
+      "sumSpeed": 151321,
+      "sumDone": 4374528,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4374528,
+          "total": 104857600,
+          "speed": 151321,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 17382,
+      "sumSpeed": 149700,
+      "sumDone": 4440064,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4440064,
+          "total": 104857600,
+          "speed": 149700,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 17791,
+      "sumSpeed": 148683,
+      "sumDone": 4505600,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4505600,
+          "total": 104857600,
+          "speed": 148683,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 18195,
+      "sumSpeed": 148081,
+      "sumDone": 4571136,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4571136,
+          "total": 104857600,
+          "speed": 148081,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 4 条"
+        }
+      ]
+    },
+    {
+      "at": 18613,
+      "sumSpeed": 142076,
+      "sumDone": 4833280,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4833280,
+          "total": 104857600,
+          "speed": 142076,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 19031,
+      "sumSpeed": 1342353,
+      "sumDone": 5652480,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5652480,
+          "total": 104857600,
+          "speed": 1342353,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 19447,
+      "sumSpeed": 1736792,
+      "sumDone": 6471680,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6471680,
+          "total": 104857600,
+          "speed": 1736792,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 19858,
+      "sumSpeed": 1809518,
+      "sumDone": 7225344,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7225344,
+          "total": 104857600,
+          "speed": 1809518,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 20274,
+      "sumSpeed": 1885361,
+      "sumDone": 8028160,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8028160,
+          "total": 104857600,
+          "speed": 1885361,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 20694,
+      "sumSpeed": 1897338,
+      "sumDone": 8847360,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8847360,
+          "total": 104857600,
+          "speed": 1897338,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 21113,
+      "sumSpeed": 1877939,
+      "sumDone": 9633792,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9633792,
+          "total": 104857600,
+          "speed": 1877939,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 21527,
+      "sumSpeed": 1932855,
+      "sumDone": 10452992,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10452992,
+          "total": 104857600,
+          "speed": 1932855,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 21949,
+      "sumSpeed": 1945396,
+      "sumDone": 11272192,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 11272192,
+          "total": 104857600,
+          "speed": 1945396,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 22358,
+      "sumSpeed": 1918167,
+      "sumDone": 12058624,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 12058624,
+          "total": 104857600,
+          "speed": 1918167,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 22764,
+      "sumSpeed": 1995457,
+      "sumDone": 12845056,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 12845056,
+          "total": 104857600,
+          "speed": 1995457,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 23180,
+      "sumSpeed": 1845916,
+      "sumDone": 13598720,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 13598720,
+          "total": 104857600,
+          "speed": 1845916,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 23595,
+      "sumSpeed": 1908440,
+      "sumDone": 14417920,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 14417920,
+          "total": 104857600,
+          "speed": 1908440,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 24008,
+      "sumSpeed": 1937614,
+      "sumDone": 15237120,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 15237120,
+          "total": 104857600,
+          "speed": 1937614,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 24414,
+      "sumSpeed": 1949305,
+      "sumDone": 16023552,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 16023552,
+          "total": 104857600,
+          "speed": 1949305,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 24827,
+      "sumSpeed": 1868761,
+      "sumDone": 16793600,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 16793600,
+          "total": 104857600,
+          "speed": 1868761,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 25229,
+      "sumSpeed": 1932054,
+      "sumDone": 17580032,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 17580032,
+          "total": 104857600,
+          "speed": 1932054,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 25643,
+      "sumSpeed": 1903363,
+      "sumDone": 18366464,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 18366464,
+          "total": 104857600,
+          "speed": 1903363,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 26060,
+      "sumSpeed": 1924557,
+      "sumDone": 19185664,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 19185664,
+          "total": 104857600,
+          "speed": 1924557,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 26466,
+      "sumSpeed": 1940284,
+      "sumDone": 19972096,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 19972096,
+          "total": 104857600,
+          "speed": 1940284,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 26880,
+      "sumSpeed": 1938741,
+      "sumDone": 20758528,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 20758528,
+          "total": 104857600,
+          "speed": 1938741,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 27294,
+      "sumSpeed": 1942624,
+      "sumDone": 21577728,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 21577728,
+          "total": 104857600,
+          "speed": 1942624,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 27706,
+      "sumSpeed": 1914425,
+      "sumDone": 22331392,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 22331392,
+          "total": 104857600,
+          "speed": 1914425,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 28115,
+      "sumSpeed": 1928431,
+      "sumDone": 23117824,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 23117824,
+          "total": 104857600,
+          "speed": 1928431,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 28526,
+      "sumSpeed": 1953773,
+      "sumDone": 23937024,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 23937024,
+          "total": 104857600,
+          "speed": 1953773,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 28945,
+      "sumSpeed": 1952202,
+      "sumDone": 24756224,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 24756224,
+          "total": 104857600,
+          "speed": 1952202,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 29360,
+      "sumSpeed": 1955088,
+      "sumDone": 25575424,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 25575424,
+          "total": 104857600,
+          "speed": 1955088,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 29778,
+      "sumSpeed": 1962486,
+      "sumDone": 26361856,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 26361856,
+          "total": 104857600,
+          "speed": 1962486,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 30184,
+      "sumSpeed": 1925014,
+      "sumDone": 27148288,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 27148288,
+          "total": 104857600,
+          "speed": 1925014,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 30593,
+      "sumSpeed": 1944833,
+      "sumDone": 27967488,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 27967488,
+          "total": 104857600,
+          "speed": 1944833,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 31004,
+      "sumSpeed": 1839190,
+      "sumDone": 28672000,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 28672000,
+          "total": 104857600,
+          "speed": 1839190,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 31410,
+      "sumSpeed": 1905788,
+      "sumDone": 29491200,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 29491200,
+          "total": 104857600,
+          "speed": 1905788,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 31828,
+      "sumSpeed": 1898853,
+      "sumDone": 30277632,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 30277632,
+          "total": 104857600,
+          "speed": 1898853,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 32241,
+      "sumSpeed": 1955115,
+      "sumDone": 31096832,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 31096832,
+          "total": 104857600,
+          "speed": 1955115,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 32647,
+      "sumSpeed": 1956129,
+      "sumDone": 31883264,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 31883264,
+          "total": 104857600,
+          "speed": 1956129,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 33061,
+      "sumSpeed": 1937665,
+      "sumDone": 32702464,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 32702464,
+          "total": 104857600,
+          "speed": 1937665,
+          "limit": 2,
+          "degraded": true,
+          "reason": "降档未提升总速率，试探最低并发 2 条"
+        }
+      ]
+    },
+    {
+      "at": 33473,
+      "sumSpeed": 2285975,
+      "sumDone": 33701888,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 33701888,
+          "total": 104857600,
+          "speed": 2285975,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 33879,
+      "sumSpeed": 2467868,
+      "sumDone": 34783232,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 34783232,
+          "total": 104857600,
+          "speed": 2467868,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 34295,
+      "sumSpeed": 2782246,
+      "sumDone": 36012032,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 36012032,
+          "total": 104857600,
+          "speed": 2782246,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 34705,
+      "sumSpeed": 2880743,
+      "sumDone": 37191680,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 37191680,
+          "total": 104857600,
+          "speed": 2880743,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 35123,
+      "sumSpeed": 2887877,
+      "sumDone": 38420480,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 38420480,
+          "total": 104857600,
+          "speed": 2887877,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 35527,
+      "sumSpeed": 2914570,
+      "sumDone": 39600128,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 39600128,
+          "total": 104857600,
+          "speed": 2914570,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 35945,
+      "sumSpeed": 2946191,
+      "sumDone": 40779776,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 40779776,
+          "total": 104857600,
+          "speed": 2946191,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 36360,
+      "sumSpeed": 2807312,
+      "sumDone": 41959424,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 41959424,
+          "total": 104857600,
+          "speed": 2807312,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 36774,
+      "sumSpeed": 2927705,
+      "sumDone": 43139072,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 43139072,
+          "total": 104857600,
+          "speed": 2927705,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 37192,
+      "sumSpeed": 2891062,
+      "sumDone": 44367872,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 44367872,
+          "total": 104857600,
+          "speed": 2891062,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 37610,
+      "sumSpeed": 2926591,
+      "sumDone": 45596672,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 45596672,
+          "total": 104857600,
+          "speed": 2926591,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 38023,
+      "sumSpeed": 2857504,
+      "sumDone": 46776320,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 46776320,
+          "total": 104857600,
+          "speed": 2857504,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 38428,
+      "sumSpeed": 2939038,
+      "sumDone": 47955968,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 47955968,
+          "total": 104857600,
+          "speed": 2939038,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 38843,
+      "sumSpeed": 2768530,
+      "sumDone": 49086464,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 49086464,
+          "total": 104857600,
+          "speed": 2768530,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 39258,
+      "sumSpeed": 2852268,
+      "sumDone": 50315264,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 50315264,
+          "total": 104857600,
+          "speed": 2852268,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 39677,
+      "sumSpeed": 2924293,
+      "sumDone": 51544064,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 51544064,
+          "total": 104857600,
+          "speed": 2924293,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 40091,
+      "sumSpeed": 2932850,
+      "sumDone": 52772864,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 52772864,
+          "total": 104857600,
+          "speed": 2932850,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 40510,
+      "sumSpeed": 2934253,
+      "sumDone": 54001664,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 54001664,
+          "total": 104857600,
+          "speed": 2934253,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 40928,
+      "sumSpeed": 2955301,
+      "sumDone": 55230464,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 55230464,
+          "total": 104857600,
+          "speed": 2955301,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 41343,
+      "sumSpeed": 2960485,
+      "sumDone": 56459264,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 56459264,
+          "total": 104857600,
+          "speed": 2960485,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 41759,
+      "sumSpeed": 2957262,
+      "sumDone": 57688064,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 57688064,
+          "total": 104857600,
+          "speed": 2957262,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 42175,
+      "sumSpeed": 2961395,
+      "sumDone": 58916864,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 58916864,
+          "total": 104857600,
+          "speed": 2961395,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 42591,
+      "sumSpeed": 2899946,
+      "sumDone": 60096512,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 60096512,
+          "total": 104857600,
+          "speed": 2899946,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 43008,
+      "sumSpeed": 2912851,
+      "sumDone": 61325312,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 61325312,
+          "total": 104857600,
+          "speed": 2912851,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 43427,
+      "sumSpeed": 2922986,
+      "sumDone": 62554112,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 62554112,
+          "total": 104857600,
+          "speed": 2922986,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 43841,
+      "sumSpeed": 2928094,
+      "sumDone": 63782912,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 63782912,
+          "total": 104857600,
+          "speed": 2928094,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 44260,
+      "sumSpeed": 2905531,
+      "sumDone": 64978944,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 64978944,
+          "total": 104857600,
+          "speed": 2905531,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 44677,
+      "sumSpeed": 2933919,
+      "sumDone": 66207744,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 66207744,
+          "total": 104857600,
+          "speed": 2933919,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 45095,
+      "sumSpeed": 2860939,
+      "sumDone": 67387392,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 67387392,
+          "total": 104857600,
+          "speed": 2860939,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 45508,
+      "sumSpeed": 2900291,
+      "sumDone": 68616192,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 68616192,
+          "total": 104857600,
+          "speed": 2900291,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 45924,
+      "sumSpeed": 2929414,
+      "sumDone": 69844992,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 69844992,
+          "total": 104857600,
+          "speed": 2929414,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 46341,
+      "sumSpeed": 2916765,
+      "sumDone": 71090176,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 71090176,
+          "total": 104857600,
+          "speed": 2916765,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 46745,
+      "sumSpeed": 2975513,
+      "sumDone": 72269824,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 72269824,
+          "total": 104857600,
+          "speed": 2975513,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 47158,
+      "sumSpeed": 2957395,
+      "sumDone": 73498624,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 73498624,
+          "total": 104857600,
+          "speed": 2957395,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 47563,
+      "sumSpeed": 2959636,
+      "sumDone": 74678272,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 74678272,
+          "total": 104857600,
+          "speed": 2959636,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 47967,
+      "sumSpeed": 2893340,
+      "sumDone": 75857920,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 75857920,
+          "total": 104857600,
+          "speed": 2893340,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 48373,
+      "sumSpeed": 2885759,
+      "sumDone": 77037568,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 77037568,
+          "total": 104857600,
+          "speed": 2885759,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 48791,
+      "sumSpeed": 2886619,
+      "sumDone": 78266368,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 78266368,
+          "total": 104857600,
+          "speed": 2886619,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 49206,
+      "sumSpeed": 2927472,
+      "sumDone": 79495168,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 79495168,
+          "total": 104857600,
+          "speed": 2927472,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 49622,
+      "sumSpeed": 2943835,
+      "sumDone": 80723968,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 80723968,
+          "total": 104857600,
+          "speed": 2943835,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 50039,
+      "sumSpeed": 2936301,
+      "sumDone": 81952768,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 81952768,
+          "total": 104857600,
+          "speed": 2936301,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 50455,
+      "sumSpeed": 2940783,
+      "sumDone": 83181568,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 83181568,
+          "total": 104857600,
+          "speed": 2940783,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 50873,
+      "sumSpeed": 2877000,
+      "sumDone": 84361216,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 84361216,
+          "total": 104857600,
+          "speed": 2877000,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 51289,
+      "sumSpeed": 2835091,
+      "sumDone": 85540864,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 85540864,
+          "total": 104857600,
+          "speed": 2835091,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 51708,
+      "sumSpeed": 2856382,
+      "sumDone": 86720512,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 86720512,
+          "total": 104857600,
+          "speed": 2856382,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 52122,
+      "sumSpeed": 2886411,
+      "sumDone": 87949312,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 87949312,
+          "total": 104857600,
+          "speed": 2886411,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 52539,
+      "sumSpeed": 2940597,
+      "sumDone": 89178112,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 89178112,
+          "total": 104857600,
+          "speed": 2940597,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 52958,
+      "sumSpeed": 2856277,
+      "sumDone": 90341376,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 90341376,
+          "total": 104857600,
+          "speed": 2856277,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 53371,
+      "sumSpeed": 2900134,
+      "sumDone": 91570176,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 91570176,
+          "total": 104857600,
+          "speed": 2900134,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 53790,
+      "sumSpeed": 2999738,
+      "sumDone": 92798976,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 92798976,
+          "total": 104857600,
+          "speed": 2999738,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 54209,
+      "sumSpeed": 2968712,
+      "sumDone": 94027776,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 94027776,
+          "total": 104857600,
+          "speed": 2968712,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 54623,
+      "sumSpeed": 2861522,
+      "sumDone": 95207424,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 95207424,
+          "total": 104857600,
+          "speed": 2861522,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 55034,
+      "sumSpeed": 2784698,
+      "sumDone": 96321536,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 96321536,
+          "total": 104857600,
+          "speed": 2784698,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 55442,
+      "sumSpeed": 2770449,
+      "sumDone": 97452032,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 97452032,
+          "total": 104857600,
+          "speed": 2770449,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 55846,
+      "sumSpeed": 2916465,
+      "sumDone": 98582528,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 98582528,
+          "total": 104857600,
+          "speed": 2916465,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 56255,
+      "sumSpeed": 2741387,
+      "sumDone": 99729408,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 99729408,
+          "total": 104857600,
+          "speed": 2741387,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 56658,
+      "sumSpeed": 2883719,
+      "sumDone": 100909056,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 100909056,
+          "total": 104857600,
+          "speed": 2883719,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 57076,
+      "sumSpeed": 2918733,
+      "sumDone": 102121472,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 102121472,
+          "total": 104857600,
+          "speed": 2918733,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 57488,
+      "sumSpeed": 2415891,
+      "sumDone": 102940672,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 102940672,
+          "total": 104857600,
+          "speed": 2415891,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 57899,
+      "sumSpeed": 1586724,
+      "sumDone": 103383040,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 103383040,
+          "total": 104857600,
+          "speed": 1586724,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 58304,
+      "sumSpeed": 1278202,
+      "sumDone": 103776256,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 103776256,
+          "total": 104857600,
+          "speed": 1278202,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 58718,
+      "sumSpeed": 1062144,
+      "sumDone": 104169472,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 104169472,
+          "total": 104857600,
+          "speed": 1062144,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 59140,
+      "sumSpeed": 1023441,
+      "sumDone": 104579072,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 104579072,
+          "total": 104857600,
+          "speed": 1023441,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    },
+    {
+      "at": 59549,
+      "sumSpeed": 0,
+      "sumDone": 104857600,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "completed",
+          "done": 104857600,
+          "total": 104857600,
+          "speed": 0,
+          "limit": 3,
+          "degraded": true,
+          "reason": "速率回升，全局并发恢复至 3/8"
+        }
+      ]
+    }
+  ],
+  "downloadMs": 59549,
+  "minLimit": {
+    "1": 2
+  },
+  "final": [
+    {
+      "id": 1,
+      "state": "completed",
+      "done": 104857600,
+      "total": 104857600,
+      "speed": 0,
+      "limit": 3,
+      "degraded": true,
+      "reason": "速率回升，全局并发恢复至 3/8"
+    }
+  ],
+  "allCompleted": true,
+  "totalBytes": 104857600,
+  "avgBps": 1760862,
+  "allAtTwoAt": 18613,
+  "floorReached": true,
+  "disk": [
+    {
+      "id": 1,
+      "expectedBytes": 104857600,
+      "done": 104857600
+    }
+  ],
+  "server": {
+    "active": 0,
+    "peak": 8,
+    "events": [
+      {
+        "t": 3326,
+        "ev": "open",
+        "active": 1
+      },
+      {
+        "t": 3329,
+        "ev": "open",
+        "active": 2
+      },
+      {
+        "t": 3329,
+        "ev": "open",
+        "active": 3
+      },
+      {
+        "t": 3329,
+        "ev": "open",
+        "active": 4
+      },
+      {
+        "t": 3330,
+        "ev": "open",
+        "active": 5
+      },
+      {
+        "t": 3330,
+        "ev": "open",
+        "active": 6
+      },
+      {
+        "t": 3330,
+        "ev": "open",
+        "active": 7
+      },
+      {
+        "t": 3330,
+        "ev": "open",
+        "active": 8
+      },
+      {
+        "t": 15906,
+        "ev": "close",
+        "active": 7
+      },
+      {
+        "t": 15906,
+        "ev": "close",
+        "active": 6
+      },
+      {
+        "t": 15906,
+        "ev": "close",
+        "active": 5
+      },
+      {
+        "t": 15906,
+        "ev": "close",
+        "active": 4
+      },
+      {
+        "t": 21747,
+        "ev": "close",
+        "active": 3
+      },
+      {
+        "t": 21814,
+        "ev": "close",
+        "active": 2
+      },
+      {
+        "t": 34701,
+        "ev": "close",
+        "active": 1
+      },
+      {
+        "t": 34702,
+        "ev": "open",
+        "active": 2
+      },
+      {
+        "t": 34721,
+        "ev": "close",
+        "active": 1
+      },
+      {
+        "t": 34722,
+        "ev": "open",
+        "active": 2
+      },
+      {
+        "t": 36589,
+        "ev": "open",
+        "active": 3
+      },
+      {
+        "t": 47550,
+        "ev": "close",
+        "active": 2
+      },
+      {
+        "t": 47551,
+        "ev": "open",
+        "active": 3
+      },
+      {
+        "t": 47782,
+        "ev": "close",
+        "active": 2
+      },
+      {
+        "t": 47790,
+        "ev": "open",
+        "active": 3
+      },
+      {
+        "t": 49651,
+        "ev": "close",
+        "active": 2
+      },
+      {
+        "t": 49652,
+        "ev": "open",
+        "active": 3
+      },
+      {
+        "t": 60384,
+        "ev": "close",
+        "active": 2
+      },
+      {
+        "t": 60862,
+        "ev": "close",
+        "active": 1
+      },
+      {
+        "t": 62764,
+        "ev": "close",
+        "active": 0
+      }
+    ]
+  }
+}

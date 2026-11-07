@@ -1,0 +1,5390 @@
+{
+  "mode": "auto-on",
+  "tasks": 4,
+  "sizeMB": 10,
+  "sourcePort": 9474,
+  "created": [
+    {
+      "id": 1,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 8
+    },
+    {
+      "id": 2,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 8
+    },
+    {
+      "id": 3,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 8
+    },
+    {
+      "id": 4,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 8
+    }
+  ],
+  "samples": [
+    {
+      "at": 4,
+      "sumSpeed": 0,
+      "sumDone": 57094,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 40710,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 0,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 16384,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 0,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 412,
+      "sumSpeed": 932518,
+      "sumDone": 835584,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 311296,
+          "total": 10485760,
+          "speed": 628445,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 262144,
+          "total": 10485760,
+          "speed": 176169,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 131072,
+          "total": 10485760,
+          "speed": 96479,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 131072,
+          "total": 10485760,
+          "speed": 31425,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 823,
+      "sumSpeed": 1179742,
+      "sumDone": 1130496,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 344064,
+          "total": 10485760,
+          "speed": 526849,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 262144,
+          "total": 10485760,
+          "speed": 176169,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 262144,
+          "total": 10485760,
+          "speed": 242608,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 262144,
+          "total": 10485760,
+          "speed": 234116,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1243,
+      "sumSpeed": 1244999,
+      "sumDone": 1622016,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 442368,
+          "total": 10485760,
+          "speed": 526849,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 393216,
+          "total": 10485760,
+          "speed": 210794,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 393216,
+          "total": 10485760,
+          "speed": 257546,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 393216,
+          "total": 10485760,
+          "speed": 249810,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 1658,
+      "sumSpeed": 1223599,
+      "sumDone": 2146304,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 573440,
+          "total": 10485760,
+          "speed": 457177,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 524288,
+          "total": 10485760,
+          "speed": 235524,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 524288,
+          "total": 10485760,
+          "speed": 267994,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 524288,
+          "total": 10485760,
+          "speed": 262904,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 2067,
+      "sumSpeed": 1206806,
+      "sumDone": 2670592,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 704512,
+          "total": 10485760,
+          "speed": 407244,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 655360,
+          "total": 10485760,
+          "speed": 253134,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 655360,
+          "total": 10485760,
+          "speed": 274990,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 655360,
+          "total": 10485760,
+          "speed": 271438,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 2482,
+      "sumSpeed": 1194801,
+      "sumDone": 3194880,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 835584,
+          "total": 10485760,
+          "speed": 373392,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 786432,
+          "total": 10485760,
+          "speed": 264232,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 786432,
+          "total": 10485760,
+          "speed": 280700,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 786432,
+          "total": 10485760,
+          "speed": 276477,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 2895,
+      "sumSpeed": 1187275,
+      "sumDone": 3719168,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 966656,
+          "total": 10485760,
+          "speed": 349745,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 917504,
+          "total": 10485760,
+          "speed": 273263,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 917504,
+          "total": 10485760,
+          "speed": 283915,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 917504,
+          "total": 10485760,
+          "speed": 280352,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 3315,
+      "sumSpeed": 1182403,
+      "sumDone": 4243456,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1097728,
+          "total": 10485760,
+          "speed": 332133,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1048576,
+          "total": 10485760,
+          "speed": 279136,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1048576,
+          "total": 10485760,
+          "speed": 287159,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1048576,
+          "total": 10485760,
+          "speed": 283975,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 3726,
+      "sumSpeed": 1177051,
+      "sumDone": 4767744,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1228800,
+          "total": 10485760,
+          "speed": 319453,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1179648,
+          "total": 10485760,
+          "speed": 283678,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1179648,
+          "total": 10485760,
+          "speed": 288707,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1179648,
+          "total": 10485760,
+          "speed": 285213,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 4134,
+      "sumSpeed": 1174693,
+      "sumDone": 5292032,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1359872,
+          "total": 10485760,
+          "speed": 311244,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1310720,
+          "total": 10485760,
+          "speed": 286025,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1310720,
+          "total": 10485760,
+          "speed": 290396,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1310720,
+          "total": 10485760,
+          "speed": 287028,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 4543,
+      "sumSpeed": 1171548,
+      "sumDone": 5816320,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1490944,
+          "total": 10485760,
+          "speed": 305431,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1441792,
+          "total": 10485760,
+          "speed": 287940,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1441792,
+          "total": 10485760,
+          "speed": 289404,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1441792,
+          "total": 10485760,
+          "speed": 288773,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 4961,
+      "sumSpeed": 1166275,
+      "sumDone": 6340608,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1622016,
+          "total": 10485760,
+          "speed": 300709,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1572864,
+          "total": 10485760,
+          "speed": 288529,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1572864,
+          "total": 10485760,
+          "speed": 289323,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1572864,
+          "total": 10485760,
+          "speed": 287714,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 5371,
+      "sumSpeed": 1162668,
+      "sumDone": 6619136,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1753088,
+          "total": 10485760,
+          "speed": 297593,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1703936,
+          "total": 10485760,
+          "speed": 287717,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1589248,
+          "total": 10485760,
+          "speed": 289644,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1572864,
+          "total": 10485760,
+          "speed": 287714,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 5778,
+      "sumSpeed": 1161670,
+      "sumDone": 6897664,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1785856,
+          "total": 10485760,
+          "speed": 295688,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1703936,
+          "total": 10485760,
+          "speed": 287717,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1703936,
+          "total": 10485760,
+          "speed": 289644,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1703936,
+          "total": 10485760,
+          "speed": 288621,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 6193,
+      "sumSpeed": 1163799,
+      "sumDone": 7389184,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 1884160,
+          "total": 10485760,
+          "speed": 295688,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1835008,
+          "total": 10485760,
+          "speed": 287539,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1835008,
+          "total": 10485760,
+          "speed": 290868,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1835008,
+          "total": 10485760,
+          "speed": 289704,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 6606,
+      "sumSpeed": 1160849,
+      "sumDone": 7913472,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2015232,
+          "total": 10485760,
+          "speed": 292172,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 1966080,
+          "total": 10485760,
+          "speed": 289031,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 1966080,
+          "total": 10485760,
+          "speed": 289960,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 1966080,
+          "total": 10485760,
+          "speed": 289686,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 7018,
+      "sumSpeed": 1160311,
+      "sumDone": 8437760,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2146304,
+          "total": 10485760,
+          "speed": 292565,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2097152,
+          "total": 10485760,
+          "speed": 288717,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2097152,
+          "total": 10485760,
+          "speed": 289059,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2097152,
+          "total": 10485760,
+          "speed": 289970,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 7440,
+      "sumSpeed": 1159410,
+      "sumDone": 8962048,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2277376,
+          "total": 10485760,
+          "speed": 292450,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2228224,
+          "total": 10485760,
+          "speed": 289701,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2228224,
+          "total": 10485760,
+          "speed": 288244,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2228224,
+          "total": 10485760,
+          "speed": 289015,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 7856,
+      "sumSpeed": 1157458,
+      "sumDone": 9486336,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2408448,
+          "total": 10485760,
+          "speed": 291864,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2359296,
+          "total": 10485760,
+          "speed": 288954,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2359296,
+          "total": 10485760,
+          "speed": 287889,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2359296,
+          "total": 10485760,
+          "speed": 288751,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 8261,
+      "sumSpeed": 1161318,
+      "sumDone": 10010624,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2539520,
+          "total": 10485760,
+          "speed": 292238,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2490368,
+          "total": 10485760,
+          "speed": 290023,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2490368,
+          "total": 10485760,
+          "speed": 289222,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2490368,
+          "total": 10485760,
+          "speed": 289835,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 8677,
+      "sumSpeed": 1160255,
+      "sumDone": 10534912,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2670592,
+          "total": 10485760,
+          "speed": 291931,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2621440,
+          "total": 10485760,
+          "speed": 289905,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2621440,
+          "total": 10485760,
+          "speed": 289836,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2621440,
+          "total": 10485760,
+          "speed": 288583,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 9091,
+      "sumSpeed": 1162421,
+      "sumDone": 11059200,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2801664,
+          "total": 10485760,
+          "speed": 291043,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2752512,
+          "total": 10485760,
+          "speed": 289571,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2752512,
+          "total": 10485760,
+          "speed": 291350,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2752512,
+          "total": 10485760,
+          "speed": 290457,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 9506,
+      "sumSpeed": 1164631,
+      "sumDone": 11583488,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 2932736,
+          "total": 10485760,
+          "speed": 291545,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 2883584,
+          "total": 10485760,
+          "speed": 290828,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2883584,
+          "total": 10485760,
+          "speed": 291507,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2883584,
+          "total": 10485760,
+          "speed": 290751,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 9918,
+      "sumSpeed": 1163470,
+      "sumDone": 11878400,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3063808,
+          "total": 10485760,
+          "speed": 290075,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3014656,
+          "total": 10485760,
+          "speed": 290943,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 2916352,
+          "total": 10485760,
+          "speed": 291701,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 2883584,
+          "total": 10485760,
+          "speed": 290751,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 10326,
+      "sumSpeed": 1163533,
+      "sumDone": 12353536,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3194880,
+          "total": 10485760,
+          "speed": 291383,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3129344,
+          "total": 10485760,
+          "speed": 289437,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3014656,
+          "total": 10485760,
+          "speed": 291701,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3014656,
+          "total": 10485760,
+          "speed": 291012,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 10735,
+      "sumSpeed": 1162169,
+      "sumDone": 12746752,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3309568,
+          "total": 10485760,
+          "speed": 290476,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3145728,
+          "total": 10485760,
+          "speed": 289437,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3145728,
+          "total": 10485760,
+          "speed": 291414,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3145728,
+          "total": 10485760,
+          "speed": 290842,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 11156,
+      "sumSpeed": 1162852,
+      "sumDone": 13156352,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3325952,
+          "total": 10485760,
+          "speed": 290476,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3276800,
+          "total": 10485760,
+          "speed": 290109,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3276800,
+          "total": 10485760,
+          "speed": 291108,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3276800,
+          "total": 10485760,
+          "speed": 291159,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 11571,
+      "sumSpeed": 1164430,
+      "sumDone": 13680640,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3457024,
+          "total": 10485760,
+          "speed": 290601,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3407872,
+          "total": 10485760,
+          "speed": 291614,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3407872,
+          "total": 10485760,
+          "speed": 291738,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3407872,
+          "total": 10485760,
+          "speed": 290477,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 11992,
+      "sumSpeed": 1163965,
+      "sumDone": 14204928,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3588096,
+          "total": 10485760,
+          "speed": 291312,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3538944,
+          "total": 10485760,
+          "speed": 292344,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3538944,
+          "total": 10485760,
+          "speed": 291252,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3538944,
+          "total": 10485760,
+          "speed": 289057,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 12413,
+      "sumSpeed": 1152546,
+      "sumDone": 14467072,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3653632,
+          "total": 10485760,
+          "speed": 289908,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3604480,
+          "total": 10485760,
+          "speed": 290769,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3604480,
+          "total": 10485760,
+          "speed": 282239,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3604480,
+          "total": 10485760,
+          "speed": 289630,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 12823,
+      "sumSpeed": 981463,
+      "sumDone": 14729216,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3719168,
+          "total": 10485760,
+          "speed": 246642,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3670016,
+          "total": 10485760,
+          "speed": 247135,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3670016,
+          "total": 10485760,
+          "speed": 241177,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3670016,
+          "total": 10485760,
+          "speed": 246509,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 13237,
+      "sumSpeed": 861839,
+      "sumDone": 14991360,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3784704,
+          "total": 10485760,
+          "speed": 216280,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3735552,
+          "total": 10485760,
+          "speed": 216881,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3735552,
+          "total": 10485760,
+          "speed": 212476,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3735552,
+          "total": 10485760,
+          "speed": 216202,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 13650,
+      "sumSpeed": 778020,
+      "sumDone": 15253504,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3850240,
+          "total": 10485760,
+          "speed": 194492,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3801088,
+          "total": 10485760,
+          "speed": 195540,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3801088,
+          "total": 10485760,
+          "speed": 192703,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3801088,
+          "total": 10485760,
+          "speed": 195285,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 14058,
+      "sumSpeed": 719798,
+      "sumDone": 15515648,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3915776,
+          "total": 10485760,
+          "speed": 179611,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3866624,
+          "total": 10485760,
+          "speed": 181105,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3866624,
+          "total": 10485760,
+          "speed": 178633,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3866624,
+          "total": 10485760,
+          "speed": 180449,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 14466,
+      "sumSpeed": 677126,
+      "sumDone": 15777792,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 3981312,
+          "total": 10485760,
+          "speed": 169135,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3932160,
+          "total": 10485760,
+          "speed": 170293,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3932160,
+          "total": 10485760,
+          "speed": 168211,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3932160,
+          "total": 10485760,
+          "speed": 169487,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 14879,
+      "sumSpeed": 661780,
+      "sumDone": 15908864,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4046848,
+          "total": 10485760,
+          "speed": 162061,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 3997696,
+          "total": 10485760,
+          "speed": 162021,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3932160,
+          "total": 10485760,
+          "speed": 168211,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3932160,
+          "total": 10485760,
+          "speed": 169487,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 15289,
+      "sumSpeed": 639435,
+      "sumDone": 16171008,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4112384,
+          "total": 10485760,
+          "speed": 157497,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4063232,
+          "total": 10485760,
+          "speed": 157600,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 3997696,
+          "total": 10485760,
+          "speed": 161744,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 3997696,
+          "total": 10485760,
+          "speed": 162594,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 15695,
+      "sumSpeed": 624409,
+      "sumDone": 16351232,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4161536,
+          "total": 10485760,
+          "speed": 154038,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4063232,
+          "total": 10485760,
+          "speed": 157600,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4063232,
+          "total": 10485760,
+          "speed": 156063,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4063232,
+          "total": 10485760,
+          "speed": 156708,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 16111,
+      "sumSpeed": 615040,
+      "sumDone": 16564224,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4177920,
+          "total": 10485760,
+          "speed": 154038,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4128768,
+          "total": 10485760,
+          "speed": 154215,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4128768,
+          "total": 10485760,
+          "speed": 153157,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4128768,
+          "total": 10485760,
+          "speed": 153630,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 16531,
+      "sumSpeed": 605921,
+      "sumDone": 16826368,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4243456,
+          "total": 10485760,
+          "speed": 151150,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4194304,
+          "total": 10485760,
+          "speed": 151954,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4194304,
+          "total": 10485760,
+          "speed": 151289,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4194304,
+          "total": 10485760,
+          "speed": 151528,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 16936,
+      "sumSpeed": 599094,
+      "sumDone": 17088512,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4308992,
+          "total": 10485760,
+          "speed": 149281,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4259840,
+          "total": 10485760,
+          "speed": 150075,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4259840,
+          "total": 10485760,
+          "speed": 149908,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4259840,
+          "total": 10485760,
+          "speed": 149830,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 17347,
+      "sumSpeed": 592420,
+      "sumDone": 17350656,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4374528,
+          "total": 10485760,
+          "speed": 147418,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4325376,
+          "total": 10485760,
+          "speed": 149244,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4325376,
+          "total": 10485760,
+          "speed": 147763,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4325376,
+          "total": 10485760,
+          "speed": 147995,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 17757,
+      "sumSpeed": 590117,
+      "sumDone": 17612800,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4440064,
+          "total": 10485760,
+          "speed": 147419,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4390912,
+          "total": 10485760,
+          "speed": 148624,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4390912,
+          "total": 10485760,
+          "speed": 146954,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4390912,
+          "total": 10485760,
+          "speed": 147120,
+          "limit": 4,
+          "degraded": true,
+          "reason": "每连接仅 35 KB/s（持续 6 秒），全局并发自动降至 16 条"
+        }
+      ]
+    },
+    {
+      "at": 18167,
+      "sumSpeed": 579279,
+      "sumDone": 18137088,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4571136,
+          "total": 10485760,
+          "speed": 146661,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4521984,
+          "total": 10485760,
+          "speed": 147544,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4521984,
+          "total": 10485760,
+          "speed": 142506,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4521984,
+          "total": 10485760,
+          "speed": 142568,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 18587,
+      "sumSpeed": 766568,
+      "sumDone": 18661376,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4702208,
+          "total": 10485760,
+          "speed": 190085,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4653056,
+          "total": 10485760,
+          "speed": 190461,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4653056,
+          "total": 10485760,
+          "speed": 192902,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4653056,
+          "total": 10485760,
+          "speed": 193120,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 18999,
+      "sumSpeed": 887981,
+      "sumDone": 19185664,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4833280,
+          "total": 10485760,
+          "speed": 220540,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4784128,
+          "total": 10485760,
+          "speed": 220943,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4784128,
+          "total": 10485760,
+          "speed": 223152,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4784128,
+          "total": 10485760,
+          "speed": 223346,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 19410,
+      "sumSpeed": 969880,
+      "sumDone": 19709952,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 4964352,
+          "total": 10485760,
+          "speed": 242718,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 4915200,
+          "total": 10485760,
+          "speed": 240340,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4915200,
+          "total": 10485760,
+          "speed": 243355,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4915200,
+          "total": 10485760,
+          "speed": 243467,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 19830,
+      "sumSpeed": 1028185,
+      "sumDone": 20103168,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5095424,
+          "total": 10485760,
+          "speed": 257945,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5046272,
+          "total": 10485760,
+          "speed": 255843,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 4980736,
+          "total": 10485760,
+          "speed": 257164,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 4980736,
+          "total": 10485760,
+          "speed": 257233,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 20240,
+      "sumSpeed": 1050008,
+      "sumDone": 20365312,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5160960,
+          "total": 10485760,
+          "speed": 268506,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5111808,
+          "total": 10485760,
+          "speed": 267105,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5046272,
+          "total": 10485760,
+          "speed": 257164,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5046272,
+          "total": 10485760,
+          "speed": 257233,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 20652,
+      "sumSpeed": 1076765,
+      "sumDone": 20807680,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5275648,
+          "total": 10485760,
+          "speed": 275124,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5177344,
+          "total": 10485760,
+          "speed": 267105,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5177344,
+          "total": 10485760,
+          "speed": 267239,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5177344,
+          "total": 10485760,
+          "speed": 267297,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 21061,
+      "sumSpeed": 1095023,
+      "sumDone": 21282816,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5357568,
+          "total": 10485760,
+          "speed": 275124,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5308416,
+          "total": 10485760,
+          "speed": 273687,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5308416,
+          "total": 10485760,
+          "speed": 273097,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5308416,
+          "total": 10485760,
+          "speed": 273115,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 21468,
+      "sumSpeed": 1115974,
+      "sumDone": 21807104,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5488640,
+          "total": 10485760,
+          "speed": 279928,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5439488,
+          "total": 10485760,
+          "speed": 279035,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5439488,
+          "total": 10485760,
+          "speed": 278512,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5439488,
+          "total": 10485760,
+          "speed": 278499,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 21874,
+      "sumSpeed": 1125731,
+      "sumDone": 22331392,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5619712,
+          "total": 10485760,
+          "speed": 282805,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5570560,
+          "total": 10485760,
+          "speed": 281252,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5570560,
+          "total": 10485760,
+          "speed": 280823,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5570560,
+          "total": 10485760,
+          "speed": 280851,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 22290,
+      "sumSpeed": 1139866,
+      "sumDone": 22855680,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5750784,
+          "total": 10485760,
+          "speed": 286486,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5701632,
+          "total": 10485760,
+          "speed": 285230,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5701632,
+          "total": 10485760,
+          "speed": 284073,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5701632,
+          "total": 10485760,
+          "speed": 284077,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 22698,
+      "sumSpeed": 1145841,
+      "sumDone": 23379968,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 5881856,
+          "total": 10485760,
+          "speed": 287786,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5832704,
+          "total": 10485760,
+          "speed": 285347,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5832704,
+          "total": 10485760,
+          "speed": 286361,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5832704,
+          "total": 10485760,
+          "speed": 286347,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 23108,
+      "sumSpeed": 1150035,
+      "sumDone": 23904256,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6012928,
+          "total": 10485760,
+          "speed": 288865,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 5963776,
+          "total": 10485760,
+          "speed": 286737,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 5963776,
+          "total": 10485760,
+          "speed": 287219,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 5963776,
+          "total": 10485760,
+          "speed": 287214,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 23520,
+      "sumSpeed": 1156265,
+      "sumDone": 24428544,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6144000,
+          "total": 10485760,
+          "speed": 289579,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6094848,
+          "total": 10485760,
+          "speed": 288309,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6094848,
+          "total": 10485760,
+          "speed": 289174,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6094848,
+          "total": 10485760,
+          "speed": 289203,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 23931,
+      "sumSpeed": 1162656,
+      "sumDone": 24952832,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6275072,
+          "total": 10485760,
+          "speed": 290880,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6225920,
+          "total": 10485760,
+          "speed": 290151,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6225920,
+          "total": 10485760,
+          "speed": 290801,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6225920,
+          "total": 10485760,
+          "speed": 290824,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 24344,
+      "sumSpeed": 1165737,
+      "sumDone": 25477120,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6406144,
+          "total": 10485760,
+          "speed": 291614,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6356992,
+          "total": 10485760,
+          "speed": 291031,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6356992,
+          "total": 10485760,
+          "speed": 291541,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6356992,
+          "total": 10485760,
+          "speed": 291551,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 24757,
+      "sumSpeed": 1164893,
+      "sumDone": 25591808,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6471680,
+          "total": 10485760,
+          "speed": 291816,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6406144,
+          "total": 10485760,
+          "speed": 289985,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6356992,
+          "total": 10485760,
+          "speed": 291541,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6356992,
+          "total": 10485760,
+          "speed": 291551,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 25175,
+      "sumSpeed": 1164124,
+      "sumDone": 26116096,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6602752,
+          "total": 10485760,
+          "speed": 289887,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6537216,
+          "total": 10485760,
+          "speed": 290366,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6488064,
+          "total": 10485760,
+          "speed": 291936,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6488064,
+          "total": 10485760,
+          "speed": 291935,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 25589,
+      "sumSpeed": 1163383,
+      "sumDone": 26542080,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6684672,
+          "total": 10485760,
+          "speed": 290212,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6619136,
+          "total": 10485760,
+          "speed": 290366,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6619136,
+          "total": 10485760,
+          "speed": 291398,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6619136,
+          "total": 10485760,
+          "speed": 291407,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 25998,
+      "sumSpeed": 1163853,
+      "sumDone": 27049984,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6799360,
+          "total": 10485760,
+          "speed": 290212,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6750208,
+          "total": 10485760,
+          "speed": 290841,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6750208,
+          "total": 10485760,
+          "speed": 291398,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6750208,
+          "total": 10485760,
+          "speed": 291402,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 26410,
+      "sumSpeed": 1162802,
+      "sumDone": 27574272,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 6930432,
+          "total": 10485760,
+          "speed": 289711,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 6881280,
+          "total": 10485760,
+          "speed": 289530,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 6881280,
+          "total": 10485760,
+          "speed": 291790,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 6881280,
+          "total": 10485760,
+          "speed": 291771,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 26821,
+      "sumSpeed": 1163418,
+      "sumDone": 28098560,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7061504,
+          "total": 10485760,
+          "speed": 289121,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7012352,
+          "total": 10485760,
+          "speed": 290358,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7012352,
+          "total": 10485760,
+          "speed": 291968,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7012352,
+          "total": 10485760,
+          "speed": 291971,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 27226,
+      "sumSpeed": 1159807,
+      "sumDone": 28622848,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7192576,
+          "total": 10485760,
+          "speed": 289440,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7143424,
+          "total": 10485760,
+          "speed": 290354,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7143424,
+          "total": 10485760,
+          "speed": 290002,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7143424,
+          "total": 10485760,
+          "speed": 290011,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 27635,
+      "sumSpeed": 1157470,
+      "sumDone": 29147136,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7323648,
+          "total": 10485760,
+          "speed": 288455,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7274496,
+          "total": 10485760,
+          "speed": 289282,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7274496,
+          "total": 10485760,
+          "speed": 289858,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7274496,
+          "total": 10485760,
+          "speed": 289875,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 28044,
+      "sumSpeed": 1158971,
+      "sumDone": 29671424,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7454720,
+          "total": 10485760,
+          "speed": 287775,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7405568,
+          "total": 10485760,
+          "speed": 288396,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7405568,
+          "total": 10485760,
+          "speed": 291404,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7405568,
+          "total": 10485760,
+          "speed": 291396,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 28457,
+      "sumSpeed": 1158345,
+      "sumDone": 30195712,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7585792,
+          "total": 10485760,
+          "speed": 287990,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7536640,
+          "total": 10485760,
+          "speed": 289931,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7536640,
+          "total": 10485760,
+          "speed": 290214,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7536640,
+          "total": 10485760,
+          "speed": 290210,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 28863,
+      "sumSpeed": 1160951,
+      "sumDone": 30720000,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7716864,
+          "total": 10485760,
+          "speed": 288425,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7667712,
+          "total": 10485760,
+          "speed": 289709,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7667712,
+          "total": 10485760,
+          "speed": 291445,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7667712,
+          "total": 10485760,
+          "speed": 291372,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 29275,
+      "sumSpeed": 1160157,
+      "sumDone": 30851072,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7782400,
+          "total": 10485760,
+          "speed": 288200,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7733248,
+          "total": 10485760,
+          "speed": 289140,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7667712,
+          "total": 10485760,
+          "speed": 291445,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7667712,
+          "total": 10485760,
+          "speed": 291372,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 29693,
+      "sumSpeed": 1159393,
+      "sumDone": 31293440,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7897088,
+          "total": 10485760,
+          "speed": 289292,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7798784,
+          "total": 10485760,
+          "speed": 289140,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7798784,
+          "total": 10485760,
+          "speed": 290472,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7798784,
+          "total": 10485760,
+          "speed": 290489,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 30106,
+      "sumSpeed": 1158606,
+      "sumDone": 31768576,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 7979008,
+          "total": 10485760,
+          "speed": 289292,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 7929856,
+          "total": 10485760,
+          "speed": 288401,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 7929856,
+          "total": 10485760,
+          "speed": 290449,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 7929856,
+          "total": 10485760,
+          "speed": 290464,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 30523,
+      "sumSpeed": 1160533,
+      "sumDone": 32292864,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8110080,
+          "total": 10485760,
+          "speed": 291166,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8060928,
+          "total": 10485760,
+          "speed": 287699,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8060928,
+          "total": 10485760,
+          "speed": 290834,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8060928,
+          "total": 10485760,
+          "speed": 290834,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 30929,
+      "sumSpeed": 1161113,
+      "sumDone": 32817152,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8241152,
+          "total": 10485760,
+          "speed": 289885,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8192000,
+          "total": 10485760,
+          "speed": 288810,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8192000,
+          "total": 10485760,
+          "speed": 291204,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8192000,
+          "total": 10485760,
+          "speed": 291214,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 31343,
+      "sumSpeed": 1165113,
+      "sumDone": 33341440,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8372224,
+          "total": 10485760,
+          "speed": 290791,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8323072,
+          "total": 10485760,
+          "speed": 289519,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8323072,
+          "total": 10485760,
+          "speed": 292392,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8323072,
+          "total": 10485760,
+          "speed": 292411,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 31754,
+      "sumSpeed": 1167317,
+      "sumDone": 33865728,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8503296,
+          "total": 10485760,
+          "speed": 292142,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8454144,
+          "total": 10485760,
+          "speed": 290358,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8454144,
+          "total": 10485760,
+          "speed": 292409,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8454144,
+          "total": 10485760,
+          "speed": 292408,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 32165,
+      "sumSpeed": 1165192,
+      "sumDone": 34390016,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8634368,
+          "total": 10485760,
+          "speed": 292014,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8585216,
+          "total": 10485760,
+          "speed": 288904,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8585216,
+          "total": 10485760,
+          "speed": 292136,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8585216,
+          "total": 10485760,
+          "speed": 292138,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 32581,
+      "sumSpeed": 1163381,
+      "sumDone": 34914304,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8765440,
+          "total": 10485760,
+          "speed": 291774,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8716288,
+          "total": 10485760,
+          "speed": 288020,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8716288,
+          "total": 10485760,
+          "speed": 291802,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8716288,
+          "total": 10485760,
+          "speed": 291785,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 33003,
+      "sumSpeed": 1163895,
+      "sumDone": 35438592,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 8896512,
+          "total": 10485760,
+          "speed": 291536,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8847360,
+          "total": 10485760,
+          "speed": 289026,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8847360,
+          "total": 10485760,
+          "speed": 291665,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8847360,
+          "total": 10485760,
+          "speed": 291668,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 33417,
+      "sumSpeed": 1165317,
+      "sumDone": 35962880,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9027584,
+          "total": 10485760,
+          "speed": 291767,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 8978432,
+          "total": 10485760,
+          "speed": 289943,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 8978432,
+          "total": 10485760,
+          "speed": 291805,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 8978432,
+          "total": 10485760,
+          "speed": 291802,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 33827,
+      "sumSpeed": 1163570,
+      "sumDone": 36421632,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9158656,
+          "total": 10485760,
+          "speed": 291272,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9109504,
+          "total": 10485760,
+          "speed": 289928,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9109504,
+          "total": 10485760,
+          "speed": 291182,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9043968,
+          "total": 10485760,
+          "speed": 291188,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 34234,
+      "sumSpeed": 1166398,
+      "sumDone": 36798464,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9240576,
+          "total": 10485760,
+          "speed": 292476,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9224192,
+          "total": 10485760,
+          "speed": 290699,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9158656,
+          "total": 10485760,
+          "speed": 291609,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9175040,
+          "total": 10485760,
+          "speed": 291614,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 34645,
+      "sumSpeed": 1166467,
+      "sumDone": 37076992,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9355264,
+          "total": 10485760,
+          "speed": 292545,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9240576,
+          "total": 10485760,
+          "speed": 290699,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9240576,
+          "total": 10485760,
+          "speed": 291609,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9240576,
+          "total": 10485760,
+          "speed": 291614,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 35063,
+      "sumSpeed": 1165132,
+      "sumDone": 37552128,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9437184,
+          "total": 10485760,
+          "speed": 291597,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9371648,
+          "total": 10485760,
+          "speed": 290732,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9371648,
+          "total": 10485760,
+          "speed": 291410,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9371648,
+          "total": 10485760,
+          "speed": 291393,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 35473,
+      "sumSpeed": 1163709,
+      "sumDone": 38060032,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9551872,
+          "total": 10485760,
+          "speed": 291597,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9502720,
+          "total": 10485760,
+          "speed": 290420,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9502720,
+          "total": 10485760,
+          "speed": 290843,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9502720,
+          "total": 10485760,
+          "speed": 290849,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 35879,
+      "sumSpeed": 1160394,
+      "sumDone": 38535168,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9633792,
+          "total": 10485760,
+          "speed": 290163,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9633792,
+          "total": 10485760,
+          "speed": 289934,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9633792,
+          "total": 10485760,
+          "speed": 290145,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9633792,
+          "total": 10485760,
+          "speed": 290152,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 36299,
+      "sumSpeed": 1124921,
+      "sumDone": 38797312,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9699328,
+          "total": 10485760,
+          "speed": 250791,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9699328,
+          "total": 10485760,
+          "speed": 291147,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9699328,
+          "total": 10485760,
+          "speed": 291484,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9699328,
+          "total": 10485760,
+          "speed": 291499,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 36705,
+      "sumSpeed": 961641,
+      "sumDone": 39059456,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9764864,
+          "total": 10485760,
+          "speed": 219101,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9764864,
+          "total": 10485760,
+          "speed": 247353,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9764864,
+          "total": 10485760,
+          "speed": 247588,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9764864,
+          "total": 10485760,
+          "speed": 247599,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 37125,
+      "sumSpeed": 848090,
+      "sumDone": 39321600,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9830400,
+          "total": 10485760,
+          "speed": 197101,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9830400,
+          "total": 10485760,
+          "speed": 216880,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9830400,
+          "total": 10485760,
+          "speed": 217052,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9830400,
+          "total": 10485760,
+          "speed": 217057,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 37534,
+      "sumSpeed": 768374,
+      "sumDone": 39583744,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9895936,
+          "total": 10485760,
+          "speed": 181650,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9895936,
+          "total": 10485760,
+          "speed": 195499,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9895936,
+          "total": 10485760,
+          "speed": 195610,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9895936,
+          "total": 10485760,
+          "speed": 195615,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 37946,
+      "sumSpeed": 713197,
+      "sumDone": 39845888,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 9961472,
+          "total": 10485760,
+          "speed": 170994,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 9961472,
+          "total": 10485760,
+          "speed": 180671,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 9961472,
+          "total": 10485760,
+          "speed": 180768,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 9961472,
+          "total": 10485760,
+          "speed": 180764,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 38359,
+      "sumSpeed": 673823,
+      "sumDone": 40108032,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10027008,
+          "total": 10485760,
+          "speed": 163331,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10027008,
+          "total": 10485760,
+          "speed": 170113,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10027008,
+          "total": 10485760,
+          "speed": 170194,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10027008,
+          "total": 10485760,
+          "speed": 170185,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 38769,
+      "sumSpeed": 647906,
+      "sumDone": 40370176,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 158386,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 163151,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 163183,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 163186,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 39175,
+      "sumSpeed": 643273,
+      "sumDone": 40386560,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 158386,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 163151,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10108928,
+          "total": 10485760,
+          "speed": 158550,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10092544,
+          "total": 10485760,
+          "speed": 163186,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 39587,
+      "sumSpeed": 626280,
+      "sumDone": 40632320,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10158080,
+          "total": 10485760,
+          "speed": 153686,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10158080,
+          "total": 10485760,
+          "speed": 157009,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10158080,
+          "total": 10485760,
+          "speed": 158550,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10158080,
+          "total": 10485760,
+          "speed": 157035,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 40001,
+      "sumSpeed": 612824,
+      "sumDone": 40894464,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10223616,
+          "total": 10485760,
+          "speed": 151102,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10223616,
+          "total": 10485760,
+          "speed": 153422,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10223616,
+          "total": 10485760,
+          "speed": 154861,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10223616,
+          "total": 10485760,
+          "speed": 153439,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 40419,
+      "sumSpeed": 602461,
+      "sumDone": 41156608,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10289152,
+          "total": 10485760,
+          "speed": 149013,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10289152,
+          "total": 10485760,
+          "speed": 150628,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10289152,
+          "total": 10485760,
+          "speed": 152186,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10289152,
+          "total": 10485760,
+          "speed": 150634,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 40830,
+      "sumSpeed": 595636,
+      "sumDone": 41418752,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10354688,
+          "total": 10485760,
+          "speed": 147834,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10354688,
+          "total": 10485760,
+          "speed": 148980,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10354688,
+          "total": 10485760,
+          "speed": 149834,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10354688,
+          "total": 10485760,
+          "speed": 148988,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 41247,
+      "sumSpeed": 591824,
+      "sumDone": 41680896,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "done": 10420224,
+          "total": 10485760,
+          "speed": 147021,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "done": 10420224,
+          "total": 10485760,
+          "speed": 147870,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "done": 10420224,
+          "total": 10485760,
+          "speed": 149050,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "done": 10420224,
+          "total": 10485760,
+          "speed": 147883,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    },
+    {
+      "at": 41669,
+      "sumSpeed": 0,
+      "sumDone": 41943040,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "completed",
+          "done": 10485760,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 2,
+          "state": "completed",
+          "done": 10485760,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 3,
+          "state": "completed",
+          "done": 10485760,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        },
+        {
+          "id": 4,
+          "state": "completed",
+          "done": 10485760,
+          "total": 10485760,
+          "speed": 0,
+          "limit": 8,
+          "degraded": false,
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "downloadMs": 41669,
+  "minLimit": {
+    "1": 4,
+    "2": 4,
+    "3": 4,
+    "4": 4
+  },
+  "final": [
+    {
+      "id": 1,
+      "state": "completed",
+      "done": 10485760,
+      "total": 10485760,
+      "speed": 0,
+      "limit": 8,
+      "degraded": false,
+      "reason": null
+    },
+    {
+      "id": 2,
+      "state": "completed",
+      "done": 10485760,
+      "total": 10485760,
+      "speed": 0,
+      "limit": 8,
+      "degraded": false,
+      "reason": null
+    },
+    {
+      "id": 3,
+      "state": "completed",
+      "done": 10485760,
+      "total": 10485760,
+      "speed": 0,
+      "limit": 8,
+      "degraded": false,
+      "reason": null
+    },
+    {
+      "id": 4,
+      "state": "completed",
+      "done": 10485760,
+      "total": 10485760,
+      "speed": 0,
+      "limit": 8,
+      "degraded": false,
+      "reason": null
+    }
+  ],
+  "allCompleted": true,
+  "totalBytes": 41943040,
+  "avgBps": 1006577,
+  "allAtTwoAt": null,
+  "floorReached": false,
+  "disk": [
+    {
+      "id": 1,
+      "expectedBytes": 10485760,
+      "done": 10485760
+    },
+    {
+      "id": 2,
+      "expectedBytes": 10485760,
+      "done": 10485760
+    },
+    {
+      "id": 3,
+      "expectedBytes": 10485760,
+      "done": 10485760
+    },
+    {
+      "id": 4,
+      "expectedBytes": 10485760,
+      "done": 10485760
+    }
+  ],
+  "server": {
+    "active": 0,
+    "peak": 32,
+    "events": [
+      {
+        "t": 3971,
+        "ev": "open",
+        "active": 1
+      },
+      {
+        "t": 3973,
+        "ev": "open",
+        "active": 2
+      },
+      {
+        "t": 3974,
+        "ev": "open",
+        "active": 3
+      },
+      {
+        "t": 3974,
+        "ev": "open",
+        "active": 4
+      },
+      {
+        "t": 3975,
+        "ev": "open",
+        "active": 5
+      },
+      {
+        "t": 3976,
+        "ev": "open",
+        "active": 6
+      },
+      {
+        "t": 3976,
+        "ev": "open",
+        "active": 7
+      },
+      {
+        "t": 3977,
+        "ev": "open",
+        "active": 8
+      },
+      {
+        "t": 4003,
+        "ev": "open",
+        "active": 9
+      },
+      {
+        "t": 4004,
+        "ev": "open",
+        "active": 10
+      },
+      {
+        "t": 4004,
+        "ev": "open",
+        "active": 11
+      },
+      {
+        "t": 4005,
+        "ev": "open",
+        "active": 12
+      },
+      {
+        "t": 4005,
+        "ev": "open",
+        "active": 13
+      },
+      {
+        "t": 4006,
+        "ev": "open",
+        "active": 14
+      },
+      {
+        "t": 4006,
+        "ev": "open",
+        "active": 15
+      },
+      {
+        "t": 4006,
+        "ev": "open",
+        "active": 16
+      },
+      {
+        "t": 4030,
+        "ev": "open",
+        "active": 17
+      },
+      {
+        "t": 4031,
+        "ev": "open",
+        "active": 18
+      },
+      {
+        "t": 4032,
+        "ev": "open",
+        "active": 19
+      },
+      {
+        "t": 4032,
+        "ev": "open",
+        "active": 20
+      },
+      {
+        "t": 4032,
+        "ev": "open",
+        "active": 21
+      },
+      {
+        "t": 4032,
+        "ev": "open",
+        "active": 22
+      },
+      {
+        "t": 4032,
+        "ev": "open",
+        "active": 23
+      },
+      {
+        "t": 4033,
+        "ev": "open",
+        "active": 24
+      },
+      {
+        "t": 4040,
+        "ev": "open",
+        "active": 25
+      },
+      {
+        "t": 4042,
+        "ev": "open",
+        "active": 26
+      },
+      {
+        "t": 4043,
+        "ev": "open",
+        "active": 27
+      },
+      {
+        "t": 4043,
+        "ev": "open",
+        "active": 28
+      },
+      {
+        "t": 4044,
+        "ev": "open",
+        "active": 29
+      },
+      {
+        "t": 4044,
+        "ev": "open",
+        "active": 30
+      },
+      {
+        "t": 4044,
+        "ev": "open",
+        "active": 31
+      },
+      {
+        "t": 4044,
+        "ev": "open",
+        "active": 32
+      },
+      {
+        "t": 16130,
+        "ev": "close",
+        "active": 31
+      },
+      {
+        "t": 16131,
+        "ev": "close",
+        "active": 30
+      },
+      {
+        "t": 16132,
+        "ev": "close",
+        "active": 29
+      },
+      {
+        "t": 16132,
+        "ev": "close",
+        "active": 28
+      },
+      {
+        "t": 16173,
+        "ev": "close",
+        "active": 27
+      },
+      {
+        "t": 16173,
+        "ev": "close",
+        "active": 26
+      },
+      {
+        "t": 16174,
+        "ev": "close",
+        "active": 25
+      },
+      {
+        "t": 16174,
+        "ev": "close",
+        "active": 24
+      },
+      {
+        "t": 16180,
+        "ev": "close",
+        "active": 23
+      },
+      {
+        "t": 16181,
+        "ev": "close",
+        "active": 22
+      },
+      {
+        "t": 16239,
+        "ev": "close",
+        "active": 21
+      },
+      {
+        "t": 16239,
+        "ev": "close",
+        "active": 20
+      },
+      {
+        "t": 16239,
+        "ev": "close",
+        "active": 19
+      },
+      {
+        "t": 16239,
+        "ev": "close",
+        "active": 18
+      },
+      {
+        "t": 16239,
+        "ev": "close",
+        "active": 17
+      },
+      {
+        "t": 16239,
+        "ev": "close",
+        "active": 16
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 17
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 18
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 19
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 20
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 21
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 22
+      },
+      {
+        "t": 22078,
+        "ev": "open",
+        "active": 23
+      },
+      {
+        "t": 22079,
+        "ev": "open",
+        "active": 24
+      },
+      {
+        "t": 22079,
+        "ev": "open",
+        "active": 25
+      },
+      {
+        "t": 22079,
+        "ev": "open",
+        "active": 26
+      },
+      {
+        "t": 22080,
+        "ev": "open",
+        "active": 27
+      },
+      {
+        "t": 22080,
+        "ev": "open",
+        "active": 28
+      },
+      {
+        "t": 22080,
+        "ev": "open",
+        "active": 29
+      },
+      {
+        "t": 22080,
+        "ev": "open",
+        "active": 30
+      },
+      {
+        "t": 22080,
+        "ev": "open",
+        "active": 31
+      },
+      {
+        "t": 22080,
+        "ev": "open",
+        "active": 32
+      },
+      {
+        "t": 39145,
+        "ev": "close",
+        "active": 31
+      },
+      {
+        "t": 39146,
+        "ev": "close",
+        "active": 30
+      },
+      {
+        "t": 39146,
+        "ev": "close",
+        "active": 29
+      },
+      {
+        "t": 39570,
+        "ev": "close",
+        "active": 28
+      },
+      {
+        "t": 39639,
+        "ev": "close",
+        "active": 27
+      },
+      {
+        "t": 39640,
+        "ev": "close",
+        "active": 26
+      },
+      {
+        "t": 39640,
+        "ev": "close",
+        "active": 25
+      },
+      {
+        "t": 39640,
+        "ev": "close",
+        "active": 24
+      },
+      {
+        "t": 39663,
+        "ev": "close",
+        "active": 23
+      },
+      {
+        "t": 39677,
+        "ev": "close",
+        "active": 22
+      },
+      {
+        "t": 39685,
+        "ev": "close",
+        "active": 21
+      },
+      {
+        "t": 39685,
+        "ev": "close",
+        "active": 20
+      },
+      {
+        "t": 39685,
+        "ev": "close",
+        "active": 19
+      },
+      {
+        "t": 39685,
+        "ev": "close",
+        "active": 18
+      },
+      {
+        "t": 39686,
+        "ev": "close",
+        "active": 17
+      },
+      {
+        "t": 39702,
+        "ev": "close",
+        "active": 16
+      },
+      {
+        "t": 45465,
+        "ev": "close",
+        "active": 15
+      },
+      {
+        "t": 45498,
+        "ev": "close",
+        "active": 14
+      },
+      {
+        "t": 45498,
+        "ev": "close",
+        "active": 13
+      },
+      {
+        "t": 45498,
+        "ev": "close",
+        "active": 12
+      },
+      {
+        "t": 45498,
+        "ev": "close",
+        "active": 11
+      },
+      {
+        "t": 45499,
+        "ev": "close",
+        "active": 10
+      },
+      {
+        "t": 45499,
+        "ev": "close",
+        "active": 9
+      },
+      {
+        "t": 45499,
+        "ev": "close",
+        "active": 8
+      },
+      {
+        "t": 45499,
+        "ev": "close",
+        "active": 7
+      },
+      {
+        "t": 45499,
+        "ev": "close",
+        "active": 6
+      },
+      {
+        "t": 45499,
+        "ev": "close",
+        "active": 5
+      },
+      {
+        "t": 45523,
+        "ev": "close",
+        "active": 4
+      },
+      {
+        "t": 45523,
+        "ev": "close",
+        "active": 3
+      },
+      {
+        "t": 45524,
+        "ev": "close",
+        "active": 2
+      },
+      {
+        "t": 45524,
+        "ev": "close",
+        "active": 1
+      },
+      {
+        "t": 45524,
+        "ev": "close",
+        "active": 0
+      }
+    ]
+  }
+}
