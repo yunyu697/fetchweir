@@ -1,4 +1,5 @@
 // 下载引擎：任务模型、调度与事件。
+pub mod adaptive;
 pub mod http;
 pub mod pacer;
 pub mod speed;
@@ -16,6 +17,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::settings::Settings;
 
+use self::adaptive::{AdaptiveConn, ConnSlot};
 use self::pacer::Pacer;
 use self::speed::SpeedMeter;
 
@@ -57,6 +59,13 @@ pub struct TaskDto {
     pub created_at: i64,
     pub supports_ranges: bool,
     pub connections: u32,
+    /// 用户设定值（自动降并发的上限）。
+    pub conn_base: u32,
+    /// 当前实际允许的并发连接数。
+    pub conn_limit: u32,
+    pub conn_degraded: bool,
+    /// 自动降档原因；未降档为 null。
+    pub conn_reason: Option<String>,
 }
 
 /// 高频进度事件里的精简字段。
@@ -84,6 +93,9 @@ pub enum EngineError {
     Io(String),
     #[error("任务已结束")]
     Aborted,
+    /// 并发上限被调低：主动断开当前连接，稍后按新上限重新排队。
+    #[error("重新排队")]
+    Requeued,
 }
 
 impl From<reqwest::Error> for EngineError {
@@ -121,6 +133,8 @@ pub struct Task {
     /// 用户显式指定了文件名：探测阶段不得用 URL / Content-Disposition 推断的名字覆盖它。
     pub user_named: bool,
     pub connections: u32,
+    /// 自适应并发控制：用户设定是上限，只降不超。
+    pub conn: AdaptiveConn,
     /// 浏览器接管带来的额外请求头（Referer / Cookie / UA）。仅内存保存，不落盘。
     pub headers: Vec<(String, String)>,
     pub total: AtomicU64,
@@ -147,15 +161,18 @@ impl Task {
         file_name: String,
         user_named: bool,
         connections: u32,
+        auto_conn: bool,
         headers: Vec<(String, String)>,
     ) -> Self {
+        let connections = connections.clamp(1, 16);
         Self {
             id,
             url,
             save_dir,
             file_name: Mutex::new(file_name),
             user_named,
-            connections: connections.clamp(1, 16),
+            connections,
+            conn: AdaptiveConn::new(connections, auto_conn),
             headers,
             total: AtomicU64::new(0),
             done: AtomicU64::new(0),
@@ -198,6 +215,7 @@ impl Task {
     }
 
     pub fn snapshot(&self) -> TaskDto {
+        let conn = self.conn.info();
         TaskDto {
             id: self.id,
             url: self.url.clone(),
@@ -218,6 +236,10 @@ impl Task {
             created_at: self.created_at,
             supports_ranges: self.supports_ranges.load(Ordering::Relaxed),
             connections: self.connections,
+            conn_base: conn.base,
+            conn_limit: conn.limit,
+            conn_degraded: conn.degraded,
+            conn_reason: conn.reason,
         }
     }
 }
@@ -337,6 +359,7 @@ impl Engine {
             name,
             name_given,
             connections.unwrap_or(settings.connections).clamp(1, settings.max_connections.clamp(1, 16)),
+            settings.auto_concurrency,
             headers,
         ));
         self.tasks.lock().unwrap().push(task.clone());
@@ -460,6 +483,7 @@ impl Engine {
     }
 
     async fn run_task(self: Arc<Self>, task: Arc<Task>, token: CancellationToken, run_id: u64) {
+        task.conn.begin_run();
         // 探测只发一次请求，网络抖动（TLS 重置、瞬时 5xx）会让整个任务直接失败；
         // 这里补两次重试，仍然失败才如实报错。
         let meta = {
@@ -559,6 +583,31 @@ impl Engine {
             }));
         }
 
+        // 自适应并发监控：3 秒一个窗口，只在档位变化时推送完整快照，
+        // 前端据此显示“已降低连接数”及原因。
+        {
+            let engine = self.clone();
+            let task = task.clone();
+            let token = token.clone();
+            tauri::async_runtime::spawn(async move {
+                let mut tick = tokio::time::interval(Duration::from_secs(3));
+                tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+                tick.tick().await; // 第一次立即返回，跳过
+                loop {
+                    tokio::select! {
+                        _ = tick.tick() => {}
+                        _ = token.cancelled() => break,
+                    }
+                    if !same_run(&task, run_id) || task.state() != TaskState::Active {
+                        break;
+                    }
+                    if task.conn.observe(task.speed.bps()) {
+                        engine.emit_task(&task);
+                    }
+                }
+            });
+        }
+
         let mut first_err: Option<String> = None;
         for h in handles {
             match h.await {
@@ -630,12 +679,19 @@ impl Engine {
                 return Ok(());
             }
 
+            let mut slot = tokio::select! {
+                slot = task.conn.acquire() => slot,
+                _ = token.cancelled() => return Err(EngineError::Aborted),
+            };
             let result = self
-                .stream_segment(&task, idx, &url, &path, from, end, &token)
+                .stream_segment(&task, idx, &url, &path, from, end, &token, &mut slot)
                 .await;
+            drop(slot);
 
             match result {
                 Ok(()) => return Ok(()),
+                // 并发上限被调低：断开的只是当前流，已落盘字节保留，重新排队后继续。
+                Err(EngineError::Requeued) => continue,
                 Err(EngineError::Aborted) => return Err(EngineError::Aborted),
                 Err(EngineError::RangeUnsupported) => return Err(EngineError::RangeUnsupported),
                 Err(e) => {
@@ -646,9 +702,12 @@ impl Engine {
                     if attempt >= 7 {
                         return Err(e);
                     }
-                    // 429/503 是服务端限速：退避要更长，否则重试会继续撞限流。
-                    // 各分段按 idx 错开，避免所有连接同一毫秒重试形成突发。
+                    // 429/503 是服务端限速：退避要更长，否则重试会继续撞限流；
+                    // 同时立即触发自动降并发。各分段按 idx 错开，避免同一毫秒重试形成突发。
                     let throttled = matches!(&e, EngineError::Http(s) if s.starts_with("HTTP 429") || s.starts_with("HTTP 503"));
+                    if throttled && task.conn.note_throttle() {
+                        self.emit_task(&task);
+                    }
                     let base = if throttled { 1500 } else { 300 };
                     let backoff = Duration::from_millis(base * 2u64.pow(attempt.min(4)) + 97 * idx as u64);
                     tokio::select! {
@@ -669,6 +728,7 @@ impl Engine {
         from: u64,
         end: u64,
         token: &CancellationToken,
+        slot: &mut ConnSlot<'_>,
     ) -> Result<(), EngineError> {
         let resp = http::with_headers(
             self.client
@@ -698,6 +758,10 @@ impl Engine {
         while let Some(chunk) = stream.next().await {
             if token.is_cancelled() {
                 return Err(EngineError::Aborted);
+            }
+            // 上限被调低时主动断开这条流，把名额让给仍然允许的连接。
+            if slot.yield_if_excess() {
+                return Err(EngineError::Requeued);
             }
             let chunk = chunk?;
             let len = chunk.len() as u64;

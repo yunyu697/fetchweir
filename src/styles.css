@@ -414,6 +414,7 @@ html[data-theme="light"] .thumb.d{background:linear-gradient(150deg,#F7E9CE,#FEF
 .tag.hls{background:color-mix(in srgb,var(--info) 13%,transparent);color:var(--info);border-color:transparent}
 .tag.yt{background:color-mix(in srgb,var(--err) 12%,transparent);color:#FF7B86;border-color:transparent}
 .tag.protected{background:color-mix(in srgb,var(--err) 12%,transparent);color:var(--err);border-color:transparent}
+.tag.auto{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);border-color:transparent}
 .tag.dup{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn);border-color:transparent}
 
 /* ============ detail ============ */

@@ -680,6 +680,12 @@
                     <span class="tag" id="connOut">8</span>
                   </div>
                 </div>
+                <div class="set-row">
+                  <div class="lab">限速站点自动降并发<small>连续 6 秒每连接低于 96 KB/s，或 10 秒内 3 次 429/503 时自动减半；速率回升后逐档恢复。用户设置的默认分段数始终是上限。</small></div>
+                  <div class="ctl">
+                    <button class="sw" id="swAutoConn" title="关闭后完全按用户设定的连接数下载"></button>
+                  </div>
+                </div>
                 <div class="set-row disabled">
                   <div class="lab">全局连接上限<small>同时存在的分段连接总数</small></div>
                   <div class="ctl">

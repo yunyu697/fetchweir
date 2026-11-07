@@ -158,6 +158,8 @@
     return 'file';
   };
   const kindOf = (t) => kindOfExt(extOf(t.fileName || t.url || ''));
+  /* 自动降并发后，任务实际使用的连接数以 connLimit 为准。 */
+  const connNow = (t) => Math.max(1, Math.min(t.connections || 1, t.connLimit || t.connections || 1));
 
   const lighten = (hex, amt) => {
     const h = String(hex || '#6C8CFF').trim();
@@ -198,6 +200,7 @@
   const DEMO_SETTINGS = {
     downloadDir: 'C:\\Users\\Tyler\\Downloads',
     connections: 8,
+    autoConcurrency: true,
     globalLimitBps: 0,
     theme: 'dark',
     updateRepo: 'yunyu697/fetchweir',
@@ -346,6 +349,7 @@
     const tags = [];
     if (/\.(m3u8|mpd)(\?|$|#)/i.test(t.url || '') || /\.(m3u8|mpd)$/i.test(t.fileName || '')) tags.push(['HLS', 'hls']);
     if (/(youtube|youtu\.be|bilibili|vimeo)/i.test(t.url || '')) tags.push(['解析器', 'yt']);
+    if (t.connDegraded) tags.push([`已降并发 ${t.connections}→${t.connLimit}`, 'auto']);
     if (t.state === 'paused') tags.push(['断点已保存', '']);
     if (t.state === 'failed') tags.push(['需处理', 'protected']);
     return tags;
@@ -382,7 +386,7 @@
     taskTags(t).forEach(([label, cls]) => name.append(el('span', 'tag' + (cls ? ' ' + cls : ''), label)));
     const sub = el('div', 't-sub');
     sub.append(el('span', '', hostOf(t.url)), el('span', 'sep'));
-    const connText = t.supportsRanges ? `${t.connections || 1} 段` : '单连接';
+    const connText = t.supportsRanges ? `${connNow(t)} 段` : '单连接';
     sub.append(el('span', '', connText), el('span', 'sep'), el('span', '', t.state === 'active' ? ('剩余 ' + fmtEta(t)) : (t.state === 'queued' ? '等待调度' : t.state === 'failed' ? '断点保留' : t.state === 'paused' ? '已释放连接' : '已落盘')));
     const nwSize = el('span', 'nw nw-size', '· ' + fmtBytes(t.totalBytes));
     const nwSpeed = el('span', 'nw nw-speed', '· ' + fmtSpeed(t.speedBps));
@@ -480,7 +484,9 @@
       sizeMain.textContent = fmtBytes(t.doneBytes);
       sizeSub.textContent = '/ ' + fmtBytes(t.totalBytes);
       speedMain.textContent = t.state === 'active' ? fmtSpeed(t.speedBps) : '—';
-      speedSub.textContent = t.state === 'active' ? `${t.connections || 1} 连接` : t.state === 'queued' ? '等待额度' : t.state === 'failed' ? '断点保留' : '已暂停';
+      speedSub.textContent = t.state === 'active'
+        ? (t.connDegraded ? `已降低连接数 ${t.connections}→${t.connLimit}` : `${connNow(t)} 连接`)
+        : t.state === 'queued' ? '等待额度' : t.state === 'failed' ? '断点保留' : '已暂停';
     }
 
     pill.className = 'st ' + (STATE_CLASS[t.state] || 'wait');
@@ -488,7 +494,7 @@
     pill.append(el('span', 'd'), document.createTextNode(STATE_TEXT[t.state] || t.state));
 
     if (sub) {
-      const connText = t.supportsRanges ? `${t.connections || 1} 段` : '单连接';
+      const connText = t.supportsRanges ? `${connNow(t)} 段` : '单连接';
       const tail = t.state === 'active' ? ('剩余 ' + fmtEta(t)) : t.state === 'queued' ? '等待调度' : t.state === 'failed' ? '断点保留' : t.state === 'paused' ? '已释放连接' : '已落盘';
       const spans = $$('span', sub);
       if (spans[2]) spans[2].textContent = connText;
@@ -631,7 +637,7 @@
     const failed = all.filter((t) => t.state === 'failed');
     const paused = all.filter((t) => t.state === 'paused');
     const speed = active.reduce((a, t) => a + (t.speedBps || 0), 0);
-    const conns = active.reduce((a, t) => a + (t.connections || 0), 0);
+    const conns = active.reduce((a, t) => a + connNow(t), 0);
     const byKind = (k) => all.filter((t) => kindOf(t) === k).length;
 
     const count = (id, n) => { const n2 = $(id); if (n2) n2.textContent = String(n); };
@@ -683,7 +689,13 @@
     $('limitFootLeft').textContent = '当前 ' + fmtSpeed(speed);
     $('limitFootRight').textContent = limit ? '上限 ' + fmtSpeed(limit) : '未设置上限';
 
-    $('statusText').textContent = active.length ? `正在下载 ${active.length} 个任务` : (queued.length ? `排队 ${queued.length} 个任务` : '引擎就绪 · 本地模式');
+    const degraded = active.filter((t) => t.connDegraded);
+    $('statusText').textContent = active.length
+      ? `正在下载 ${active.length} 个任务` + (degraded.length ? ` · 已降低连接数（${degraded.length} 个任务）` : '')
+      : (queued.length ? `排队 ${queued.length} 个任务` : '引擎就绪 · 本地模式');
+    $('statusText').title = degraded.length
+      ? degraded.map((t) => `${t.fileName || t.url}：${t.connReason || `${t.connections}→${t.connLimit} 连接`}`).join('\n')
+      : '';
     $('statusQueue').textContent = '队列 ' + queued.length;
     $('statusSpeed').textContent = (speed / MB).toFixed(1) + ' MB/s';
 
@@ -826,13 +838,16 @@
       $('heroSpeed').append(document.createTextNode('—'), el('span', '', ''));
     }
     const subs = {
-      active: `分块 512 KB · 已用 ${t.connections || 1} 条连接 · 直接写入分段偏移`,
+      active: `分块 512 KB · 已用 ${connNow(t)} 条连接${t.connDegraded ? `（已从 ${t.connections} 自动降低）` : ''} · 直接写入分段偏移`,
       queued: '等待连接额度 · 尚未写入磁盘',
       paused: '断点已保存 · 连接已释放，续传时按需重建',
       failed: '分片失败 · 断点保留 · 等待重试',
       completed: '全部分段完成 · 无临时分片合并'
     };
     $('heroSub').textContent = subs[t.state] || '—';
+    if (t.state === 'active' && t.connDegraded && t.connReason) {
+      $('heroSub').textContent += ' · ' + t.connReason;
+    }
     $('mDone').textContent = fmtBytes(done);
     $('mTotal').textContent = fmtBytes(t.totalBytes);
     $('mEta').textContent = t.state === 'active' ? fmtEta(t) : '—';
@@ -842,7 +857,7 @@
     $('heroFill').style.background = t.state === 'failed' ? 'var(--err)' : '';
     $('heroPct').textContent = '已下载 ' + Math.round(pct) + '%';
     $('heroMax').textContent = `上限 ${settings.maxConnections || 16} 条`;
-    $('segMeta').textContent = `${t.supportsRanges ? (t.connections || 1) + ' 段' : '单连接'} · 分块 512 KB`;
+    $('segMeta').textContent = `${t.supportsRanges ? connNow(t) + ' 段' : '单连接'} · 分块 512 KB`;
 
     /* 分段图：16 列按任务总进度依次填满，不伪造每段独立百分比 */
     const segBox = $('segmap');
@@ -865,7 +880,7 @@
     const connBody = $('connBody');
     connBody.textContent = '';
     if (t.state === 'active') {
-      const n = Math.max(1, Math.min(16, t.connections || 1));
+      const n = connNow(t);
       for (let i = 0; i < n; i++) {
         const row = el('div', 'conn-row');
         row.append(el('span', 'id', '#' + String(i + 1).padStart(2, '0')));
@@ -877,7 +892,10 @@
         connBody.append(row);
       }
       connBody.append(el('div', 'dim', '分连接速率与进度未上报，条形只表示任务总进度。'));
-      $('connMeta').textContent = `${n} / ${settings.maxConnections || 16}`;
+      if (t.connDegraded && t.connReason) {
+        connBody.append(el('div', 'dim', '自动降并发：' + t.connReason));
+      }
+      $('connMeta').textContent = `${n} / ${t.connections || 1}`;
     } else {
       $('connMeta').textContent = t.state === 'completed' ? '已全部释放' : t.state === 'paused' ? '已释放' : t.state === 'failed' ? '已关闭' : '未建立';
       connBody.append(el('div', 'dim', {
@@ -892,7 +910,9 @@
     $('kvBuffer').textContent = '4 KiB';
     $('kvSync').textContent = '未启用（后端无摘要接口）';
     $('kvGate').textContent = `${settings.maxConnections || 16} 条（单任务）`;
-    $('kvSched').textContent = t.supportsRanges ? '自适应分段' : '单连接直下';
+    $('kvSched').textContent = t.supportsRanges
+      ? (t.connDegraded ? `已自动降并发 · ${t.connReason || (t.connections + '→' + t.connLimit)}` : '自适应分段')
+      : '单连接直下';
     const parts = (t.savePath || '').split(/[\\/]/);
     $('kvMedium').textContent = parts.length > 1 ? parts.slice(0, -1).join('\\') : (settings.downloadDir || '—');
 
@@ -981,6 +1001,7 @@
     s.connections = Math.max(1, Math.min(32, Number(s.connections) || 8));
     s.maxConnections = Math.max(1, Math.min(16, Number(s.maxConnections) || 16));
     if (s.connections > s.maxConnections) s.connections = s.maxConnections;
+    s.autoConcurrency = s.autoConcurrency !== false;
     s.globalLimitBps = Math.max(0, Number(s.globalLimitBps) || 0);
     s.sniffTtlHours = Number(s.sniffTtlHours) || 0;
     s.connectTimeoutSec = Math.max(1, Number(s.connectTimeoutSec) || 10);
@@ -1076,6 +1097,7 @@
     $('segOut').textContent = String(s.connections);
     $('connRange').value = String(s.maxConnections);
     $('connOut').textContent = String(s.maxConnections);
+    paintSwitch('swAutoConn', s.autoConcurrency);
     $('limitRange').value = String(s.globalLimitBps ? Math.round(s.globalLimitBps / MB) : 0);
     updateLimitLabel();
     $('timeoutSel').value = `${s.connectTimeoutSec},${s.readTimeoutSec}`;
@@ -1973,7 +1995,8 @@
     state.tasks.set(t.id, t);
     if (batch) return;
     // 状态变化会影响筛选/排序与统计，必须整表重排；仅进度变化只重绘本行。
-    const structural = !prev || prev.state !== t.state;
+    const structural = !prev || prev.state !== t.state
+      || prev.connLimit !== t.connLimit || prev.connDegraded !== t.connDegraded;
     if (state.view !== 'main') { renderStats(); return; }
     if (structural) renderTasks();
     else {
@@ -2233,6 +2256,7 @@
     }));
     bindSwitch('swReduce', 'reduceMotion', (v) => document.documentElement.classList.toggle('reduce-motion', v));
     bindSwitch('swCloseTray', 'closeToTray');
+    bindSwitch('swAutoConn', 'autoConcurrency');
 
     // 自启动与提权需要落系统状态，不能用纯前端开关直接写设置。
     const swAutostart = $('swAutostart');

@@ -39,6 +39,8 @@ pub fn system_download_dir() -> PathBuf {
 pub struct Settings {
     pub download_dir: String,
     pub connections: u32,
+    /// 限速站点自动降并发：用户设定值是上限，自动策略只在其下调整。
+    pub auto_concurrency: bool,
     pub global_limit_bps: u64,
     pub theme: String,
     /// 更新源仓库（owner/name）。默认指向自有仓库，替换为公开镜像仓库也可。
@@ -77,6 +79,7 @@ impl Default for Settings {
         Self {
             download_dir: default_download_dir(),
             connections: 8,
+            auto_concurrency: true,
             global_limit_bps: 0,
             theme: "dark".to_string(),
             update_repo: "yunyu697/fetchweir".to_string(),
