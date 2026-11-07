@@ -1,0 +1,35 @@
+{
+  "label": "before-warm-2",
+  "exe": "D:\\fw-temp\\before\\Fetchweir.exe",
+  "at": "2026-11-07T07:52:28.051Z",
+  "load": false,
+  "coldStartMs": 18895,
+  "targetMs": 519,
+  "connectMs": 14,
+  "domReady": {
+    "ready": "complete",
+    "rows": 0,
+    "nav": 13
+  },
+  "loadInfo": null,
+  "click": {
+    "samples": 15,
+    "handlerAvgMs": 0.94,
+    "handlerMaxMs": 2.1,
+    "frameAvgMs": 19.1,
+    "frameMaxMs": 68.4
+  },
+  "idleWindowSec": 12,
+  "cpuPct": 0.11,
+  "memMb": 572.9,
+  "processCount": 7,
+  "processNames": {
+    "Fetchweir": 1,
+    "msedgewebview2": 6
+  },
+  "longTasks": {
+    "count": 0,
+    "totalMs": 0,
+    "maxMs": 0
+  }
+}

@@ -72,6 +72,25 @@
   };
   const rowsById = new Map();
 
+  /* 进度事件由后端按 10Hz 合并推送，前端若逐条重排会持续抢占主线程。
+   * 这里再合并一层：200ms 窗口内只重绘一次行内数字与统计卡。 */
+  const paintQueue = { items: new Map(), timer: 0 };
+  function scheduleProgressPaint(items) {
+    items.forEach((p) => { if (p && p.id != null) paintQueue.items.set(p.id, p); });
+    if (paintQueue.timer) return;
+    paintQueue.timer = setTimeout(() => {
+      paintQueue.timer = 0;
+      const batch = Array.from(paintQueue.items.values());
+      paintQueue.items.clear();
+      batch.forEach((p) => {
+        const t = state.tasks.get(p.id);
+        if (t) paintRow(rowsById.get(String(t.id)), t);
+      });
+      renderStats();
+      if (state.detailId != null && state.tasks.has(state.detailId)) paintDetail();
+    }, 200);
+  }
+
   /* ---------------- 格式化 ---------------- */
   const pctOf = (t) => {
     if (t.state === 'completed') return 100;
@@ -567,8 +586,26 @@
     });
   }
 
+  /* 解析器版本探测要拉起 yt-dlp 子进程（首次 1-8 秒），
+   * 放到首次进入视频页时再做，不拖慢冷启动。 */
+  state.parserChecked = false;
+  async function checkParserState() {
+    if (state.parserChecked || isDemo) return;
+    state.parserChecked = true;
+    const ps = $('parserState');
+    if (!ps) return;
+    try {
+      const vs = await invoke('video_status');
+      ps.textContent = vs && vs.present ? ('已就绪' + (vs.version ? ' · ' + vs.version : '')) : '未找到解析器';
+      ps.style.color = vs && vs.present ? 'var(--ok)' : 'var(--err)';
+    } catch (err) {
+      ps.textContent = '状态未知';
+      ps.style.color = 'var(--err)';
+    }
+  }
   function setView(v) {
     state.view = v;
+    if (v === 'video') checkParserState();
     $$('.view').forEach((s) => { s.hidden = s.dataset.view !== v; });
     $$('.sb').forEach((s) => { if (s.dataset.nav !== 'main') s.classList.toggle('active', s.dataset.nav === v); });
     const view = $(`.view[data-view="${v}"]`);
@@ -1822,12 +1859,14 @@
     for (const item of items) {
       try {
         const task = await invoke('add_sniff_task', { id: item.id, saveDir });
-        upsertTask(task);
+        // 批量添加期间不逐条整表重排，循环结束后统一渲染一次。
+        upsertTask(task, true);
         ok++;
       } catch (err) {
         errors.push(sniffName(item) + '：' + ((err && err.message) || err));
       }
     }
+    if (ok) renderTasks();
     state.sniffSel.clear();
     renderSniff();
     if (ok) toast(`已加入 ${ok} 项到下载队列`);
@@ -1877,11 +1916,19 @@
   }
 
   /* ---------------- 新建下载 ---------------- */
-  function upsertTask(t) {
+  function upsertTask(t, batch) {
     if (!t || t.id == null) return;
+    const prev = state.tasks.get(t.id);
     state.tasks.set(t.id, t);
-    if (state.view === 'main') renderTasks();
-    else renderStats();
+    if (batch) return;
+    // 状态变化会影响筛选/排序与统计，必须整表重排；仅进度变化只重绘本行。
+    const structural = !prev || prev.state !== t.state;
+    if (state.view !== 'main') { renderStats(); return; }
+    if (structural) renderTasks();
+    else {
+      paintRow(rowsById.get(String(t.id)), t);
+      renderStats();
+    }
   }
   function openAddPanel() {
     $('addBar').hidden = false;
@@ -1942,7 +1989,23 @@
     }
   }
   /* ---------------- 事件绑定 ---------------- */
+  /* 自绘标题栏（decorations:false）没有系统拖拽区：
+   * 给标题栏内除按钮外的所有元素补 data-tauri-drag-region，
+   * 由 Tauri 注入脚本处理按下拖动与双击最大化。 */
+  function setupTitlebarDrag() {
+    const bar = document.querySelector('.titlebar');
+    if (!bar) return;
+    const mark = (node) => {
+      if (!node || node.nodeType !== 1) return;
+      if (node.closest('button')) return;
+      node.setAttribute('data-tauri-drag-region', '');
+      Array.from(node.children).forEach(mark);
+    };
+    mark(bar);
+  }
+
   function bindUI() {
+    setupTitlebarDrag();
     const on = (id, ev, fn) => { const node = $(id); if (node) node.addEventListener(ev, fn); };
 
     /* 窗口按钮 */
@@ -2385,11 +2448,7 @@
         if (p.state) t.state = p.state;
       });
       if (structural) renderTasks();
-      else {
-        items.forEach((p) => { const t = state.tasks.get(p.id); if (t) paintRow(rowsById.get(String(t.id)), t); });
-        renderStats();
-        if (state.detailId != null && state.tasks.has(state.detailId)) paintDetail();
-      }
+      else scheduleProgressPaint(items);
     });
     await ev.listen('fw://removed', (e) => {
       const p = e.payload || {};
@@ -2414,33 +2473,48 @@
     await ev.listen('fw://video', (e) => onVideoEvent(e.payload));
   }
 
-  let sniffPolling = false;
+  /* 轮询按“当前视图 + 是否真的需要”启停：
+   * - 嗅探列表由 fw://sniff 事件驱动，不再每 2 秒整表重建；
+   * - 引擎内存只在主界面采样；
+   * - 更新状态只在检查/下载/安装进行中才轮询。 */
+  let lastSniffStatusAt = 0;
+  let lastMemSampleAt = 0;
+  let lastUpdatePollAt = 0;
   let updatePolling = false;
+  let memPolling = false;
+  function updateBusy() {
+    const stage = state.update && state.update.stage;
+    return stage === 'checking' || stage === 'downloading' || stage === 'installing';
+  }
   function startPolling() {
     setInterval(() => {
-      if (document.hidden || sniffPolling) return;
-      sniffPolling = true;
-      refreshSniff(false).finally(() => { sniffPolling = false; });
-    }, 2000);
-    setInterval(() => {
-      if (document.hidden || updatePolling) return;
-      updatePolling = true;
-      invoke('update_status').then((u) => { if (u) renderUpdate(u); }).catch(() => {}).finally(() => { updatePolling = false; });
-    }, 1000);
-    setInterval(() => {
-      if (document.hidden || state.view !== 'sniff') return;
-      loadSniffStatus();
-      renderSniffStoreInfo();
-    }, 2000);
-    setInterval(() => {
       if (document.hidden) return;
-      invoke('engine_memory')
-        .then((bytes) => {
-          state.memBytes = Number(bytes) || null;
-          renderStats();
-        })
-        .catch(() => {});
-    }, 3000);
+      const now = Date.now();
+      if (state.view === 'sniff' && now - lastSniffStatusAt >= 5000) {
+        lastSniffStatusAt = now;
+        loadSniffStatus();
+        renderSniffStoreInfo();
+      }
+      if (state.view === 'main' && !memPolling && now - lastMemSampleAt >= 5000) {
+        lastMemSampleAt = now;
+        memPolling = true;
+        invoke('engine_memory')
+          .then((bytes) => {
+            state.memBytes = Number(bytes) || null;
+            renderStats();
+          })
+          .catch(() => {})
+          .finally(() => { memPolling = false; });
+      }
+      if (updateBusy() && !updatePolling && now - lastUpdatePollAt >= 1000) {
+        lastUpdatePollAt = now;
+        updatePolling = true;
+        invoke('update_status')
+          .then((u) => { if (u) renderUpdate(u); })
+          .catch(() => {})
+          .finally(() => { updatePolling = false; });
+      }
+    }, 250);
   }
 
   /* ---------------- 版本信息 ---------------- */
@@ -2513,6 +2587,7 @@
       return;
     }
 
+    performance.mark('fw:boot');
     try {
       const info = await invoke('app_info');
       applyInfo(info);
@@ -2541,20 +2616,11 @@
       renderSniff();
     } catch (err) { toast('读取嗅探记录失败：' + ((err && err.message) || err), 'err'); }
     loadSniffStatus();
-    try {
-      const vs = await invoke('video_status');
-      const ps = $('parserState');
-      if (ps) {
-        ps.textContent = vs && vs.present ? ('已就绪' + (vs.version ? ' · ' + vs.version : '')) : '未找到解析器';
-        ps.style.color = vs && vs.present ? 'var(--ok)' : 'var(--err)';
-      }
-    } catch (err) {
-      const ps = $('parserState');
-      if (ps) { ps.textContent = '状态未知'; ps.style.color = 'var(--err)'; }
-    }
     setView(view);
+    performance.mark('fw:data');
     listenEvents().catch((err) => toast('订阅事件失败：' + ((err && err.message) || err), 'err'));
     startPolling();
+    performance.mark('fw:ready');
     invoke('ui_ready').catch(() => {});
     if (PARAMS.has('modal')) {
       const t = Array.from(state.tasks.values()).find((x) => x.state === 'active') || Array.from(state.tasks.values())[0];

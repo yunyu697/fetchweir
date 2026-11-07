@@ -153,7 +153,8 @@ pub fn run() {
             app.manage(video::VideoHost::new());
             nm::start_ipc(app.handle().clone(), store);
             // 幂等注册宿主清单：升级后路径变化也能被浏览器找到。
-            let _ = nm::register_hosts();
+            // 放后台线程执行：注册要读写清单并查注册表，不能挡在窗口创建之前。
+            nm::register_hosts_async();
             // 单实例转发窗口由插件创建，需要在这里放行 WM_COPYDATA。
             #[cfg(windows)]
             allow_single_instance_forward(app);

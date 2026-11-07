@@ -53,6 +53,34 @@ pub fn exe_path() -> PathBuf {
     std::env::current_exe().unwrap_or_else(|_| PathBuf::from("."))
 }
 
+/// 启动子进程时一律不创建控制台窗口。
+/// 只重定向 stdio 并不能阻止 conhost 弹窗：GUI 父进程没有控制台，
+/// 子进程默认会新开一个控制台窗口（任务栏里看到的就是它）。
+/// Windows 上用 CREATE_NO_WINDOW；其它平台原样返回。
+pub fn hidden_command(program: impl AsRef<std::ffi::OsStr>) -> Command {
+    #[allow(unused_mut)]
+    let mut cmd = Command::new(program);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    cmd
+}
+
+/// tokio 版：视频解析与下载都走异步子进程，同样必须隐藏控制台。
+pub fn hidden_tokio_command(program: impl AsRef<std::ffi::OsStr>) -> tokio::process::Command {
+    #[allow(unused_mut)]
+    let mut cmd = tokio::process::Command::new(program);
+    #[cfg(windows)]
+    {
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    cmd
+}
+
 fn norm(path: &Path) -> String {
     path.to_string_lossy().replace('\\', "/").to_lowercase()
 }
@@ -214,7 +242,7 @@ pub fn request_elevation(_extra_arg: Option<&str>) -> bool {
 pub fn task_registered() -> bool {
     #[cfg(windows)]
     {
-        return Command::new("schtasks")
+        return hidden_command("schtasks")
             .args(["/Query", "/TN", TASK_NAME])
             .output()
             .map(|o| o.status.success())
@@ -228,7 +256,7 @@ pub fn run_registered() -> bool {
     #[cfg(windows)]
     {
         // 值名不是子键：必须 query 键本身再 /v 指定值名，否则永远查不到。
-        return Command::new("reg")
+        return hidden_command("reg")
             .args(["query", RUN_KEY, "/v", RUN_VALUE])
             .output()
             .map(|o| o.status.success())
@@ -236,6 +264,33 @@ pub fn run_registered() -> bool {
     }
     #[allow(unreachable_code)]
     false
+}
+
+/// 自启动注册状态查询要拉起 schtasks/reg 子进程，频繁调用会拖慢设置页。
+/// 结果缓存 15 秒：切换自启动后会主动失效。
+static AUTOSTART_CACHE: std::sync::Mutex<Option<(std::time::Instant, bool, bool)>> =
+    std::sync::Mutex::new(None);
+
+pub fn autostart_registered() -> (bool, bool) {
+    if let Ok(guard) = AUTOSTART_CACHE.lock() {
+        if let Some((at, task, run)) = *guard {
+            if at.elapsed() < std::time::Duration::from_secs(15) {
+                return (task, run);
+            }
+        }
+    }
+    let task = task_registered();
+    let run = run_registered();
+    if let Ok(mut guard) = AUTOSTART_CACHE.lock() {
+        *guard = Some((std::time::Instant::now(), task, run));
+    }
+    (task, run)
+}
+
+pub fn invalidate_autostart_cache() {
+    if let Ok(mut guard) = AUTOSTART_CACHE.lock() {
+        *guard = None;
+    }
 }
 
 /// 写 / 删自启动。管理员模式走计划任务（最高权限），普通模式走 HKCU Run。
@@ -253,7 +308,7 @@ pub fn apply_autostart(enabled: bool, admin: bool) -> Result<(), String> {
                     return Err("注册最高权限计划任务需要管理员权限".to_string());
                 }
                 let tr = format!("\"{exe_s}\"");
-                let out = Command::new("schtasks")
+                let out = hidden_command("schtasks")
                     .args([
                         "/Create", "/F", "/SC", "ONLOGON", "/RL", "HIGHEST", "/TN", TASK_NAME,
                         "/TR", &tr,
@@ -267,11 +322,11 @@ pub fn apply_autostart(enabled: bool, admin: bool) -> Result<(), String> {
                     ));
                 }
                 // 提权自启不能同时留 Run 项，否则会出现一个普通权限实例抢先启动。
-                let _ = Command::new("reg")
+                let _ = hidden_command("reg")
                     .args(["delete", RUN_KEY, "/v", RUN_VALUE, "/f"])
                     .output();
             } else {
-                let out = Command::new("reg")
+                let out = hidden_command("reg")
                     .args(["add", RUN_KEY, "/v", RUN_VALUE, "/t", "REG_SZ", "/d", &exe_s, "/f"])
                     .output()
                     .map_err(|e| e.to_string())?;
@@ -287,7 +342,7 @@ pub fn apply_autostart(enabled: bool, admin: bool) -> Result<(), String> {
                 if !is_elevated() {
                     return Err("移除最高权限计划任务需要管理员权限".to_string());
                 }
-                let out = Command::new("schtasks")
+                let out = hidden_command("schtasks")
                     .args(["/Delete", "/F", "/TN", TASK_NAME])
                     .output()
                     .map_err(|e| e.to_string())?;
@@ -298,10 +353,11 @@ pub fn apply_autostart(enabled: bool, admin: bool) -> Result<(), String> {
                     ));
                 }
             }
-            let _ = Command::new("reg")
+            let _ = hidden_command("reg")
                 .args(["delete", RUN_KEY, "/v", RUN_VALUE, "/f"])
                 .output();
         }
+        invalidate_autostart_cache();
     }
     Ok(())
 }
@@ -331,8 +387,8 @@ pub fn elevation_status(settings: &settings::Settings) -> ElevationStatus {
         elevated,
         elevation_label: if elevated { "已提权（管理员）" } else { "普通权限" }.to_string(),
         run_as_admin: settings.run_as_admin,
-        task_registered: task_registered(),
-        run_registered: run_registered(),
+        task_registered: autostart_registered().0,
+        run_registered: autostart_registered().1,
         autostart: settings.autostart,
         note: note.to_string(),
     }

@@ -20,7 +20,7 @@ pub struct AppInfo {
     pub data_dir: String,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn app_info(engine: State<'_, Arc<Engine>>) -> AppInfo {
     let settings = engine.settings.read().unwrap().clone();
     AppInfo {
@@ -31,19 +31,19 @@ pub fn app_info(engine: State<'_, Arc<Engine>>) -> AppInfo {
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn list_tasks(engine: State<'_, Arc<Engine>>) -> Vec<TaskDto> {
     engine.list()
 }
 
 /// 宿主进程当前工作集（字节）；拿不到时返回 null，前端显示「—」。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn engine_memory() -> Option<u64> {
     crate::platform::process_memory()
 }
 
 /// 把当前配置导出为 JSON 到下载目录；更新令牌属于凭据，导出时清空。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn export_settings(engine: State<'_, Arc<Engine>>) -> Result<String, String> {
     let settings = engine.settings.read().unwrap().clone();
     let dir = PathBuf::from(&settings.download_dir);
@@ -114,12 +114,12 @@ pub fn remove_task(engine: State<'_, Arc<Engine>>, id: u64, delete_file: Option<
         .map_err(|e| e.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn get_settings(engine: State<'_, Arc<Engine>>) -> Settings {
     engine.settings.read().unwrap().clone()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn save_settings(engine: State<'_, Arc<Engine>>, settings: Settings) -> Result<(), String> {
     if !settings.download_dir.trim().is_empty() {
         std::fs::create_dir_all(&settings.download_dir).map_err(|e| e.to_string())?;
@@ -134,7 +134,7 @@ pub fn save_settings(engine: State<'_, Arc<Engine>>, settings: Settings) -> Resu
 }
 
 /// 重置为默认设置（不影响已下载文件与任务列表）。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn reset_settings(engine: State<'_, Arc<Engine>>) -> Result<Settings, String> {
     let next = Settings::default();
     settings::save(&next)?;
@@ -143,26 +143,26 @@ pub fn reset_settings(engine: State<'_, Arc<Engine>>) -> Result<Settings, String
     Ok(next)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn open_data_dir() -> Result<(), String> {
     let dir = settings::ensure_data_dir();
     open_target(&dir, false)
 }
 
 /// 安装范围、安装目录与数据目录；切换范围只能重装。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn install_info() -> crate::platform::InstallInfo {
     crate::platform::install_info()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn elevation_status(engine: State<'_, Arc<Engine>>) -> crate::platform::ElevationStatus {
     crate::platform::elevation_status(&engine.settings.read().unwrap())
 }
 
 /// 开启「始终以管理员身份运行」：写入设置并尝试以管理员身份重新拉起。
 /// 返回 `relaunching = true` 时前端应予提示，当前进程随后退出。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn set_run_as_admin(engine: State<'_, Arc<Engine>>, enabled: bool) -> Result<bool, String> {
     if !cfg!(windows) {
         return Err("该选项仅在 Windows 生效".to_string());
@@ -189,7 +189,7 @@ pub fn set_run_as_admin(engine: State<'_, Arc<Engine>>, enabled: bool) -> Result
 }
 
 /// 开机自启动：管理员模式下走计划任务，普通模式写 HKCU Run。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn set_autostart(engine: State<'_, Arc<Engine>>, enabled: bool) -> Result<(), String> {
     if !cfg!(windows) {
         return Err("当前平台的自启动注册未接入，仅 Windows 生效".to_string());
@@ -205,7 +205,7 @@ fn updater(app: &AppHandle) -> Arc<Updater> {
     app.state::<Arc<Updater>>().inner().clone()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn update_status(app: AppHandle) -> UpdateDto {
     updater(&app).snapshot()
 }
@@ -215,12 +215,12 @@ pub async fn check_update(app: AppHandle) -> Result<UpdateDto, String> {
     Ok(updater(&app).check().await)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn set_update_mirror(app: AppHandle, mirror: String) -> Result<UpdateDto, String> {
     updater(&app).set_mirror(&mirror)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn download_update(app: AppHandle, mode: String) -> Result<UpdateDto, String> {
     updater(&app).start_download(&mode)
 }
@@ -230,12 +230,12 @@ pub fn cancel_update(app: AppHandle) -> UpdateDto {
     updater(&app).cancel()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn install_update(app: AppHandle) -> Result<UpdateDto, String> {
     updater(&app).install()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn open_homepage() -> Result<(), String> {
     let url = {
         let s = settings::load();
@@ -279,7 +279,7 @@ fn open_url(url: &str) -> Result<(), String> {
 
 /* ---------- 资源嗅探 ---------- */
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn list_sniff(store: State<'_, Arc<SniffStore>>) -> Vec<SniffItem> {
     store.list()
 }
@@ -294,12 +294,12 @@ pub fn remove_sniff(store: State<'_, Arc<SniffStore>>, id: String) -> bool {
     store.remove(&id)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn sniff_status() -> NmStatus {
     nm::status()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn set_sniff_tier(app: AppHandle, tier: String) -> Result<String, String> {
     if !matches!(tier.as_str(), "A" | "B" | "C") {
         return Err("档位只能是 A / B / C".to_string());
@@ -314,7 +314,7 @@ pub fn set_sniff_tier(app: AppHandle, tier: String) -> Result<String, String> {
 }
 
 /// 把嗅探项交给引擎。受保护内容在这里硬拒绝，不依赖前端按钮状态。
-#[tauri::command]
+#[tauri::command(async)]
 pub fn add_sniff_task(
     app: AppHandle,
     store: State<'_, Arc<SniffStore>>,
@@ -368,7 +368,7 @@ pub fn cancel_video(app: AppHandle, job_id: u64) -> bool {
     crate::video::cancel(&host, job_id)
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn video_status() -> serde_json::Value {
     crate::video::status()
 }

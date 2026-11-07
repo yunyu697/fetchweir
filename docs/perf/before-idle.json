@@ -1,0 +1,35 @@
+{
+  "label": "before-idle",
+  "exe": "D:\\fw-build\\fetchweir\\release\\Fetchweir.exe",
+  "at": "2026-11-07T07:35:20.061Z",
+  "load": false,
+  "coldStartMs": 19877,
+  "targetMs": 685,
+  "connectMs": 11,
+  "domReady": {
+    "ready": "complete",
+    "rows": 0,
+    "nav": 13
+  },
+  "loadInfo": null,
+  "click": {
+    "samples": 15,
+    "handlerAvgMs": 1.29,
+    "handlerMaxMs": 2.2,
+    "frameAvgMs": 29.1,
+    "frameMaxMs": 185.7
+  },
+  "idleWindowSec": 12,
+  "cpuPct": 0.35,
+  "memMb": 555.5,
+  "processCount": 7,
+  "processNames": {
+    "fetchweir": 1,
+    "msedgewebview2": 6
+  },
+  "longTasks": {
+    "count": 0,
+    "totalMs": 0,
+    "maxMs": 0
+  }
+}

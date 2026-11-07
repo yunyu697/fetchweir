@@ -119,7 +119,7 @@ pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, Str
     let exe = ytdlp_path().ok_or_else(|| "未找到视频解析器（yt-dlp sidecar）".to_string())?;
     let out = tokio::time::timeout(
         std::time::Duration::from_secs(PROBE_TIMEOUT_SECS),
-        tokio::process::Command::new(&exe)
+        crate::platform::hidden_tokio_command(&exe)
             .args(["-J", "--no-playlist", "--no-warnings", "--skip-download"])
             .arg(url)
             .stdin(Stdio::null())
@@ -298,7 +298,7 @@ fn delegate(
         id
     };
 
-    let mut child = tokio::process::Command::new(&exe)
+    let mut child = crate::platform::hidden_tokio_command(&exe)
         .arg("-f")
         .arg(format_id)
         .arg("--no-playlist")
@@ -429,21 +429,35 @@ pub fn cancel(host: &Arc<VideoHost>, job_id: u64) -> bool {
     }
 }
 
+/// 解析器版本探测要拉起 yt-dlp 子进程（冷启动 1-8 秒），
+/// 每次打开视频页都跑一次会直接卡住界面，因此按可执行文件路径缓存。
 pub fn status() -> Value {
+    static CACHE: std::sync::Mutex<Option<(PathBuf, Value)>> = std::sync::Mutex::new(None);
     let path = ytdlp_path();
+    if let Ok(guard) = CACHE.lock() {
+        if let Some((cached_path, value)) = guard.as_ref() {
+            if Some(cached_path) == path.as_ref() {
+                return value.clone();
+            }
+        }
+    }
     let version = path.as_ref().and_then(|p| {
-        std::process::Command::new(p)
+        crate::platform::hidden_command(p)
             .arg("--version")
             .output()
             .ok()
             .filter(|o| o.status.success())
             .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
     });
-    json!({
+    let value = json!({
         "present": path.is_some(),
-        "path": path.map(|p| p.to_string_lossy().to_string()),
+        "path": path.as_ref().map(|p| p.to_string_lossy().to_string()),
         "version": version,
-    })
+    });
+    if let (Some(p), Ok(mut guard)) = (path, CACHE.lock()) {
+        *guard = Some((p, value.clone()));
+    }
+    value
 }
 
 #[cfg(test)]

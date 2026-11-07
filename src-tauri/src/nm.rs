@@ -371,15 +371,35 @@ pub fn register_hosts() -> Vec<String> {
 
     let chromium_file = dir.join(format!("{HOST_NAME}.json"));
     let firefox_file = dir.join(format!("{HOST_NAME}.firefox.json"));
-    if let Ok(raw) = serde_json::to_string_pretty(&chromium) {
-        if std::fs::write(&chromium_file, raw).is_ok() {
-            log.push(format!("manifest {}", chromium_file.display()));
-        }
+    let chromium_raw = serde_json::to_string_pretty(&chromium).unwrap_or_default();
+    let firefox_raw = serde_json::to_string_pretty(&firefox).unwrap_or_default();
+
+    // 已经注册且内容一致时直接跳过：每次启动都写清单 + 拉起 6 个 reg 子进程
+    // 既拖慢冷启动，也会让任务栏闪出控制台窗口。
+    let manifest_same = std::fs::read_to_string(&chromium_file)
+        .map(|s| s == chromium_raw)
+        .unwrap_or(false)
+        && std::fs::read_to_string(&firefox_file)
+            .map(|s| s == firefox_raw)
+            .unwrap_or(false);
+    #[cfg(target_os = "windows")]
+    let registry_same = registry_value_matches(
+        &format!(r"HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts\{HOST_NAME}"),
+        chromium_file.as_path(),
+    );
+    #[cfg(not(target_os = "windows"))]
+    let registry_same = true;
+    if manifest_same && registry_same {
+        let report = "已注册：清单与注册表项均与当前路径一致，跳过重复写入";
+        let _ = std::fs::write(settings::ensure_data_dir().join("nm-register.log"), report);
+        return vec![report.to_string()];
     }
-    if let Ok(raw) = serde_json::to_string_pretty(&firefox) {
-        if std::fs::write(&firefox_file, raw).is_ok() {
-            log.push(format!("manifest {}", firefox_file.display()));
-        }
+
+    if std::fs::write(&chromium_file, &chromium_raw).is_ok() {
+        log.push(format!("manifest {}", chromium_file.display()));
+    }
+    if std::fs::write(&firefox_file, &firefox_raw).is_ok() {
+        log.push(format!("manifest {}", firefox_file.display()));
     }
 
     #[cfg(target_os = "windows")]
@@ -393,7 +413,7 @@ pub fn register_hosts() -> Vec<String> {
         ];
         for key in chromium_keys {
             let full = format!("{key}\\{HOST_NAME}");
-            match std::process::Command::new("reg")
+            match crate::platform::hidden_command("reg")
                 .args([
                     "add",
                     &full,
@@ -415,7 +435,7 @@ pub fn register_hosts() -> Vec<String> {
             }
         }
         let ff = format!(r"HKEY_CURRENT_USER\Software\Mozilla\NativeMessagingHosts\{HOST_NAME}");
-        match std::process::Command::new("reg")
+        match crate::platform::hidden_command("reg")
             .args([
                 "add",
                 &ff,
@@ -474,6 +494,29 @@ pub fn register_hosts() -> Vec<String> {
     let report = log.join("\n");
     let _ = std::fs::write(settings::ensure_data_dir().join("nm-register.log"), &report);
     log
+}
+
+/// 读取 HKCU 下宿主清单路径，判断是否已经指向本次可执行文件所在的数据目录。
+#[cfg(target_os = "windows")]
+fn registry_value_matches(key: &str, expected: &std::path::Path) -> bool {
+    let Ok(out) = crate::platform::hidden_command("reg")
+        .args(["query", key, "/ve"])
+        .output()
+    else {
+        return false;
+    };
+    if !out.status.success() {
+        return false;
+    }
+    let text = String::from_utf8_lossy(&out.stdout).to_lowercase();
+    text.contains(&expected.to_string_lossy().to_lowercase())
+}
+
+/// 后台注册：不阻塞窗口创建；内容一致时只做一次 reg query。
+pub fn register_hosts_async() {
+    tauri::async_runtime::spawn_blocking(|| {
+        let _ = register_hosts();
+    });
 }
 
 #[cfg(any(target_os = "macos", all(unix, not(target_os = "macos"))))]
