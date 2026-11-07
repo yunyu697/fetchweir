@@ -22,9 +22,10 @@ const CANCELLED: &str = "__cancelled__";
 /// 发布清单固定文件名，与同名 `.sig`（base64 Ed25519 签名）一起放在 Release 里。
 const MANIFEST_NAME: &str = "latest.json";
 /// 发布清单验签公钥（Ed25519 原始公钥，base64，32 字节）。
-/// 与它配对的私钥只存在于发布流水线的 secret（FW_SIGNING_KEY），客户端不含私钥。
-/// 首次正式发布前必须用自己的密钥替换：`node tools/New-FwSigningKey.mjs`。
-const RELEASE_PUBKEY_B64: &str = "rCIGNn+TyD8uXrd2b1+LK+K9HgaFylkNwbUOGXZUgU0=";
+/// 配对私钥只存本地 `.secrets/update-signing.pem`（已被 .gitignore 覆盖），
+/// CI 通过 secret FW_SIGNING_KEY 提供；客户端不含私钥。
+/// 公钥被编译进二进制，替换后必须重新构建发版才生效。
+const RELEASE_PUBKEY_B64: &str = "Tk+FpZg8tSODE6zqT1t/PT6iDX+KfSRMNFOewh33yLE=";
 
 pub struct MirrorDef {
     pub id: &'static str,
@@ -1259,7 +1260,7 @@ mod tests {
     fn builtin_pubkey_verifies_reference_manifest() {
         // 用与内置公钥配对的私钥对一段固定内容签名；客户端必须能验过，改一个字节必须失败。
         let msg = br#"{"version":"1.0.4","assets":[]}"#;
-        let sig = "LDDqTafhBqLIXS56b45qlsblRu7XmluCTLbupjuNnIPMIIdhLcdNgcsEwx2qnTuTkhamCfxtVm032hGMWNbfAw==";
+        let sig = "yMRXH0VLXWTisjEiKktBXH/k71bLiOxs006iUhS7mtYS9kNKFfWojsovxDAdJIJgOVCBA0VlIGi/5weavm1qCw==";
         assert!(verify_manifest(msg, sig).is_ok(), "内置公钥应能验证参考签名");
         let mut tampered = msg.to_vec();
         tampered[0] ^= 0x01;
