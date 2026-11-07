@@ -90,6 +90,11 @@ function ensurePort() {
         tier = msg.tier;
         chrome.storage.local.set({ tier }).catch(() => {});
         broadcastConfig();
+      } else if (typeof msg.tier === 'string' && 'ABC'.includes(msg.tier) && msg.tier !== tier) {
+        // 桌面端把档位随每次应答带回，这里跟随，保持两端一致。
+        tier = msg.tier;
+        chrome.storage.local.set({ tier }).catch(() => {});
+        broadcastConfig();
       }
     });
     port.onDisconnect.addListener(() => {
@@ -134,7 +139,7 @@ function record(tabId, item) {
   bag.set(key, item);
   updateBadge(tabId);
   scheduleSend();
-  if (tier === 'A') broadcastTab(tabId);
+  if (tier === 'A' || tier === 'B') broadcastTab(tabId);
 }
 
 function scheduleSend() {
@@ -248,8 +253,8 @@ function broadcastTab(tabId) {
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   if (!msg || typeof msg !== 'object') return;
   if (msg.type === 'fw:hello') {
-    // 内容脚本上报页面里直接可见的媒体元素（补充网络层信号）
-    if (sender.tab && msg.items && msg.items.length) {
+    // 档位 A 才把 DOM 媒体信号并入候选；B 只信顶层网络层，C 仅徽标。
+    if (tier === 'A' && sender.tab && msg.items && msg.items.length) {
       for (const it of msg.items.slice(0, 8)) {
         const mime = it.mime || 'video/mp4';
         record(sender.tab.id, {

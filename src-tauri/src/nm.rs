@@ -385,11 +385,11 @@ pub fn register_hosts() -> Vec<String> {
     #[cfg(target_os = "windows")]
     {
         let chromium_keys = [
-            r"Software\Google\Chrome\NativeMessagingHosts",
-            r"Software\Chromium\NativeMessagingHosts",
-            r"Software\Microsoft\Edge\NativeMessagingHosts",
-            r"Software\BraveSoftware\Brave-Browser\NativeMessagingHosts",
-            r"Software\Vivaldi\NativeMessagingHosts",
+            r"HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts",
+            r"HKEY_CURRENT_USER\Software\Chromium\NativeMessagingHosts",
+            r"HKEY_CURRENT_USER\Software\Microsoft\Edge\NativeMessagingHosts",
+            r"HKEY_CURRENT_USER\Software\BraveSoftware\Brave-Browser\NativeMessagingHosts",
+            r"HKEY_CURRENT_USER\Software\Vivaldi\NativeMessagingHosts",
         ];
         for key in chromium_keys {
             let full = format!("{key}\\{HOST_NAME}");
@@ -414,7 +414,7 @@ pub fn register_hosts() -> Vec<String> {
                 Err(e) => log.push(format!("registry {full} 失败：{e}")),
             }
         }
-        let ff = format!(r"Software\Mozilla\NativeMessagingHosts\{HOST_NAME}");
+        let ff = format!(r"HKEY_CURRENT_USER\Software\Mozilla\NativeMessagingHosts\{HOST_NAME}");
         match std::process::Command::new("reg")
             .args([
                 "add",

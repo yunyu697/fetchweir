@@ -120,13 +120,22 @@ try {
 
   const reg = path.join(DATA, 'nm-register.log');
   const lines = fs.existsSync(reg) ? fs.readFileSync(reg, 'utf8').trim().split('\n') : [];
-  const registry = lines.filter((l) => l.startsWith('registry ')).length;
+  // 失败行也以 registry 开头，必须排除，否则失败会被记成通过。
+  const registry = lines.filter((l) => l.startsWith('registry ') && !l.includes('失败')).length;
   const manifests = lines.filter((l) => l.startsWith('manifest ')).length;
   if (manifests >= 2) ok('宿主清单写入', `${manifests} 个清单文件`);
   else bad('宿主清单写入', JSON.stringify(lines));
   if (process.platform === 'win32') {
     if (registry >= 6) ok('Windows 注册表注册', `${registry} 个键`);
     else bad('Windows 注册表注册', `${registry} 个键，日志=${JSON.stringify(lines)}`);
+  } else {
+    // 非 Windows 没有注册表概念：检查用户目录清单可读
+    const home = os.homedir();
+    const edge = path.join(home, 'Library/Application Support/Microsoft Edge/NativeMessagingHosts');
+    const linux = path.join(home, '.config/microsoft-edge/NativeMessagingHosts');
+    const dir = fs.existsSync(edge) ? edge : linux;
+    if (fs.existsSync(path.join(dir, 'dev.fetchweir.nmh.json'))) ok('用户目录清单', path.join(dir, 'dev.fetchweir.nmh.json'));
+    else bad('用户目录清单', path.join(dir, 'dev.fetchweir.nmh.json'));
   }
 
   host = spawn(EXE, ['--nm-host'], { stdio: ['pipe', 'pipe', 'ignore'], windowsHide: true });

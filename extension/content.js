@@ -3,7 +3,7 @@
 (() => {
   'use strict';
   if (window.top !== window) {
-    // 子帧：只上报 DOM 里直接可见的媒体元素，不渲染浮动条。
+    // 子帧：只上报 DOM 里直接可见的媒体元素；是否采信由后台按档位决定。
     reportDomMedia();
     return;
   }

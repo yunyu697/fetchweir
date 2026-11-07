@@ -67,7 +67,12 @@ fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
 
 pub fn run() {
     // Native Messaging 宿主模式：浏览器按 stdio 帧直接驱动本二进制。
-    if std::env::args().any(|a| a == "--nm-host") {
+    // Chromium 启动宿主时只会把扩展的 origin 作为首个参数传进来（没有自定义参数位），
+    // 所以除了手动调试用的 --nm-host，还要认 chrome-extension:// / moz-extension:// 形式。
+    let host_mode = std::env::args().skip(1).any(|a| {
+        a == "--nm-host" || a.starts_with("chrome-extension://") || a.starts_with("moz-extension://")
+    });
+    if host_mode {
         nm::run_host();
     }
 
