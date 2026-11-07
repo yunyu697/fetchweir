@@ -24,7 +24,8 @@ const MANIFEST_NAME: &str = "latest.json";
 /// 发布清单验签公钥（Ed25519 原始公钥，base64，32 字节）。
 /// 配对私钥只存本地 `.secrets/update-signing.pem`（已被 .gitignore 覆盖），
 /// CI 通过 secret FW_SIGNING_KEY 提供；客户端不含私钥。
-/// 公钥被编译进二进制，替换后必须重新构建发版才生效。
+/// 这把密钥固定使用，不随发版更换；`tools/Sign-FwManifest.mjs` 会校验私钥与它是否配对，
+/// 不配对直接拒绝签名。换钥必须先发布带新公钥的版本，见 docs/更新机制.md。
 const RELEASE_PUBKEY_B64: &str = "Tk+FpZg8tSODE6zqT1t/PT6iDX+KfSRMNFOewh33yLE=";
 
 pub struct MirrorDef {

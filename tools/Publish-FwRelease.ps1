@@ -91,8 +91,12 @@ $manifestJson = $manifest | ConvertTo-Json -Depth 8
 
 $sigPath = "$manifestPath.sig"
 if (-not [string]::IsNullOrWhiteSpace($env:FW_SIGNING_KEY)) {
+  # 签名脚本会校验「私钥推导出的公钥」与内置 RELEASE_PUBKEY_B64 是否一致；
+  # 不一致直接失败。这里不会、也不允许在发版流程中生成新密钥。
   node ./tools/Sign-FwManifest.mjs --in $manifestPath --out $sigPath
-  if ($LASTEXITCODE -ne 0) { throw '清单签名失败' }
+  if ($LASTEXITCODE -ne 0) {
+    throw '清单签名失败：私钥与客户端内置公钥可能不一致（发布密钥固定，不会自动换钥；见 docs/更新机制.md）'
+  }
 } elseif ($FwDryRun) {
   Write-Host '（dry-run）未提供 FW_SIGNING_KEY，跳过签名'
 } else {
