@@ -90,6 +90,25 @@ pub fn run() {
     }
 
     tauri::Builder::default()
+        // 必须是第一个注册的插件：先拿单实例锁，再初始化窗口与托盘。
+        // 第二个实例把 argv 转发过来后自行退出，回调里把已有窗口唤到前台。
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            show_main(app);
+            // 诊断钩子：验证转发确实到达第一个实例（CI / 无界面测试用）。
+            if std::env::var("FW_SINGLE_PROBE").is_ok() {
+                let body = serde_json::json!({
+                    "receivedAt": std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|d| d.as_millis() as u64)
+                        .unwrap_or(0),
+                    "argv": argv,
+                });
+                let _ = std::fs::write(
+                    settings::ensure_data_dir().join("single-instance-probe.json"),
+                    serde_json::to_string_pretty(&body).unwrap_or_else(|_| "{}".to_string()),
+                );
+            }
+        }))
         .setup(|app| {
             let settings = settings::load();
             let handle = app.handle().clone();
