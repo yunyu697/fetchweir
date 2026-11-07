@@ -21,8 +21,8 @@ jobs:
           - os: ubuntu-22.04
             label: linux-x64
             bundles: deb,appimage
-          - os: macos-14
-            label: macos-arm64
+          - os: macos-latest
+            label: macos
             bundles: dmg
     runs-on: ${{ matrix.os }}
     steps:
@@ -65,7 +65,7 @@ jobs:
 
             · Windows: NSIS 安装包
             · Linux: deb / AppImage
-            · macOS: dmg（arm64）
+            · macOS: dmg
 
             更新说明与变更记录见仓库提交历史。
           releaseDraft: false
