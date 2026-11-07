@@ -3,10 +3,11 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use serde::Serialize;
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 
 use crate::engine::{Engine, TaskDto};
 use crate::settings::{self, Settings};
+use crate::update::{UpdateDto, Updater};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -80,10 +81,89 @@ pub fn save_settings(engine: State<'_, Arc<Engine>>, settings: Settings) -> Resu
     if !settings.download_dir.trim().is_empty() {
         std::fs::create_dir_all(&settings.download_dir).map_err(|e| e.to_string())?;
     }
-    settings::save(&settings)?;
-    engine.pacer.set_bps(settings.global_limit_bps);
-    *engine.settings.write().unwrap() = settings;
+    let mut next = settings;
+    // 镜像由 set_update_mirror 独占维护，避免普通保存把用户选择重置回默认。
+    next.update_mirror = engine.settings.read().unwrap().update_mirror.clone();
+    settings::save(&next)?;
+    engine.pacer.set_bps(next.global_limit_bps);
+    *engine.settings.write().unwrap() = next;
     Ok(())
+}
+
+fn updater(app: &AppHandle) -> Arc<Updater> {
+    app.state::<Arc<Updater>>().inner().clone()
+}
+
+#[tauri::command]
+pub fn update_status(app: AppHandle) -> UpdateDto {
+    updater(&app).snapshot()
+}
+
+#[tauri::command]
+pub async fn check_update(app: AppHandle) -> Result<UpdateDto, String> {
+    Ok(updater(&app).check().await)
+}
+
+#[tauri::command]
+pub fn set_update_mirror(app: AppHandle, mirror: String) -> Result<UpdateDto, String> {
+    updater(&app).set_mirror(&mirror)
+}
+
+#[tauri::command]
+pub fn download_update(app: AppHandle, mode: String) -> Result<UpdateDto, String> {
+    updater(&app).start_download(&mode)
+}
+
+#[tauri::command]
+pub fn cancel_update(app: AppHandle) -> UpdateDto {
+    updater(&app).cancel()
+}
+
+#[tauri::command]
+pub fn install_update(app: AppHandle) -> Result<UpdateDto, String> {
+    updater(&app).install()
+}
+
+#[tauri::command]
+pub fn open_homepage() -> Result<(), String> {
+    let url = {
+        let s = settings::load();
+        if s.homepage.trim().is_empty() {
+            "https://github.com/yunyu697/fetchweir".to_string()
+        } else {
+            s.homepage.trim().to_string()
+        }
+    };
+    open_url(&url)
+}
+
+fn open_url(url: &str) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("explorer.exe")
+            .arg(url)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(url)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+
+    #[allow(unreachable_code)]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(url)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+        Ok(())
+    }
 }
 
 /// 前端启动完成的探针：写标记文件，供无头冒烟测试判断 WebView 已加载且 IPC 可用。

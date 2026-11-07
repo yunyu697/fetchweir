@@ -23,6 +23,8 @@
 
 11. **命名**：原名 **Hydra** 与已存在的跨平台下载管理器 **ja7ad/hydra**（Rust · Windows/macOS/Linux + 浏览器扩展 + CLI）重名，需更名；核查后建议 **Fetchweir**（详见 §11）。界面稿已同步替换。
 
+12. **更新器**：常驻"检查更新 / 打开主页"，发现新版本再出现"更新 / 仅下载"，两种方式都支持加速镜像并可手动切换；Pathleap 的更新模块尚标注 M3 未实现，无可复用代码，规格见 §12，已实现状态与实测数据见 §12.6。
+
 **明确不做**：不内置站点白名单式"破解"逻辑、不代管账号 Cookie 云端同步、不做 P2P/吸血、不做"绕过验证码"；**也不做任何 DRM/付费墙/访问控制的绕过，包括不对外发布的私有版本**（理由与法律依据见 §8.1）。
 
 ---
@@ -551,6 +553,79 @@ queued → resolving(视频/清单) → connecting → downloading → postproce
 | 「对标某某」 | 「对标主流同类产品」 |
 
 界面文案同理：只说"下载管理器""同类工具"，不点名。代码注释与提交信息一并遵守。
+
+---
+
+## 12. 更新器规格（对齐 Pathleap 的交互基准）
+
+### 12.1 参考结论：Pathleap 没有可复用的更新器实现
+
+`yunyu697/pathleap`（private，默认分支 main）是 .NET/WPF 的 M1 骨架。**可以借鉴的**已落地：版本号单一来源与硬校验规则、tag `v` 前缀、CI 在 tag 触发打包；这些已在本仓库照搬（`version.json` + `tools/Test-FwVersion.ps1` + `.github/workflows/release.yml`）。
+
+**不可借鉴的**：其仓库与文档中更新模块标注为 **M3（未实现）**，没有更新器、镜像配置与状态机的代码可读。因此本节按用户给定的交互规格自行落地，**不存在"两边行为不一致"的可比对象**，后续 Pathleap 若实现更新器需要反过来对齐本节。
+
+### 12.2 常驻与条件按钮
+
+| 条件 | 可见按钮 |
+| --- | --- |
+| 常态 | **检查更新**、**打开主页** |
+| 检测到新版本 | 追加 **更新**、**仅下载**，并显示：版本号、更新说明、镜像选择下拉 |
+| 仅下载完成 | 该区域改为 **安装**、**打开下载目录** |
+
+- **更新** = 自动下载 → 安装 → 重启。
+- **仅下载** = 下载到系统默认下载目录，不安装；下载完成后按钮组切换为"安装 / 打开下载目录"。
+- 两种方式都走加速镜像，且允许用户手动切换；切换即时生效并记忆选择。
+
+### 12.3 状态机
+
+```
+idle ──检查更新──► checking ──┬─► up-to-date（显示"已是最新"）
+                              └─► update-available（显示版本号/说明/镜像下拉 + 更新/仅下载）
+update-available ──更新──────► downloading ──► verifying ──► installing ──► restarting
+update-available ──仅下载────► downloading ──► downloaded(external) ──► 安装 / 打开下载目录
+downloading ──失败──► download-failed（可重试，保留镜像切换）
+任何状态 ──取消──► idle（已下载字节可续）
+```
+
+- 预发布版本（`-alphaN`）之间按 semver 预发布顺序比较，`alpha10 > alpha9`，`1.0.0 > 1.0.0-alphaN`。
+- 检查更新只读自有仓库 Releases（`api.github.com/repos/yunyu697/fetchweir/releases`），**不执行从任意 URL 拉来的安装包**。
+- 资源匹配按平台后缀：Windows `*-setup.exe`（NSIS）、macOS `*.dmg`、Linux `*.AppImage` / `*.deb`。
+
+### 12.4 镜像策略
+
+- 默认直连 GitHub；内置若干只做**前缀转发**的加速镜像（不改变资源内容），由用户在下拉中切换。
+- 镜像不可用时自动回退到下一个候选，全部失败再提示"切换镜像或稍后重试"，不静默失败。
+- 下载完成后校验 `Content-Length` 与实际字节数一致；正式版启用签名校验（见 §12.5）前，至少校验文件名与平台匹配。
+
+### 12.5 分平台安装
+
+| 平台 | "更新"的行为 | 说明 |
+| --- | --- | --- |
+| Windows | 静默运行 NSIS 安装包后退出主程序 | 安装包统一为当前用户安装，避免 UAC 反复弹窗 |
+| macOS | 打开 dmg 引导用户完成，随后退出 | 无公证前不做静默替换；正式发布补签名与公证 |
+| Linux | 打开 AppImage / 提示用包管理器安装 deb | 与 §10 的分发结论一致 |
+
+### 12.6 实现状态（v1.0.0-alpha2 开发线）
+
+已落地：`src-tauri/src/update.rs` + 设置页「更新」卡片。行为与 §12.2–12.5 对齐，差异点单列。
+
+- **检查**：只读 `api.github.com/repos/{updateRepo}/releases`，草稿跳过；按平台后缀挑包（Windows `*-setup.exe`、macOS `*.dmg`、Linux `*.AppImage` 优先、`*.deb` 兜底）。预发布按 semver 预发布序比较：`alpha10 > alpha9`，`1.0.0 > 1.0.0-alphaN`。
+- **私有仓库**：仓库当前为 private，需在设置里填「访问令牌」，或设置环境变量 `FETCHWEIR_GITHUB_TOKEN`。未配置令牌时返回明确原因，不静默失败。
+- **镜像**：内置 GitHub 直连 / ghfast.top / gh-proxy.com 三个**前缀转发**镜像，下拉切换即时保存；公开仓库下载按「所选镜像 → 其余镜像」顺序自动回退，全部失败才报错。私有仓库的资源只能走带令牌的 API 端点，镜像不参与（代理无法携带鉴权）。
+- **下载**：`.part` 断点续传（取消后保留已下载字节）；`Content-Length` 与落盘字节数一致才判定成功。「仅下载」落到系统默认下载目录，「更新」落到数据目录 `updates/`。
+- **安装**：Windows 走 NSIS `/S` 静默安装，由独立 PowerShell 等待安装完成后再拉起新版本；macOS 打开 dmg 后退出；Linux 给 AppImage 赋可执行位后启动，deb 打开所在目录交给系统安装。
+- **与规格的差异**：取消后状态回到 `updateAvailable`（保留断点），而不是规格里的 `idle`；这样按钮组不会消失，用户可直接续传。
+
+**本机实测（Windows，2026-11-07，全部后台/无界面运行）**
+
+| 场景 | 触发方式 | 结果 |
+|---|---|---|
+| 私有仓库带令牌检查 | `FW_UPDATE_PROBE=1` | `stage=upToDate`，识别 alpha2 与四个平台产物 |
+| 私有仓库无令牌检查 | `FW_UPDATE_PROBE=1` | `stage=failed`，提示「更新源不可访问……请填写访问令牌」 |
+| 「仅下载」完整链路 | 版本临时置 alpha0 + `FW_UPDATE_FETCH=1` | `stage=downloaded`，1385827 字节与 `assetSize` 完全一致，落点 `%USERPROFILE%\Downloads` |
+| 版本比较 / 镜像顺序 / 文件名净化 | `cargo test` | 6 个单测通过 |
+
+**尚未覆盖**：正式版签名校验（发布前补）、macOS dmg 与 Linux AppImage 的安装动作仅有代码路径（本机无对应环境）。
 
 ---
 

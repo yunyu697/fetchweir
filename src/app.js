@@ -14,6 +14,7 @@
     detailId: null,
     settings: null,
     info: { version: '—', platform: '—', downloadDir: '', dataDir: '' },
+    update: null,
   };
 
   /* ---------- 格式化 ---------- */
@@ -317,7 +318,102 @@
     $('setDir').value = s.downloadDir || '';
     $('setConns').value = String(s.connections ?? 8);
     $('setLimit').value = String(Math.round((s.globalLimitBps || 0) / 1024));
+    $('setUpdateRepo').value = s.updateRepo || 'yunyu697/fetchweir';
+    $('setUpdateToken').value = s.updateToken || '';
+    $('setHomepage').value = s.homepage || '';
     applyTheme(s.theme);
+  }
+
+  /* ---------- 更新器 ---------- */
+  const UPDATE_STAGE_TEXT = {
+    checking: '正在检查…',
+    upToDate: '已是最新',
+    updateAvailable: '发现新版本',
+    downloading: '正在下载更新包',
+    downloaded: '已下载完成',
+    installing: '正在安装',
+    failed: '更新失败',
+  };
+
+  function renderUpdate(u) {
+    if (!u) return;
+    state.update = u;
+    const hasLatest = !!u.latestVersion;
+    const failedCheck = u.stage === 'failed' && !hasLatest;
+
+    $('updatePanel').hidden = !hasLatest;
+    $('updateHint').classList.toggle('err-color', failedCheck);
+    let hint;
+    if (failedCheck) hint = u.message || '检查更新失败';
+    else if (u.stage === 'upToDate' && hasLatest) hint = `已是最新（v${u.latestVersion}）`;
+    else hint = UPDATE_STAGE_TEXT[u.stage] || '';
+    $('updateHint').textContent = hint;
+
+    if (hasLatest) {
+      $('updateVersion').textContent = `v${u.latestVersion}`;
+      $('updateDate').textContent = u.publishedAt ? fmtTime(Date.parse(u.publishedAt)) : '';
+      $('updateNotes').textContent = u.notes || '';
+    }
+
+    // 镜像下拉：只在选项集合或选中项变化时重建，避免高频进度事件打断展开状态。
+    const sig = `${(u.mirrors || []).map((m) => m.id).join(',')}|${u.mirror}`;
+    const sel = $('updateMirror');
+    if (sel.dataset.sig !== sig) {
+      sel.textContent = '';
+      (u.mirrors || []).forEach((m) => {
+        const o = document.createElement('option');
+        o.value = m.id;
+        o.textContent = m.label;
+        sel.appendChild(o);
+      });
+      sel.value = u.mirror;
+      sel.dataset.sig = sig;
+    }
+
+    const busy = u.stage === 'downloading' || u.stage === 'installing';
+    const canInstall = !!u.canInstall && !busy;
+    $('updateMainActions').hidden = canInstall;
+    $('updateDoneActions').hidden = !canInstall;
+    $('btnCheckUpdate').disabled = busy || u.stage === 'checking';
+    $('btnUpdateNow').disabled = busy;
+    $('btnDownloadOnly').disabled = busy;
+    $('btnInstall').disabled = busy;
+    $('updateMirror').disabled = busy;
+    $('btnCancelUpdate').hidden = u.stage !== 'downloading';
+
+    const showProgress = u.stage === 'downloading' || (u.downloaded > 0 && !canInstall);
+    $('updateProgressWrap').hidden = !showProgress;
+    if (showProgress) {
+      const pct = Math.max(0, Math.min(100, u.progress || 0));
+      $('updateFill').style.width = `${pct.toFixed(1)}%`;
+      $('updateStatusText').textContent = u.stage === 'downloading'
+        ? `正在下载 · ${pct.toFixed(0)}%`
+        : `已下载 ${fmtBytes(u.downloaded)}，可继续`;
+      $('updateBytes').textContent = u.total ? `${fmtBytes(u.downloaded)} / ${fmtBytes(u.total)}` : fmtBytes(u.downloaded);
+    }
+
+    const showMsg = !!u.message && u.stage !== 'downloading';
+    $('updateMsg').hidden = !showMsg;
+    $('updateMsg').textContent = showMsg ? u.message : '';
+    $('updateMsg').classList.toggle('err', u.stage === 'failed');
+  }
+
+  async function checkUpdate() {
+    if (!IS_TAURI) return;
+    try {
+      renderUpdate(await invoke('check_update'));
+    } catch (e) {
+      toast(String(e));
+    }
+  }
+
+  async function startUpdate(mode) {
+    if (!IS_TAURI) return;
+    try {
+      renderUpdate(await invoke('download_update', { mode }));
+    } catch (e) {
+      toast(String(e));
+    }
   }
 
   async function saveSettings() {
@@ -327,6 +423,10 @@
       connections: Math.max(1, Math.min(16, Number($('setConns').value) || 8)),
       globalLimitBps: Math.max(0, Number($('setLimit').value) || 0) * 1024,
       theme: document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
+      updateRepo: $('setUpdateRepo').value.trim() || 'yunyu697/fetchweir',
+      updateToken: $('setUpdateToken').value.trim(),
+      updateMirror: state.settings.updateMirror || 'github',
+      homepage: $('setHomepage').value.trim() || 'https://github.com/yunyu697/fetchweir',
     };
     try {
       await invoke('save_settings', { settings: next });
@@ -383,6 +483,31 @@
       if (dir) doReveal(dir);
     });
     $('btnSaveSettings').addEventListener('click', saveSettings);
+    $('btnCheckUpdate').addEventListener('click', checkUpdate);
+    $('btnOpenHome').addEventListener('click', async () => {
+      if (!IS_TAURI) return;
+      try { await invoke('open_homepage'); } catch (e) { toast(String(e)); }
+    });
+    $('btnUpdateNow').addEventListener('click', () => startUpdate('install'));
+    $('btnDownloadOnly').addEventListener('click', () => startUpdate('only'));
+    $('btnCancelUpdate').addEventListener('click', async () => {
+      if (!IS_TAURI) return;
+      try { renderUpdate(await invoke('cancel_update')); } catch (e) { toast(String(e)); }
+    });
+    $('btnInstall').addEventListener('click', async () => {
+      if (!IS_TAURI) return;
+      try { renderUpdate(await invoke('install_update')); } catch (e) { toast(String(e)); }
+    });
+    $('btnOpenDownloads').addEventListener('click', () => {
+      const dir = state.update && state.update.downloadDir;
+      if (dir) doReveal(dir);
+    });
+    $('updateMirror').addEventListener('change', async () => {
+      if (!IS_TAURI) return;
+      try {
+        renderUpdate(await invoke('set_update_mirror', { mirror: $('updateMirror').value }));
+      } catch (e) { toast(String(e)); }
+    });
     $('btnRevealDir').addEventListener('click', () => {
       const dir = $('setDir').value.trim();
       if (dir) doReveal(dir);
@@ -411,6 +536,8 @@
         state.info = await invoke('app_info');
         state.settings = await invoke('get_settings');
         renderSettings();
+        state.update = await invoke('update_status');
+        renderUpdate(state.update);
         const version = `v${state.info.version}`;
         $('versionPill').textContent = version;
         $('statusVersion').textContent = version;
@@ -437,6 +564,7 @@
             upsert(t, false);
           });
         });
+        await window.__TAURI__.event.listen('fw://update', (e) => renderUpdate(e.payload));
 
         await invoke('ui_ready');
       } catch (e) {
@@ -453,8 +581,40 @@
         { id: 3, url: 'https://example.com/tools.zip', fileName: 'fetchweir-1.0.0.zip', savePath: 'C:/Downloads/fetchweir-1.0.0.zip', totalBytes: 24e6, doneBytes: 24e6, speedBps: 0, state: 'completed', connections: 4, supportsRanges: true, createdAt: Date.now() - 86400000 },
       ];
       demo.forEach((t) => state.tasks.set(t.id, t));
-      state.settings = { downloadDir: 'C:/Users/Public/Downloads', connections: 8, globalLimitBps: 0, theme: 'dark' };
+      state.settings = {
+        downloadDir: 'C:/Users/Public/Downloads',
+        connections: 8,
+        globalLimitBps: 0,
+        theme: 'dark',
+        updateRepo: 'yunyu697/fetchweir',
+        updateToken: '',
+        updateMirror: 'ghfast',
+        homepage: 'https://github.com/yunyu697/fetchweir',
+      };
+      state.update = {
+        stage: 'updateAvailable',
+        currentVersion: '1.0.0-alpha2',
+        latestVersion: '1.0.0-alpha3',
+        notes: '本次更新：\n· 修复暂停后立即继续时偶发的文件名回退\n· 新增下载完成后的校验提示\n· 提高多任务并发时的进度合并频率稳定性',
+        publishedAt: '2026-11-06T09:12:00Z',
+        assetName: 'Fetchweir_1.0.0-alpha3_x64-setup.exe',
+        assetSize: 1.4e6,
+        mirrors: [
+          { id: 'github', label: 'GitHub 直连' },
+          { id: 'ghfast', label: '加速镜像 ghfast.top' },
+          { id: 'ghproxy', label: '加速镜像 gh-proxy.com' },
+        ],
+        mirror: 'ghfast',
+        progress: 0,
+        downloaded: 0,
+        total: 1.4e6,
+        path: null,
+        message: null,
+        canInstall: false,
+        downloadDir: 'C:/Users/Tyler/Downloads',
+      };
       renderSettings();
+      renderUpdate(state.update);
       $('versionPill').textContent = 'v1.0.0-alpha1';
       $('statusVersion').textContent = 'v1.0.0-alpha1';
       $('setVersion').textContent = 'v1.0.0-alpha1';

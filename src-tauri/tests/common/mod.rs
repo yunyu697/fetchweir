@@ -151,6 +151,7 @@ fn engine_for(dir: &PathBuf) -> Arc<Engine> {
         connections: 8,
         global_limit_bps: 0,
         theme: "dark".into(),
+        ..Settings::default()
     };
     Engine::with_events(Arc::new(SilentEvents), settings)
 }

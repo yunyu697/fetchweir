@@ -24,6 +24,13 @@ fn default_download_dir() -> String {
         .to_string()
 }
 
+/// 系统默认下载目录，「仅下载」与普通下载的默认落点。
+pub fn system_download_dir() -> PathBuf {
+    dirs::download_dir()
+        .or_else(dirs::home_dir)
+        .unwrap_or_else(|| PathBuf::from("."))
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct Settings {
@@ -31,6 +38,13 @@ pub struct Settings {
     pub connections: u32,
     pub global_limit_bps: u64,
     pub theme: String,
+    /// 更新源仓库（owner/name）。默认指向自有仓库，替换为公开镜像仓库也可。
+    pub update_repo: String,
+    /// 私有仓库的读取令牌；为空时回退到 FETCHWEIR_GITHUB_TOKEN 环境变量。
+    pub update_token: String,
+    /// 更新下载镜像 id（见 update::MIRRORS）。
+    pub update_mirror: String,
+    pub homepage: String,
 }
 
 impl Default for Settings {
@@ -40,6 +54,10 @@ impl Default for Settings {
             connections: 8,
             global_limit_bps: 0,
             theme: "dark".to_string(),
+            update_repo: "yunyu697/fetchweir".to_string(),
+            update_token: String::new(),
+            update_mirror: "github".to_string(),
+            homepage: "https://github.com/yunyu697/fetchweir".to_string(),
         }
     }
 }

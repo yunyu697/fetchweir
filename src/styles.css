@@ -235,6 +235,38 @@ body{
 .path-row{display:flex;gap:8px;width:100%}
 .path-row .field{flex:1}
 
+/* ============ 更新卡片 ============ */
+.span-all{grid-column:1/-1}
+.update-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.update-bar .dim{margin-left:2px}
+.update-panel{
+  margin-top:12px;padding:12px 13px;border:1px solid var(--line-2);border-radius:var(--r-sm);
+  background:var(--panel-2);display:flex;flex-direction:column;gap:10px;
+}
+.update-panel[hidden]{display:none}
+.update-head{display:flex;align-items:baseline;gap:10px}
+.update-ver{font-size:13px;font-weight:650;color:var(--accent)}
+.update-notes{
+  font-size:11.5px;color:var(--fg-2);line-height:1.65;white-space:pre-wrap;
+  max-height:132px;overflow-y:auto;padding-right:4px;
+}
+.update-mirror-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.update-mirror-row .lbl{font-size:12px;color:var(--fg-2)}
+.select-wrap{width:220px}
+.select-wrap select{
+  border:0;background:transparent;outline:0;color:var(--fg);width:100%;
+  font:400 12.5px var(--font);cursor:pointer;
+}
+.select-wrap select option{background:var(--panel);color:var(--fg)}
+.update-progress{display:flex;flex-direction:column;gap:6px}
+.update-line{display:flex;justify-content:space-between;font-size:11px;color:var(--fg-3)}
+.update-actions{display:flex;align-items:center;gap:8px}
+.update-actions[hidden]{display:none}
+.update-msg{font-size:11.5px;line-height:1.6;color:var(--fg-2);word-break:break-all}
+.update-msg.err{color:var(--err)}
+.update-msg[hidden]{display:none}
+.err-color{color:var(--err)}
+
 /* ============ 详情弹窗 ============ */
 .overlay{
   position:fixed;inset:0;background:rgba(6,8,12,.55);backdrop-filter:blur(2px);
