@@ -18,15 +18,22 @@ jobs:
           - os: windows-latest
             label: windows-x64
             bundles: nsis
+            triple: x86_64-pc-windows-msvc
           - os: ubuntu-22.04
             label: linux-x64
             bundles: deb,appimage
+            triple: x86_64-unknown-linux-gnu
           - os: macos-latest
             label: macos
             bundles: dmg
+            triple: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: 同步视频解析器 sidecar
+        shell: pwsh
+        run: ./tools/Sync-FwYtdlp.ps1 -FwTriple ${{ matrix.triple }}
 
       - name: 校验 tag 与版本号
         shell: pwsh

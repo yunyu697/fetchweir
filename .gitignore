@@ -10,6 +10,8 @@ dist/
 *.fwstate.json
 .screenshots/
 .trae-html-share-packages/
+# 视频解析器 sidecar（体积大，按目标平台下载，不入库）
+/src-tauri/binaries/
 
 # 系统文件
 .DS_Store

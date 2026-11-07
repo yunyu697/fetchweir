@@ -23,9 +23,20 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-22.04, macos-latest]
+        include:
+          - os: windows-latest
+            triple: x86_64-pc-windows-msvc
+          - os: ubuntu-22.04
+            triple: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            triple: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: 同步视频解析器 sidecar
+        shell: pwsh
+        run: ./tools/Sync-FwYtdlp.ps1 -FwTriple ${{ matrix.triple }}
 
       - name: 安装 Linux 系统依赖
         if: matrix.os == 'ubuntu-22.04'

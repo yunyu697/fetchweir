@@ -92,6 +92,22 @@ pub fn save_settings(engine: State<'_, Arc<Engine>>, settings: Settings) -> Resu
     Ok(())
 }
 
+/// 重置为默认设置（不影响已下载文件与任务列表）。
+#[tauri::command]
+pub fn reset_settings(engine: State<'_, Arc<Engine>>) -> Result<Settings, String> {
+    let next = Settings::default();
+    settings::save(&next)?;
+    engine.pacer.set_bps(next.global_limit_bps);
+    *engine.settings.write().unwrap() = next.clone();
+    Ok(next)
+}
+
+#[tauri::command]
+pub fn open_data_dir() -> Result<(), String> {
+    let dir = settings::ensure_data_dir();
+    open_target(&dir, false)
+}
+
 fn updater(app: &AppHandle) -> Arc<Updater> {
     app.state::<Arc<Updater>>().inner().clone()
 }
@@ -229,6 +245,39 @@ pub fn add_sniff_task(
     engine
         .add_with_headers(item.url, save_dir, None, None, true, headers)
         .map_err(|e| e.to_string())
+}
+
+/* ---------- 视频解析 ---------- */
+
+#[tauri::command]
+pub async fn probe_video(
+    app: AppHandle,
+    url: String,
+) -> Result<crate::video::VideoInfoDto, String> {
+    let host = app.state::<std::sync::Arc<crate::video::VideoHost>>().inner().clone();
+    crate::video::probe(&host, &url).await
+}
+
+#[tauri::command]
+pub fn add_video_task(
+    app: AppHandle,
+    url: String,
+    format_id: String,
+    save_dir: Option<String>,
+) -> Result<serde_json::Value, String> {
+    let host = app.state::<std::sync::Arc<crate::video::VideoHost>>().inner().clone();
+    crate::video::download(&app, &host, &url, &format_id, save_dir)
+}
+
+#[tauri::command]
+pub fn cancel_video(app: AppHandle, job_id: u64) -> bool {
+    let host = app.state::<std::sync::Arc<crate::video::VideoHost>>().inner().clone();
+    crate::video::cancel(&host, job_id)
+}
+
+#[tauri::command]
+pub fn video_status() -> serde_json::Value {
+    crate::video::status()
 }
 
 /// 前端启动完成的探针：写标记文件，供无头冒烟测试判断 WebView 已加载且 IPC 可用。

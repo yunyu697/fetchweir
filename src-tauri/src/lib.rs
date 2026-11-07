@@ -5,11 +5,65 @@ pub mod nm;
 pub mod settings;
 pub mod sniff;
 pub mod update;
+pub mod video;
 
 use tauri::Manager;
 
 /// 版本号唯一来源：version.json（build.rs 注入），这里只读不写。
 pub const VERSION: &str = env!("FETCHWEIR_VERSION");
+
+/* ---------- 托盘 ---------- */
+
+fn show_main(app: &tauri::AppHandle) {
+    if let Some(win) = app.get_webview_window("main") {
+        let _ = win.show();
+        let _ = win.unminimize();
+        let _ = win.set_focus();
+    }
+}
+
+fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
+    use tauri::menu::{Menu, MenuItem};
+    use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+
+    let show = MenuItem::with_id(app, "show", "显示主窗口", true, None::<&str>)?;
+    let check = MenuItem::with_id(app, "check", "检查更新", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "退出 Fetchweir", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&show, &check, &quit])?;
+
+    let mut builder = TrayIconBuilder::with_id("main")
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .tooltip("Fetchweir 下载管理器");
+    if let Some(icon) = app.default_window_icon() {
+        builder = builder.icon(icon.clone());
+    }
+    builder
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => show_main(app),
+            "check" => {
+                show_main(app);
+                if let Some(updater) = app.try_state::<std::sync::Arc<update::Updater>>() {
+                    let updater = updater.inner().clone();
+                    tauri::async_runtime::spawn(async move { updater.check().await });
+                }
+            }
+            "quit" => app.exit(0),
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main(tray.app_handle());
+            }
+        })
+        .build(app)?;
+    Ok(())
+}
 
 pub fn run() {
     // Native Messaging 宿主模式：浏览器按 stdio 帧直接驱动本二进制。
@@ -28,6 +82,7 @@ pub fn run() {
 
             let store = sniff::SniffStore::new();
             app.manage(store.clone());
+            app.manage(video::VideoHost::new());
             nm::start_ipc(app.handle().clone(), store);
             // 幂等注册宿主清单：升级后路径变化也能被浏览器找到。
             let _ = nm::register_hosts();
@@ -68,6 +123,22 @@ pub fn run() {
                 });
             }
 
+            // 诊断钩子：FW_VIDEO_PROBE=<url> 时后台解析一次并写入数据目录，
+            // 供无浏览器环境验证 yt-dlp 接线与 DRM 拒绝。
+            if let Ok(url) = std::env::var("FW_VIDEO_PROBE") {
+                let host = app.state::<std::sync::Arc<video::VideoHost>>().inner().clone();
+                tauri::async_runtime::spawn(async move {
+                    let body = match video::probe(&host, &url).await {
+                        Ok(info) => serde_json::to_value(&info).unwrap_or_default(),
+                        Err(e) => serde_json::json!({ "error": e }),
+                    };
+                    let _ = std::fs::write(
+                        settings::ensure_data_dir().join("video-probe.json"),
+                        serde_json::to_string_pretty(&body).unwrap_or_default(),
+                    );
+                });
+            }
+
             // 诊断钩子：FW_SNIFF_PROBE=1 时把嗅探列表周期性写入数据目录，
             // 供无浏览器环境验证 扩展 → 宿主 → 主进程 全链路。
             if std::env::var("FW_SNIFF_PROBE").is_ok() {
@@ -88,6 +159,9 @@ pub fn run() {
                 });
             }
 
+            // 托盘：显示主窗口 / 检查更新 / 退出。窗口关闭时按设置驻留后台。
+            setup_tray(app)?;
+
             // 默认显示窗口；冒烟测试用 FW_SMOKE=1 保持隐藏，避免占用前台。
             if std::env::var("FW_SMOKE").is_err() {
                 if let Some(window) = app.get_webview_window("main") {
@@ -95,6 +169,14 @@ pub fn run() {
                 }
             }
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if settings::load().close_to_tray {
+                    api.prevent_close();
+                    let _ = window.hide();
+                }
+            }
         })
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
@@ -105,6 +187,8 @@ pub fn run() {
             commands::remove_task,
             commands::get_settings,
             commands::save_settings,
+            commands::reset_settings,
+            commands::open_data_dir,
             commands::open_path,
             commands::reveal_path,
             commands::ui_ready,
@@ -121,6 +205,10 @@ pub fn run() {
             commands::add_sniff_task,
             commands::sniff_status,
             commands::set_sniff_tier,
+            commands::probe_video,
+            commands::add_video_task,
+            commands::cancel_video,
+            commands::video_status,
         ])
         .run(tauri::generate_context!())
         .expect("Fetchweir 启动失败");
