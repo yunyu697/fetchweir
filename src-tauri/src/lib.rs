@@ -66,6 +66,34 @@ fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
     Ok(())
 }
 
+/// 单实例插件用隐藏窗口接收第二个实例的 argv（WM_COPYDATA）。
+/// 提权实例的这个窗口默认拒绝低完整性进程发来的消息（UIPI），
+/// 结果是以管理员身份运行时再次双击图标，第二个实例只能自行退出、唤不醒已有窗口。
+/// 这里只放行 WM_COPYDATA 一条消息，其它消息仍然受 UIPI 约束。
+#[cfg(windows)]
+fn allow_single_instance_forward(app: &tauri::App) {
+    use windows_sys::Win32::UI::WindowsAndMessaging::{
+        ChangeWindowMessageFilterEx, FindWindowW, CHANGEFILTERSTRUCT, WM_COPYDATA,
+    };
+
+    const MSGFLT_ALLOW: u32 = 1;
+
+    let id = app.config().identifier.clone();
+    let class: Vec<u16> = format!("{id}-sic").encode_utf16().chain([0]).collect();
+    let title: Vec<u16> = format!("{id}-siw").encode_utf16().chain([0]).collect();
+    unsafe {
+        let hwnd = FindWindowW(class.as_ptr(), title.as_ptr());
+        if hwnd.is_null() {
+            return;
+        }
+        let mut filter = CHANGEFILTERSTRUCT {
+            cbSize: std::mem::size_of::<CHANGEFILTERSTRUCT>() as u32,
+            ExtStatus: 0,
+        };
+        let _ = ChangeWindowMessageFilterEx(hwnd, WM_COPYDATA, MSGFLT_ALLOW, &mut filter);
+    }
+}
+
 pub fn run() {
     // Native Messaging 宿主模式：浏览器按 stdio 帧直接驱动本二进制。
     // Chromium 启动宿主时只会把扩展的 origin 作为首个参数传进来（没有自定义参数位），
@@ -95,7 +123,10 @@ pub fn run() {
         .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
             show_main(app);
             // 诊断钩子：验证转发确实到达第一个实例（CI / 无界面测试用）。
-            if std::env::var("FW_SINGLE_PROBE").is_ok() {
+            // 也认第二个实例自带的标记参数，这样提权首实例（拿不到测试环境变量）也能被观测。
+            if std::env::var("FW_SINGLE_PROBE").is_ok()
+                || argv.iter().any(|a| a == "--fw-single-probe")
+            {
                 let body = serde_json::json!({
                     "receivedAt": std::time::SystemTime::now()
                         .duration_since(std::time::UNIX_EPOCH)
@@ -123,6 +154,9 @@ pub fn run() {
             nm::start_ipc(app.handle().clone(), store);
             // 幂等注册宿主清单：升级后路径变化也能被浏览器找到。
             let _ = nm::register_hosts();
+            // 单实例转发窗口由插件创建，需要在这里放行 WM_COPYDATA。
+            #[cfg(windows)]
+            allow_single_instance_forward(app);
 
             // 提权实例启动时把自启项对齐成最高权限计划任务（幂等）。
             let boot = settings::load();
@@ -160,6 +194,18 @@ pub fn run() {
                     settings::ensure_data_dir().join("autostart-probe.json"),
                     serde_json::to_string_pretty(&body).unwrap_or_else(|_| "{}".to_string()),
                 );
+            }
+
+            // 诊断钩子：FW_EXIT_AFTER_MS 让实例在指定毫秒后自行退出。
+            // 提权实例无法被普通权限的测试脚本结束，用它收尾。
+            if let Ok(ms) = std::env::var("FW_EXIT_AFTER_MS") {
+                if let Ok(ms) = ms.trim().parse::<u64>() {
+                    let handle = app.handle().clone();
+                    tauri::async_runtime::spawn(async move {
+                        tokio::time::sleep(std::time::Duration::from_millis(ms)).await;
+                        handle.exit(0);
+                    });
+                }
             }
 
             // 诊断钩子：FW_UPDATE_PROBE=1 时后台跑一次检查并把结果写进数据目录，
