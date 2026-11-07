@@ -302,6 +302,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
             commands::list_tasks,
+            commands::engine_memory,
+            commands::export_settings,
             commands::add_task,
             commands::pause_task,
             commands::resume_task,

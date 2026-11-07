@@ -66,6 +66,7 @@
     sniffHideDup: false,
     video: { info: null, tab: 'video', sel: null, job: null, url: '' },
     themePref: 'dark',
+    memBytes: null,
     speedHistory: [],
     timers: {}
   };
@@ -201,10 +202,10 @@
   function demoTasks() {
     const now = Date.now();
     return [
-      { id: 1, url: 'https://cdn.media-cdn.net/hls/master.m3u8?token=9f2', fileName: 'Interstellar.2014.2160p.HDR.x265.mkv', savePath: 'C:\\Users\\Tyler\\Downloads\\Interstellar.2014.2160p.HDR.x265.mkv', totalBytes: 12.62 * GB, doneBytes: 9.84 * GB, speedBps: 28.4 * MB, state: 'active', error: null, createdAt: now - 32 * 60000, supportsRanges: true, connections: 8 },
-      { id: 2, url: 'https://mirrors.example.net/ubuntu/24.04/ubuntu-24.04.3-desktop-amd64.iso', fileName: 'ubuntu-24.04.3-desktop-amd64.iso', savePath: 'C:\\Users\\Tyler\\Downloads\\ubuntu-24.04.3-desktop-amd64.iso', totalBytes: 4.72 * GB, doneBytes: 3.02 * GB, speedBps: 6.2 * MB, state: 'active', error: null, createdAt: now - 18 * 60000, supportsRanges: true, connections: 12 },
-      { id: 3, url: 'https://video.example.com/files/engines-1080.mp4', fileName: 'How-Engines-Work-1080p.mp4', savePath: 'C:\\Users\\Tyler\\Downloads\\How-Engines-Work-1080p.mp4', totalBytes: 448 * MB, doneBytes: 184 * MB, speedBps: 4.1 * MB, state: 'active', error: null, createdAt: now - 9 * 60000, supportsRanges: true, connections: 1 },
-      { id: 4, url: 'https://files.example.com/docs/2026-q4-architecture-review.pdf', fileName: '2026-Q4-architecture-review.pdf', savePath: 'C:\\Users\\Tyler\\Downloads\\2026-Q4-architecture-review.pdf', totalBytes: 12.8 * MB, doneBytes: 0, speedBps: 0, state: 'queued', error: null, createdAt: now - 4 * 60000, supportsRanges: true, connections: 4 },
+      { id: 1, url: 'https://cdn.media-cdn.net/hls/master.m3u8?token=9f2', fileName: 'Interstellar.2014.2160p.HDR.x265.mkv', savePath: 'C:\\Users\\Tyler\\Downloads\\Interstellar.2014.2160p.HDR.x265.mkv', totalBytes: 12.62 * GB, doneBytes: 9.84 * GB, speedBps: 28.4 * MB, state: 'active', error: null, createdAt: now - 3 * 60000, supportsRanges: true, connections: 8 },
+      { id: 2, url: 'https://mirrors.example.net/ubuntu/24.04/ubuntu-24.04.3-desktop-amd64.iso', fileName: 'ubuntu-24.04.3-desktop-amd64.iso', savePath: 'C:\\Users\\Tyler\\Downloads\\ubuntu-24.04.3-desktop-amd64.iso', totalBytes: 4.72 * GB, doneBytes: 3.02 * GB, speedBps: 6.2 * MB, state: 'active', error: null, createdAt: now - 6 * 60000, supportsRanges: true, connections: 12 },
+      { id: 3, url: 'https://video.example.com/files/engines-1080.mp4', fileName: 'How-Engines-Work-1080p.mp4', savePath: 'C:\\Users\\Tyler\\Downloads\\How-Engines-Work-1080p.mp4', totalBytes: 448 * MB, doneBytes: 184 * MB, speedBps: 4.1 * MB, state: 'active', error: null, createdAt: now - 10 * 60000, supportsRanges: true, connections: 1 },
+      { id: 4, url: 'https://files.example.com/docs/2026-q4-architecture-review.pdf', fileName: '2026-Q4-architecture-review.pdf', savePath: 'C:\\Users\\Tyler\\Downloads\\2026-Q4-architecture-review.pdf', totalBytes: 12.8 * MB, doneBytes: 0, speedBps: 0, state: 'queued', error: null, createdAt: now - 14 * 60000, supportsRanges: true, connections: 4 },
       { id: 5, url: 'https://cdn.podcast.example.com/ep214/commentary-160k.webm', fileName: 'Podcast-Ep214-commentary-160k.webm', savePath: 'C:\\Users\\Tyler\\Downloads\\Podcast-Ep214-commentary-160k.webm', totalBytes: 94 * MB, doneBytes: 54.6 * MB, speedBps: 0, state: 'failed', error: '分片 #118 失败：HTTP 403（签名已过期，重试 3 次）', createdAt: now - 51 * 60000, supportsRanges: true, connections: 6 },
       { id: 6, url: 'https://audio.example.com/books/part-02.m4b', fileName: 'Audiobook-Vol1-Part-02.m4b', savePath: 'C:\\Users\\Tyler\\Downloads\\Audiobook-Vol1-Part-02.m4b', totalBytes: 640 * MB, doneBytes: 224 * MB, speedBps: 0, state: 'paused', error: null, createdAt: now - 2 * 3600000, supportsRanges: true, connections: 4 },
       { id: 7, url: 'https://cdn.example.com/keynote/2026-keynote-1080p.mp4', fileName: 'Keynote-2026-1080p-H264.mp4', savePath: 'C:\\Users\\Tyler\\Downloads\\Keynote-2026-1080p-H264.mp4', totalBytes: 1.28 * GB, doneBytes: 1.28 * GB, speedBps: 0, state: 'completed', error: null, createdAt: now - 3 * 3600000, supportsRanges: true, connections: 8 },
@@ -625,8 +626,16 @@
     const todayDone = completed.filter((t) => (t.createdAt || 0) >= dayStart.getTime()).length;
     setValue('statToday', todayDone, ' 个任务');
     $('statTodaySub').textContent = '本机下载记录';
-    setValue('statQueue', queued.length, ' 个');
-    $('statQueueSub').textContent = queued.length ? '等待调度额度' : '队列为空';
+    if (isDemo) {
+      setValue('statMemory', '—', ' MB');
+      $('statMemorySub').textContent = '演示模式无宿主进程';
+    } else if (state.memBytes) {
+      setValue('statMemory', (state.memBytes / MB).toFixed(1), ' MB');
+      $('statMemorySub').textContent = '宿主进程工作集 · PSAPI';
+    } else {
+      setValue('statMemory', '—', ' MB');
+      $('statMemorySub').textContent = '宿主进程工作集';
+    }
 
     const settings = state.settings || DEMO_SETTINGS;
     const limit = settings.globalLimitBps || 0;
@@ -1572,15 +1581,18 @@
       $('sniffPageMeta').textContent = '—';
     }
     renderSniffDomain(all);
+    renderSniffExt(all);
 
     const kw = ($('sniffKw').value || '').trim().toLowerCase();
     const minSize = Number($('sniffMinSize').value) || 0;
     const domain = $('sniffDomain').value || '';
+    const ext = ($('sniffExt').value || '').toLowerCase();
     const filtered = all.filter((item) => {
       if (state.sniffChip !== 'all' && bucketOf(item) !== state.sniffChip) return false;
       if (state.sniffHideDup && (item.hits || 0) > 1) return false;
       if (minSize && (item.size || 0) < minSize) return false;
       if (domain && sniffHost(item) !== domain) return false;
+      if (ext && extOf(item.url) !== ext) return false;
       if (kw) {
         const hay = (item.url + ' ' + (item.pageUrl || '') + ' ' + (item.mime || '') + ' ' + sniffName(item)).toLowerCase();
         if (!hay.includes(kw)) return false;
@@ -1624,6 +1636,27 @@
       });
       sel.dataset.sig = sig;
       sel.value = hosts.includes(prev) ? prev : '';
+    }
+  }
+
+  function renderSniffExt(all) {
+    const sel = $('sniffExt');
+    if (!sel) return;
+    const exts = Array.from(new Set(all.map((i) => extOf(i.url)).filter(Boolean))).sort();
+    const sig = exts.join('|');
+    if (sel.dataset.sig !== sig) {
+      const prev = sel.value;
+      sel.textContent = '';
+      const optAll = el('option', '', '全部格式');
+      optAll.value = '';
+      sel.append(optAll);
+      exts.forEach((x) => {
+        const o = el('option', '', '.' + x);
+        o.value = x;
+        sel.append(o);
+      });
+      sel.dataset.sig = sig;
+      sel.value = exts.includes(prev) ? prev : '';
     }
   }
 
@@ -2223,6 +2256,14 @@
 
     /* 关于 / 数据 */
     on('btnClearSniff', 'click', clearSniffItems);
+    on('btnExportSettings', 'click', async () => {
+      if (isDemo) { toast('演示模式：不会写出真实配置文件'); return; }
+      try {
+        const path = await invoke('export_settings');
+        const name = String(path || '').split(/[\\/]/).pop() || '配置文件';
+        toast('已导出 ' + name + '（不含更新令牌）');
+      } catch (err) { toast('导出配置失败：' + ((err && err.message) || err), 'err'); }
+    });
     on('btnOpenData', 'click', async () => {
       if (isDemo) { toast('演示模式：数据目录 ' + ((state.info && state.info.dataDir) || 'C:\\Users\\Tyler\\AppData\\Roaming\\Fetchweir')); return; }
       try { await invoke('open_data_dir'); } catch (err) { toast('打开数据目录失败：' + ((err && err.message) || err), 'err'); }
@@ -2274,6 +2315,7 @@
     }));
     on('sniffKw', 'input', () => renderSniff());
     on('sniffMinSize', 'change', () => renderSniff());
+    on('sniffExt', 'change', () => renderSniff());
     on('sniffDomain', 'change', () => renderSniff());
     on('sniffHideDup', 'click', () => {
       state.sniffHideDup = !state.sniffHideDup;
@@ -2390,6 +2432,15 @@
       loadSniffStatus();
       renderSniffStoreInfo();
     }, 2000);
+    setInterval(() => {
+      if (document.hidden) return;
+      invoke('engine_memory')
+        .then((bytes) => {
+          state.memBytes = Number(bytes) || null;
+          renderStats();
+        })
+        .catch(() => {});
+    }, 3000);
   }
 
   /* ---------------- 版本信息 ---------------- */

@@ -111,6 +111,32 @@ fn whoami() -> String {
         .unwrap_or_else(|_| "unknown".to_string())
 }
 
+/// 当前进程工作集（字节）。用于主界面「引擎内存」统计卡，取自 PSAPI，非估算。
+/// 用 K32 前缀：Windows 的 psapi.dll 本身只导出 K32GetProcessMemoryInfo，
+/// 直接链 psapi!GetProcessMemoryInfo 会在加载时 STATUS_ENTRYPOINT_NOT_FOUND。
+#[cfg(windows)]
+pub fn process_memory() -> Option<u64> {
+    use windows_sys::Win32::System::ProcessStatus::{
+        K32GetProcessMemoryInfo, PROCESS_MEMORY_COUNTERS,
+    };
+    use windows_sys::Win32::System::Threading::GetCurrentProcess;
+
+    unsafe {
+        let mut counters: PROCESS_MEMORY_COUNTERS = std::mem::zeroed();
+        counters.cb = std::mem::size_of::<PROCESS_MEMORY_COUNTERS>() as u32;
+        let ok = K32GetProcessMemoryInfo(GetCurrentProcess(), &mut counters, counters.cb);
+        if ok == 0 {
+            return None;
+        }
+        Some(counters.WorkingSetSize as u64)
+    }
+}
+
+#[cfg(not(windows))]
+pub fn process_memory() -> Option<u64> {
+    None
+}
+
 #[cfg(windows)]
 pub fn is_elevated() -> bool {
     use windows_sys::Win32::Foundation::CloseHandle;
@@ -309,5 +335,14 @@ pub fn elevation_status(settings: &settings::Settings) -> ElevationStatus {
         run_registered: run_registered(),
         autostart: settings.autostart,
         note: note.to_string(),
+    }
+}
+
+#[cfg(all(test, windows))]
+mod tests {
+    #[test]
+    fn process_memory_reports_working_set() {
+        let bytes = super::process_memory().expect("PSAPI 应能读到当前进程工作集");
+        assert!(bytes > 0, "工作集应大于 0，实际 {bytes}");
     }
 }

@@ -36,6 +36,47 @@ pub fn list_tasks(engine: State<'_, Arc<Engine>>) -> Vec<TaskDto> {
     engine.list()
 }
 
+/// 宿主进程当前工作集（字节）；拿不到时返回 null，前端显示「—」。
+#[tauri::command]
+pub fn engine_memory() -> Option<u64> {
+    crate::platform::process_memory()
+}
+
+/// 把当前配置导出为 JSON 到下载目录；更新令牌属于凭据，导出时清空。
+#[tauri::command]
+pub fn export_settings(engine: State<'_, Arc<Engine>>) -> Result<String, String> {
+    let settings = engine.settings.read().unwrap().clone();
+    let dir = PathBuf::from(&settings.download_dir);
+    let path = write_settings_export(&settings, &dir)?;
+    Ok(path.to_string_lossy().to_string())
+}
+
+fn settings_export_body(settings: &Settings) -> Result<String, String> {
+    let mut value = serde_json::to_value(settings).map_err(|e| e.to_string())?;
+    if let Some(obj) = value.as_object_mut() {
+        obj.insert(
+            "updateToken".to_string(),
+            serde_json::Value::String(String::new()),
+        );
+    }
+    serde_json::to_string_pretty(&value).map_err(|e| e.to_string())
+}
+
+fn write_settings_export(settings: &Settings, dir: &Path) -> Result<PathBuf, String> {
+    let stamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let name = format!("fetchweir-settings-{stamp}.json");
+    let path = if dir.is_dir() {
+        dir.join(&name)
+    } else {
+        settings::ensure_data_dir().join(&name)
+    };
+    std::fs::write(&path, settings_export_body(settings)?).map_err(|e| e.to_string())?;
+    Ok(path)
+}
+
 #[tauri::command]
 pub fn add_task(
     engine: State<'_, Arc<Engine>>,
@@ -401,5 +442,26 @@ fn open_target(target: &Path, reveal: bool) -> Result<(), String> {
             .spawn()
             .map_err(|e| e.to_string())?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn export_writes_json_without_token() {
+        let dir = std::env::temp_dir().join(format!("fw-export-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let mut settings = Settings::default();
+        settings.download_dir = dir.to_string_lossy().to_string();
+        settings.update_token = "secret-token".to_string();
+        let path = write_settings_export(&settings, &dir).unwrap();
+        let raw = std::fs::read_to_string(&path).unwrap();
+        assert!(raw.contains("\"updateToken\": \"\""));
+        assert!(!raw.contains("secret-token"));
+        assert!(raw.contains("\"downloadDir\""));
+        std::fs::remove_file(&path).unwrap();
+        std::fs::remove_dir_all(&dir).unwrap();
     }
 }
