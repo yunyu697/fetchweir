@@ -1,0 +1,24 @@
+{
+  "uiReadyMs": 849,
+  "info": {
+    "version": "1.0.2",
+    "platform": "windows",
+    "downloadDir": "D:\\Users\\Tyler Zhang\\Downloads",
+    "dataDir": "C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir"
+  },
+  "ext": {
+    "present": true,
+    "dir": "\\\\?\\C:\\Users\\Tyler Zhang\\AppData\\Local\\Fetchweir\\extension",
+    "host_registered": true,
+    "browsers": [
+      "Chrome",
+      "Chromium",
+      "Edge",
+      "Brave",
+      "Vivaldi",
+      "Firefox"
+    ],
+    "extension_id": "fjngndhalbkfkfcfhleflcgkicknkele"
+  },
+  "extPanelText": " 扩展文件：已随安装包提供 · Native Messaging 宿主：Chrome、Chromium、Edge、Brave、Vivaldi、Firefox（HKCU，无需管理员） 扩展目录：\\\\?\\C:\\Users\\Tyler Zhang\\AppData\\Local\\Fetchweir\\extension 点「打开扩展文件夹」，记下其中的 extension 目录。 Chrome 打开 chrome://extensions（Edge 为 edge://extensions"
+}
