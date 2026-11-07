@@ -460,13 +460,29 @@ impl Engine {
     }
 
     async fn run_task(self: Arc<Self>, task: Arc<Task>, token: CancellationToken, run_id: u64) {
-        let meta = match http::probe(&self.client, &task.url, &token, &task.headers).await {
-            Ok(meta) => meta,
-            Err(e) => {
-                if !matches!(e, EngineError::Aborted) {
-                    self.fail(&task, e.to_string());
+        // 探测只发一次请求，网络抖动（TLS 重置、瞬时 5xx）会让整个任务直接失败；
+        // 这里补两次重试，仍然失败才如实报错。
+        let meta = {
+            let mut attempt: u32 = 0;
+            loop {
+                match http::probe(&self.client, &task.url, &token, &task.headers).await {
+                    Ok(meta) => break meta,
+                    Err(e) => {
+                        let fatal = matches!(e, EngineError::Aborted | EngineError::RangeUnsupported)
+                            || attempt >= 2;
+                        if fatal {
+                            if !matches!(e, EngineError::Aborted) {
+                                self.fail(&task, e.to_string());
+                            }
+                            return;
+                        }
+                        attempt += 1;
+                        tokio::select! {
+                            _ = tokio::time::sleep(Duration::from_millis(700 * attempt as u64)) => {}
+                            _ = token.cancelled() => return,
+                        }
+                    }
                 }
-                return;
             }
         };
 
@@ -627,10 +643,14 @@ impl Engine {
                         return Err(EngineError::Aborted);
                     }
                     attempt += 1;
-                    if attempt >= 5 {
+                    if attempt >= 7 {
                         return Err(e);
                     }
-                    let backoff = Duration::from_millis(300 * 2u64.pow(attempt.min(4)));
+                    // 429/503 是服务端限速：退避要更长，否则重试会继续撞限流。
+                    // 各分段按 idx 错开，避免所有连接同一毫秒重试形成突发。
+                    let throttled = matches!(&e, EngineError::Http(s) if s.starts_with("HTTP 429") || s.starts_with("HTTP 503"));
+                    let base = if throttled { 1500 } else { 300 };
+                    let backoff = Duration::from_millis(base * 2u64.pow(attempt.min(4)) + 97 * idx as u64);
                     tokio::select! {
                         _ = tokio::time::sleep(backoff) => {}
                         _ = token.cancelled() => return Err(EngineError::Aborted),

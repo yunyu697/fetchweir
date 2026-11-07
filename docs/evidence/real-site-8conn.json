@@ -1,0 +1,2375 @@
+{
+  "url": "https://commons.wikimedia.org/wiki/File:Big_Buck_Bunny_4K.webm",
+  "steps": [],
+  "parseMs": 3058,
+  "parsed": {
+    "grid": true,
+    "empty": "",
+    "rows": [
+      {
+        "fmt": "3",
+        "text": "1920×1080 vp9 — WEBM 3788 kbps 286.5 MB 推荐"
+      },
+      {
+        "fmt": "2",
+        "text": "854×480 vp9 — WEBM 1218 kbps 92.1 MB 含音轨"
+      },
+      {
+        "fmt": "1",
+        "text": "640×360 mp4v — MOV 1636 kbps 123.8 MB 需转封装"
+      },
+      {
+        "fmt": "0",
+        "text": "426×240 vp9 — WEBM 383 kbps 29.0 MB 含音轨"
+      }
+    ]
+  },
+  "selected": {
+    "fmt": "0",
+    "text": "426×240vp9—WEBM383 kbps29.0 MB含音轨"
+  },
+  "output": {
+    "video": "426×240 · vp9 · —",
+    "videoSize": "29.0 MB",
+    "audio": "OPUS",
+    "total": "29.0 MB",
+    "btnDisabled": false
+  },
+  "tasks": [
+    {
+      "at": 17,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 535,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 1045,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 1555,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 2071,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 2575,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 3085,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 3590,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 4094,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 4610,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 5121,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 5628,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 6137,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 0,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 6642,
+      "done": [
+        {
+          "st": "active",
+          "done": 0,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 7146,
+      "done": [
+        {
+          "st": "active",
+          "done": 107080,
+          "total": 30448117,
+          "speed": 69351
+        }
+      ]
+    },
+    {
+      "at": 7656,
+      "done": [
+        {
+          "st": "active",
+          "done": 786320,
+          "total": 30448117,
+          "speed": 759567
+        }
+      ]
+    },
+    {
+      "at": 8161,
+      "done": [
+        {
+          "st": "active",
+          "done": 3711280,
+          "total": 30448117,
+          "speed": 4565763
+        }
+      ]
+    },
+    {
+      "at": 8675,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 4565763
+        }
+      ]
+    },
+    {
+      "at": 9192,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 9704,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 10210,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 10721,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 11238,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 11750,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 12260,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 12773,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 13291,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 13797,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 14311,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 14816,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 15336,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 15845,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 16356,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 16871,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 17377,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 17890,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 18408,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 18921,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 19425,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 19935,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 20440,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 20952,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 21469,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 21988,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 22507,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 23026,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 23538,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 24054,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 24572,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 25091,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 25603,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 26105,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 26613,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 27129,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 27635,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 28156,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 28674,
+      "done": [
+        {
+          "st": "active",
+          "done": 3806019,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 29181,
+      "done": [
+        {
+          "st": "active",
+          "done": 5442755,
+          "total": 30448117,
+          "speed": 3200638
+        }
+      ]
+    },
+    {
+      "at": 29688,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 4262321
+        }
+      ]
+    },
+    {
+      "at": 30205,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 30717,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 31237,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 31754,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 32270,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 32785,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 33290,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 33794,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 34303,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 34816,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 35322,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 35839,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 36356,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 36871,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 37388,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 37904,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 38424,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 38928,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 39434,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 39951,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 40472,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 40988,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 41496,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 42004,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 42519,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 43025,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 43534,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 44049,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 44565,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 45081,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 45586,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 46103,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 46608,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 47121,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 47636,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 48153,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 48668,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 49185,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 49690,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 50204,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 50720,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 51235,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 51745,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 52265,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 52777,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 53290,
+      "done": [
+        {
+          "st": "active",
+          "done": 7612033,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 53809,
+      "done": [
+        {
+          "st": "active",
+          "done": 7657929,
+          "total": 30448117,
+          "speed": 3010120
+        }
+      ]
+    },
+    {
+      "at": 54321,
+      "done": [
+        {
+          "st": "active",
+          "done": 11769871,
+          "total": 30448117,
+          "speed": 7502265
+        }
+      ]
+    },
+    {
+      "at": 54828,
+      "done": [
+        {
+          "st": "active",
+          "done": 13945071,
+          "total": 30448117,
+          "speed": 5388233
+        }
+      ]
+    },
+    {
+      "at": 55336,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 5388233
+        }
+      ]
+    },
+    {
+      "at": 55847,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 56368,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 56879,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 57385,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 57895,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 58412,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 58919,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 59428,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 59933,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 60439,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 60950,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 61460,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 61964,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 62483,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 62998,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 63509,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 64027,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 64534,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 65046,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 65564,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 66081,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 66596,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 67115,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 67628,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 68146,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 68659,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 69164,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 69680,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 70196,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 70715,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 71226,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 71732,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 72247,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 72759,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 73278,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 73794,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 74308,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 74825,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 75344,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 75858,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 76378,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 76898,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 77411,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 77923,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 78441,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 78947,
+      "done": [
+        {
+          "st": "active",
+          "done": 15224061,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 79465,
+      "done": [
+        {
+          "st": "active",
+          "done": 18200557,
+          "total": 30448117,
+          "speed": 2449214
+        }
+      ]
+    },
+    {
+      "at": 79980,
+      "done": [
+        {
+          "st": "active",
+          "done": 20024355,
+          "total": 30448117,
+          "speed": 5762411
+        }
+      ]
+    },
+    {
+      "at": 80495,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 5417390
+        }
+      ]
+    },
+    {
+      "at": 81009,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 5417390
+        }
+      ]
+    },
+    {
+      "at": 81529,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 82041,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 82547,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 83062,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 83576,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 84091,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 84597,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 85112,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 85627,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 86141,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 86654,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 87172,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 87680,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 88195,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 88709,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 89221,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 89726,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 90243,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 90760,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 91272,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 91784,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 92294,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 92802,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 93311,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 93820,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 94328,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 94847,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 95367,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 95876,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 96391,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 96906,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 97411,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 97926,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 98444,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 98957,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 99475,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 99993,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 100509,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 101023,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 101539,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 102057,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 102576,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 103092,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 103609,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 104127,
+      "done": [
+        {
+          "st": "active",
+          "done": 22836089,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    },
+    {
+      "at": 104643,
+      "done": [
+        {
+          "st": "active",
+          "done": 25835241,
+          "total": 30448117,
+          "speed": 5618655
+        }
+      ]
+    },
+    {
+      "at": 105161,
+      "done": [
+        {
+          "st": "active",
+          "done": 27797091,
+          "total": 30448117,
+          "speed": 5137879
+        }
+      ]
+    },
+    {
+      "at": 105670,
+      "done": [
+        {
+          "st": "completed",
+          "done": 30448117,
+          "total": 30448117,
+          "speed": 0
+        }
+      ]
+    }
+  ],
+  "downloadMs": 105670,
+  "final": {
+    "id": 1,
+    "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.240p.vp9.webm",
+    "fileName": "Big_Buck_Bunny_4K.webm.240p.vp9.webm",
+    "savePath": "D:\\Users\\Tyler Zhang\\Downloads\\Big_Buck_Bunny_4K.webm.240p.vp9 (1).webm",
+    "totalBytes": 30448117,
+    "doneBytes": 30448117,
+    "speedBps": 0,
+    "state": "completed",
+    "error": null,
+    "createdAt": 1794039449011,
+    "supportsRanges": true,
+    "connections": 8
+  },
+  "disk": {
+    "path": "D:\\Users\\Tyler Zhang\\Downloads\\Big_Buck_Bunny_4K.webm.240p.vp9 (1).webm",
+    "bytes": 30448117
+  },
+  "speedSamples": [
+    {
+      "st": "active",
+      "done": 22836089,
+      "total": 30448117,
+      "speed": 0
+    },
+    {
+      "st": "active",
+      "done": 22836089,
+      "total": 30448117,
+      "speed": 0
+    },
+    {
+      "st": "active",
+      "done": 22836089,
+      "total": 30448117,
+      "speed": 0
+    },
+    {
+      "st": "active",
+      "done": 25835241,
+      "total": 30448117,
+      "speed": 5618655
+    },
+    {
+      "st": "active",
+      "done": 27797091,
+      "total": 30448117,
+      "speed": 5137879
+    },
+    {
+      "st": "completed",
+      "done": 30448117,
+      "total": 30448117,
+      "speed": 0
+    }
+  ],
+  "avgBps": 288143
+}
