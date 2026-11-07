@@ -190,6 +190,8 @@
     density: 'comfortable',
     reduceMotion: false,
     closeToTray: true,
+    autostart: false,
+    runAsAdmin: false,
     connectTimeoutSec: 10,
     readTimeoutSec: 30,
     videoPreferred: 'compat'
@@ -976,6 +978,41 @@
     });
   }
 
+  // 安装范围与提权状态都来自后端实测（进程令牌 + 可执行文件位置），不在前端推断。
+  function renderInstallInfo() {
+    const scopeTag = $('installScopeTag');
+    if (!scopeTag) return;
+    const paint = (info, elev) => {
+      scopeTag.textContent = info.scopeLabel || '未知';
+      const dir = $('installDirText');
+      if (dir) {
+        dir.textContent = info.installDir || '';
+        dir.title = info.maintenance || '';
+      }
+      if (elev) {
+        const tag = $('elevationTag');
+        if (tag) tag.textContent = elev.elevationLabel || '普通权限';
+        const note = $('uipiNote');
+        if (note) note.hidden = !(elev.runAsAdmin || elev.elevated);
+        const sw = $('swRunAsAdmin');
+        if (sw && elev.platform !== 'windows') {
+          sw.disabled = true;
+          sw.title = '该选项仅在 Windows 生效';
+        }
+      }
+    };
+    if (!IS_TAURI) {
+      paint(
+        { scopeLabel: '当前用户（用户目录）', installDir: '%LOCALAPPDATA%\\Fetchweir', maintenance: '演示数据：切换安装范围需要卸载后重装' },
+        { platform: 'windows', elevationLabel: '普通权限', runAsAdmin: !!state.settings.runAsAdmin, elevated: false },
+      );
+      return;
+    }
+    Promise.all([invoke('install_info'), invoke('elevation_status')])
+      .then(([info, elev]) => paint(info, elev))
+      .catch(() => { scopeTag.textContent = '读取失败'; });
+  }
+
   function renderSettings() {
     const s = state.settings;
     if (!s) return;
@@ -996,6 +1033,9 @@
     document.documentElement.dataset.density = s.density === 'compact' ? 'compact' : 'comfortable';
     $$('[data-density-set]').forEach((b) => b.classList.toggle('on', b.dataset.densitySet === document.documentElement.dataset.density));
     paintSwitch('swCloseTray', s.closeToTray);
+    paintSwitch('swAutostart', s.autostart);
+    paintSwitch('swRunAsAdmin', s.runAsAdmin);
+    renderInstallInfo();
     paintSwitch('swReduce', s.reduceMotion);
     $('setUpdateRepo').value = s.updateRepo || '';
     $('setUpdateToken').value = s.updateToken || '';
@@ -2028,6 +2068,47 @@
     bindSwitch('swReduce', 'reduceMotion', (v) => document.documentElement.classList.toggle('reduce-motion', v));
     bindSwitch('swCloseTray', 'closeToTray');
 
+    // 自启动与提权需要落系统状态，不能用纯前端开关直接写设置。
+    const swAutostart = $('swAutostart');
+    if (swAutostart) {
+      swAutostart.addEventListener('click', async () => {
+        if (!state.settings) return;
+        const next = !state.settings.autostart;
+        swAutostart.disabled = true;
+        try {
+          if (IS_TAURI) await invoke('set_autostart', { enabled: next });
+          state.settings.autostart = next;
+          paintSwitch('swAutostart', next);
+          toast(next ? '已注册开机自启动' : '已取消开机自启动');
+        } catch (e) {
+          toast('自启动设置失败：' + (e && e.message ? e.message : e), 'err');
+        } finally {
+          swAutostart.disabled = false;
+        }
+      });
+    }
+    const swAdmin = $('swRunAsAdmin');
+    if (swAdmin) {
+      swAdmin.addEventListener('click', async () => {
+        if (!state.settings) return;
+        const next = !state.settings.runAsAdmin;
+        swAdmin.disabled = true;
+        try {
+          let relaunching = false;
+          if (IS_TAURI) relaunching = await invoke('set_run_as_admin', { enabled: next });
+          state.settings.runAsAdmin = next;
+          paintSwitch('swRunAsAdmin', next);
+          if (next && relaunching) toast('已请求管理员权限；在 UAC 中确认后应用会以提权重启');
+          else toast(next ? '已开启：下次启动会请求管理员权限' : '已关闭：恢复普通权限启动');
+        } catch (e) {
+          toast('切换失败：' + (e && e.message ? e.message : e), 'err');
+        } finally {
+          swAdmin.disabled = false;
+          renderInstallInfo();
+        }
+      });
+    }
+
     /* 下载引擎设置 */
     on('setDir', 'input', () => { if (state.settings) { state.settings.downloadDir = $('setDir').value.trim(); scheduleSave(800); } });
     on('segRange', 'input', () => {
@@ -2336,11 +2417,14 @@
 
     if (isDemo) {
       state.settings = normalizeSettings(Object.assign({}, DEMO_SETTINGS));
+      // 截图用：?admin 让演示数据呈现「已开启管理员运行」的状态（含 UIPI 提示），
+      // 只影响演示数据，不会调用后端，也不改变真实设置。
+      if (PARAMS.has('admin')) state.settings.runAsAdmin = true;
       state.tasks = new Map(demoTasks().map((t) => [t.id, t]));
       state.sniff = demoSniff();
       state.sniffNm = DEMO_NM;
       state.update = Object.assign({}, DEMO_UPDATE);
-      state.info = { version: '0.1.0', dataDir: 'C:\\Users\\Tyler\\AppData\\Roaming\\Fetchweir' };
+      state.info = { version: '1.0.0-alpha2', dataDir: 'C:\\Users\\Tyler\\AppData\\Local\\Fetchweir' };
       applyInfo(state.info);
       applyVisuals(state.settings);
       renderSettings();

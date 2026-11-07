@@ -2,6 +2,7 @@
 mod commands;
 pub mod engine;
 pub mod nm;
+pub mod platform;
 pub mod settings;
 pub mod sniff;
 pub mod update;
@@ -76,6 +77,18 @@ pub fn run() {
         nm::run_host();
     }
 
+    // 设置里开启「始终以管理员身份运行」后，每次启动都请求 UAC。
+    // 用户在 UAC 里拒绝时 ShellExecute 返回失败，这里保持普通权限继续运行。
+    // 冒烟/无头测试用 FW_NO_ELEVATE=1 关闭，避免弹出权限对话框。
+    if cfg!(windows) && std::env::var("FW_NO_ELEVATE").is_err() {
+        let saved = settings::load();
+        if saved.run_as_admin && !platform::is_elevated() {
+            if platform::request_elevation(Some("--elevated-launch")) {
+                std::process::exit(0);
+            }
+        }
+    }
+
     tauri::Builder::default()
         .setup(|app| {
             let settings = settings::load();
@@ -91,6 +104,24 @@ pub fn run() {
             nm::start_ipc(app.handle().clone(), store);
             // 幂等注册宿主清单：升级后路径变化也能被浏览器找到。
             let _ = nm::register_hosts();
+
+            // 提权实例启动时把自启项对齐成最高权限计划任务（幂等）。
+            let boot = settings::load();
+            if cfg!(windows) && boot.run_as_admin && boot.autostart {
+                let _ = platform::apply_autostart(true, true);
+            }
+            if std::env::var("FW_PLATFORM_PROBE").is_ok() {
+                let body = serde_json::json!({
+                    "install": platform::install_info(),
+                    "elevation": platform::elevation_status(&boot),
+                    "autostart": boot.autostart,
+                });
+                let path = settings::ensure_data_dir().join("platform-probe.json");
+                let _ = std::fs::write(
+                    path,
+                    serde_json::to_string_pretty(&body).unwrap_or_else(|_| "{}".to_string()),
+                );
+            }
 
             // 诊断钩子：FW_UPDATE_PROBE=1 时后台跑一次检查并把结果写进数据目录，
             // 供无界面环境（CI / 冒烟）验证更新链路。
@@ -194,6 +225,10 @@ pub fn run() {
             commands::save_settings,
             commands::reset_settings,
             commands::open_data_dir,
+            commands::install_info,
+            commands::elevation_status,
+            commands::set_run_as_admin,
+            commands::set_autostart,
             commands::open_path,
             commands::reveal_path,
             commands::ui_ready,

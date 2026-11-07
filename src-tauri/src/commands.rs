@@ -108,6 +108,58 @@ pub fn open_data_dir() -> Result<(), String> {
     open_target(&dir, false)
 }
 
+/// 安装范围、安装目录与数据目录；切换范围只能重装。
+#[tauri::command]
+pub fn install_info() -> crate::platform::InstallInfo {
+    crate::platform::install_info()
+}
+
+#[tauri::command]
+pub fn elevation_status(engine: State<'_, Arc<Engine>>) -> crate::platform::ElevationStatus {
+    crate::platform::elevation_status(&engine.settings.read().unwrap())
+}
+
+/// 开启「始终以管理员身份运行」：写入设置并尝试以管理员身份重新拉起。
+/// 返回 `relaunching = true` 时前端应予提示，当前进程随后退出。
+#[tauri::command]
+pub fn set_run_as_admin(engine: State<'_, Arc<Engine>>, enabled: bool) -> Result<bool, String> {
+    if !cfg!(windows) {
+        return Err("该选项仅在 Windows 生效".to_string());
+    }
+    {
+        let mut guard = engine.settings.write().unwrap();
+        guard.run_as_admin = enabled;
+        settings::save(&guard)?;
+    }
+    if !enabled {
+        // 关闭：撤掉最高权限自启，避免下次仍以计划任务拉起。
+        let _ = crate::platform::apply_autostart(false, true);
+        return Ok(false);
+    }
+    if crate::platform::is_elevated() {
+        // 已经是提权状态，直接把自启项升级为最高权限计划任务。
+        crate::platform::apply_autostart(true, true)?;
+        return Ok(false);
+    }
+    if crate::platform::request_elevation(Some("--elevated-launch")) {
+        return Ok(true);
+    }
+    Err("未获得管理员权限，已保持普通权限运行".to_string())
+}
+
+/// 开机自启动：管理员模式下走计划任务，普通模式写 HKCU Run。
+#[tauri::command]
+pub fn set_autostart(engine: State<'_, Arc<Engine>>, enabled: bool) -> Result<(), String> {
+    if !cfg!(windows) {
+        return Err("当前平台的自启动注册未接入，仅 Windows 生效".to_string());
+    }
+    let admin = engine.settings.read().unwrap().run_as_admin;
+    crate::platform::apply_autostart(enabled, admin)?;
+    let mut guard = engine.settings.write().unwrap();
+    guard.autostart = enabled;
+    settings::save(&guard)
+}
+
 fn updater(app: &AppHandle) -> Arc<Updater> {
     app.state::<Arc<Updater>>().inner().clone()
 }

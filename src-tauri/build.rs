@@ -27,15 +27,18 @@ fn main() {
     // windows-gnu 下测试 / example 二进制不会从 libresource.a 里拉取该资源对象，
     // 于是退回 comctl32 v5，因 TaskDialogIndirect 缺失而无法启动
     // （STATUS_ENTRYPOINT_NOT_FOUND）。这里把已生成的 resource.rc 编译成 COFF
-    // 目标文件并作为 link-arg 提供给所有目标。
+    // 目标文件补给它。
+    // 只能用 -tests / -examples 限定作用域：如果对所有目标追加，bin 会同时拿到
+    // tauri 的 resource 对象和这份副本，ld 报 duplicate leaf ICON/GROUP_ICON，
+    // 图标资源可能被丢弃。
     // windows-msvc 不需要：link.exe 会把 resource.lib 一并转换，清单已在其中；
     // 再加 /MANIFESTINPUT 会与它冲突（CVT1100 duplicate resource MANIFEST）。
     #[cfg(windows)]
-    link_resource_for_all_targets();
+    link_resource_for_non_bin_targets();
 }
 
 #[cfg(windows)]
-fn link_resource_for_all_targets() {
+fn link_resource_for_non_bin_targets() {
     if std::env::var("CARGO_CFG_TARGET_ENV").unwrap_or_default() != "gnu" {
         return;
     }
@@ -58,7 +61,8 @@ fn link_resource_for_all_targets() {
         .map(|s| s.success())
         .unwrap_or(false);
     if ok {
-        println!("cargo:rustc-link-arg={}", obj.display());
+        println!("cargo:rustc-link-arg-tests={}", obj.display());
+        println!("cargo:rustc-link-arg-examples={}", obj.display());
     }
 }
 

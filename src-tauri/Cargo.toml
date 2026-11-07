@@ -35,6 +35,16 @@ thiserror = "2"
 dirs = "6"
 url = "2"
 
+[target.'cfg(windows)'.dependencies]
+# 提权状态读取（进程令牌）与 runas 重新拉起；计划任务走 schtasks，无需 COM。
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_Threading",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
 [profile.release]
 codegen-units = 1
 lto = true

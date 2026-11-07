@@ -58,6 +58,10 @@ pub struct Settings {
     pub reduce_motion: bool,
     /// 关闭窗口时保持后台运行。
     pub close_to_tray: bool,
+    /// 开机自启动（Windows：普通权限写 HKCU Run，管理员模式写计划任务）。
+    pub autostart: bool,
+    /// 始终以管理员身份运行（仅 Windows；开启后每次启动都会请求 UAC）。
+    pub run_as_admin: bool,
     /// 首次连接与读取超时；改动在下次启动引擎时生效。
     pub connect_timeout_sec: u32,
     pub read_timeout_sec: u32,
@@ -83,6 +87,8 @@ impl Default for Settings {
             density: "comfortable".to_string(),
             reduce_motion: false,
             close_to_tray: true,
+            autostart: false,
+            run_as_admin: false,
             connect_timeout_sec: 10,
             read_timeout_sec: 30,
             video_preferred: "compat".to_string(),
