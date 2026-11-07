@@ -264,7 +264,8 @@ impl Engine {
 
     pub fn with_events(events: Arc<dyn TaskEvents>, settings: Settings) -> Arc<Self> {
         let client = reqwest::Client::builder()
-            .connect_timeout(Duration::from_secs(20))
+            .connect_timeout(Duration::from_secs(settings.connect_timeout_sec.clamp(3, 120) as u64))
+            .read_timeout(Duration::from_secs(settings.read_timeout_sec.clamp(5, 300) as u64))
             .redirect(reqwest::redirect::Policy::limited(10))
             .user_agent(format!(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Fetchweir/{}",
@@ -335,7 +336,7 @@ impl Engine {
             dir,
             name,
             name_given,
-            connections.unwrap_or(settings.connections),
+            connections.unwrap_or(settings.connections).clamp(1, settings.max_connections.clamp(1, 16)),
             headers,
         ));
         self.tasks.lock().unwrap().push(task.clone());

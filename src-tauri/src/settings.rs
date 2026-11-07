@@ -47,6 +47,22 @@ pub struct Settings {
     pub homepage: String,
     /// 浮动条档位：A 自动出条 / B 仅顶层按网络信号 / C 只用徽标。
     pub sniff_tier: String,
+    /// 嗅探记录保留小时数；0 表示直到手动清除。
+    pub sniff_ttl_hours: u32,
+    /// 每任务连接数的硬上限（新建任务对话框不得超过此值）。
+    pub max_connections: u32,
+    /// 强调色（十六进制），外观页色板直接写入。
+    pub accent: String,
+    /// 列表密度：comfortable / compact。
+    pub density: String,
+    pub reduce_motion: bool,
+    /// 关闭窗口时保持后台运行。
+    pub close_to_tray: bool,
+    /// 首次连接与读取超时；改动在下次启动引擎时生效。
+    pub connect_timeout_sec: u32,
+    pub read_timeout_sec: u32,
+    /// 视频首选组合：compat（1080p H.264 MP4）/ best / small。
+    pub video_preferred: String,
 }
 
 impl Default for Settings {
@@ -61,6 +77,15 @@ impl Default for Settings {
             update_mirror: "github".to_string(),
             homepage: "https://github.com/yunyu697/fetchweir".to_string(),
             sniff_tier: "B".to_string(),
+            sniff_ttl_hours: 24,
+            max_connections: 16,
+            accent: "#6C8CFF".to_string(),
+            density: "comfortable".to_string(),
+            reduce_motion: false,
+            close_to_tray: true,
+            connect_timeout_sec: 10,
+            read_timeout_sec: 30,
+            video_preferred: "compat".to_string(),
         }
     }
 }

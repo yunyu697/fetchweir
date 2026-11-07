@@ -77,7 +77,10 @@ pub fn start_ipc(app: AppHandle, store: Arc<SniffStore>) {
             tauri::async_runtime::spawn(async move {
                 loop {
                     tokio::time::sleep(Duration::from_secs(60)).await;
-                    store.prune(crate::sniff::DEFAULT_TTL_MS);
+                    let hours = settings::load().sniff_ttl_hours;
+                    if hours > 0 {
+                        store.prune(hours as i64 * 60 * 60 * 1000);
+                    }
                     drain_inbox(&app, &store);
                 }
             });
