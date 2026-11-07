@@ -123,6 +123,26 @@ pub fn run() {
                 );
             }
 
+            // 诊断钩子：FW_AUTOSTART_PROBE=1/0 时按指定值写或删自启动项，
+            // 供无界面环境核对 HKCU Run / 计划任务的真实注册结果。
+            if let Ok(want) = std::env::var("FW_AUTOSTART_PROBE") {
+                let enabled = want.trim() == "1";
+                let admin = settings::load().run_as_admin;
+                let result = platform::apply_autostart(enabled, admin);
+                let body = serde_json::json!({
+                    "requested": enabled,
+                    "admin": admin,
+                    "ok": result.is_ok(),
+                    "error": result.err(),
+                    "taskRegistered": platform::task_registered(),
+                    "runRegistered": platform::run_registered(),
+                });
+                let _ = std::fs::write(
+                    settings::ensure_data_dir().join("autostart-probe.json"),
+                    serde_json::to_string_pretty(&body).unwrap_or_else(|_| "{}".to_string()),
+                );
+            }
+
             // 诊断钩子：FW_UPDATE_PROBE=1 时后台跑一次检查并把结果写进数据目录，
             // 供无界面环境（CI / 冒烟）验证更新链路。
             if std::env::var("FW_UPDATE_PROBE").is_ok() {

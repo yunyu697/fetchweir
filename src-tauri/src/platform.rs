@@ -201,9 +201,9 @@ pub fn task_registered() -> bool {
 pub fn run_registered() -> bool {
     #[cfg(windows)]
     {
-        let key = format!("{RUN_KEY}\\{RUN_VALUE}");
+        // 值名不是子键：必须 query 键本身再 /v 指定值名，否则永远查不到。
         return Command::new("reg")
-            .args(["query", &key])
+            .args(["query", RUN_KEY, "/v", RUN_VALUE])
             .output()
             .map(|o| o.status.success())
             .unwrap_or(false);
