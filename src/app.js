@@ -2040,19 +2040,29 @@
     }
   }
   /* ---------------- 事件绑定 ---------------- */
-  /* 自绘标题栏（decorations:false）没有系统拖拽区：
-   * 给标题栏内除按钮外的所有元素补 data-tauri-drag-region，
-   * 由 Tauri 注入脚本处理按下拖动与双击最大化。 */
+  /* 自绘标题栏（decorations:false）没有系统拖拽区。
+   * 属性方案（data-tauri-drag-region）在 Windows 上会被 WebView2 的拖放控制器吃掉，
+   * 这里改为在 mousedown 里显式调用 startDragging()，双击切换最大化；
+   * 按钮/输入框不参与拖动。详情弹窗遮住标题栏时，它自己的标题条同样可拖。 */
+  function attachDrag(node) {
+    if (!node || node.dataset.dragBound) return;
+    node.dataset.dragBound = '1';
+    node.addEventListener('mousedown', async (e) => {
+      if (e.button !== 0) return;
+      if (e.target.closest('button, input, select, textarea, a')) return;
+      if (isDemo) return;
+      try {
+        const win = window.__TAURI__.window.getCurrentWindow();
+        if (e.detail === 2) await win.toggleMaximize();
+        else await win.startDragging();
+      } catch (err) {
+        /* 拖动失败不打断用户 */
+      }
+    });
+  }
   function setupTitlebarDrag() {
-    const bar = document.querySelector('.titlebar');
-    if (!bar) return;
-    const mark = (node) => {
-      if (!node || node.nodeType !== 1) return;
-      if (node.closest('button')) return;
-      node.setAttribute('data-tauri-drag-region', '');
-      Array.from(node.children).forEach(mark);
-    };
-    mark(bar);
+    attachDrag(document.querySelector('.titlebar'));
+    $$('.modal-bar').forEach(attachDrag);
   }
 
   function bindUI() {

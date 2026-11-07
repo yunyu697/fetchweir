@@ -1,0 +1,100 @@
+{
+  "exe": "D:\\fw-temp\\after\\Fetchweir.exe",
+  "pid": 18216,
+  "port": 9371,
+  "steps": [
+    {
+      "name": "main-titlebar",
+      "before": {
+        "left": 130,
+        "top": 46,
+        "width": 1193,
+        "height": 768
+      },
+      "after": {
+        "left": 270,
+        "top": 126,
+        "width": 1193,
+        "height": 768
+      },
+      "dx": 140,
+      "dy": 80,
+      "mouseDx": 140,
+      "mouseDy": 80,
+      "events": [
+        {
+          "phase": "md",
+          "detail": 1,
+          "target": "titlebar",
+          "x": 313,
+          "y": 21
+        },
+        {
+          "phase": "ok"
+        }
+      ]
+    },
+    {
+      "name": "detail-modal-bar",
+      "point": [
+        885,
+        236
+      ],
+      "bar": {
+        "x": 153.0349884033203,
+        "y": 86.80000305175781,
+        "w": 923.9301147460938,
+        "h": 46.29499816894531
+      },
+      "before": {
+        "left": 270,
+        "top": 126,
+        "width": 1193,
+        "height": 768
+      },
+      "after": {
+        "left": 150,
+        "top": 186,
+        "width": 1193,
+        "height": 768
+      },
+      "dx": -120,
+      "dy": 60,
+      "mouseDx": -120,
+      "mouseDy": 60,
+      "events": [
+        {
+          "phase": "md",
+          "detail": 1,
+          "target": "titlebar",
+          "x": 313,
+          "y": 21
+        },
+        {
+          "phase": "ok"
+        }
+      ]
+    },
+    {
+      "name": "dblclick-titlebar",
+      "maximized": true,
+      "maxRect": {
+        "left": -7,
+        "top": -7,
+        "width": 1453,
+        "height": 865
+      },
+      "restoredMaximized": false,
+      "restoredRect": {
+        "left": 150,
+        "top": 186,
+        "width": 1193,
+        "height": 768
+      }
+    }
+  ],
+  "diagInstalled": 0,
+  "foreground": false,
+  "scaleFactor": 2,
+  "ok": true
+}
