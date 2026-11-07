@@ -149,6 +149,41 @@ pub fn open_data_dir() -> Result<(), String> {
     open_target(&dir, false)
 }
 
+/// 浏览器扩展与 Native Messaging 宿主的真实状态（设置页展示与引导用）。
+#[derive(serde::Serialize)]
+pub struct ExtensionInfo {
+    /// 扩展目录是否存在（清单齐全）。
+    pub present: bool,
+    pub dir: Option<String>,
+    /// 宿主清单是否已写进至少一个浏览器的 HKCU 注册表项。
+    pub host_registered: bool,
+    pub browsers: Vec<String>,
+    pub extension_id: String,
+}
+
+#[tauri::command(async)]
+pub fn extension_info(app: AppHandle) -> ExtensionInfo {
+    let dir = crate::platform::extension_dir(&app);
+    let browsers: Vec<String> = crate::nm::browser_registration()
+        .into_iter()
+        .filter(|(_, ok)| *ok)
+        .map(|(name, _)| name)
+        .collect();
+    ExtensionInfo {
+        present: dir.is_some(),
+        dir: dir.map(|p| p.to_string_lossy().to_string()),
+        host_registered: !browsers.is_empty(),
+        browsers,
+        extension_id: crate::nm::EXTENSION_ID.to_string(),
+    }
+}
+
+#[tauri::command(async)]
+pub fn open_extension_dir(app: AppHandle) -> Result<(), String> {
+    let dir = crate::platform::extension_dir(&app).ok_or_else(|| "未找到扩展目录".to_string())?;
+    open_target(&dir, false)
+}
+
 /// 安装范围、安装目录与数据目录；切换范围只能重装。
 #[tauri::command(async)]
 pub fn install_info() -> crate::platform::InstallInfo {
@@ -186,6 +221,21 @@ pub fn set_run_as_admin(engine: State<'_, Arc<Engine>>, enabled: bool) -> Result
         return Ok(true);
     }
     Err("未获得管理员权限，已保持普通权限运行".to_string())
+}
+
+/// 显式提权重启：只在用户点「以管理员身份重启」时调用。
+/// 正常启动路径不调用这里，因此不会出现「每次双击图标都弹 UAC」。
+#[tauri::command(async)]
+pub fn restart_elevated(app: AppHandle) -> bool {
+    if !cfg!(windows) || crate::platform::is_elevated() {
+        return false;
+    }
+    if crate::platform::request_elevation(Some("--elevated-launch")) {
+        app.exit(0);
+        true
+    } else {
+        false
+    }
 }
 
 /// 开机自启动：管理员模式下走计划任务，普通模式写 HKCU Run。

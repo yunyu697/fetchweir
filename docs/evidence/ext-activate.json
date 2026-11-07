@@ -1,0 +1,31 @@
+{
+  "passed": 5,
+  "total": 5,
+  "results": [
+    {
+      "name": "桌面端窗口已创建",
+      "pass": true,
+      "detail": "hwnd=1645360"
+    },
+    {
+      "name": "浮动条出现",
+      "pass": true,
+      "detail": "{\"host\":true,\"display\":\"block\"}"
+    },
+    {
+      "name": "点击前窗口已最小化",
+      "pass": true,
+      "detail": "{\"ok\":true,\"hwnd\":1645360,\"iconic\":true,\"visible\":true,\"foreground\":false}"
+    },
+    {
+      "name": "点击浮动条唤起应用",
+      "pass": true,
+      "detail": "click@1156,659 {\"ok\":true,\"hwnd\":3869976,\"iconic\":false,\"visible\":true,\"foreground\":true}"
+    },
+    {
+      "name": "窗口回到前台",
+      "pass": true,
+      "detail": "{\"ok\":true,\"hwnd\":3869976,\"iconic\":false,\"visible\":true,\"foreground\":true}"
+    }
+  ]
+}

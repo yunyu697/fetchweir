@@ -69,6 +69,25 @@ pub fn hidden_command(program: impl AsRef<std::ffi::OsStr>) -> Command {
     cmd
 }
 
+/// 浏览器扩展目录：安装包里随 resources 落到资源目录；
+/// 开发态回落到仓库里的 extension/。
+pub fn extension_dir(app: &tauri::AppHandle) -> Option<PathBuf> {
+    use tauri::Manager;
+    if let Ok(dir) = app.path().resource_dir() {
+        let p = dir.join("extension");
+        if p.join("manifest.json").exists() {
+            return Some(p);
+        }
+    }
+    let dev = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .map(|p| p.join("extension"))?;
+    if dev.join("manifest.json").exists() {
+        return Some(dev);
+    }
+    None
+}
+
 /// tokio 版：视频解析与下载都走异步子进程，同样必须隐藏控制台。
 pub fn hidden_tokio_command(program: impl AsRef<std::ffi::OsStr>) -> tokio::process::Command {
     #[allow(unused_mut)]

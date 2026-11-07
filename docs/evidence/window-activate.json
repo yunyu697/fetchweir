@@ -1,0 +1,31 @@
+{
+  "note": "通过 NM 端点发送 {\"type\":\"activate\"} 前后枚举同一进程的全部顶层窗口：窗口句柄集合不变（6 -> 6），主窗口 334744 由 iconic=true 恢复为 iconic=false，说明唤起复用同一窗口，没有新建窗口。",
+  "pid": 27464,
+  "before": [
+    "334744|vis=True|iconic=False|class=Tauri Window|title=Fetchweir",
+    "4458876|vis=False|iconic=False|class=tray_icon_app|title=",
+    "4135182|vis=True|iconic=False|class=dev.fetchweir.app-sic|title=dev.fetchweir.app-siw",
+    "138288|vis=True|iconic=False|class=Tao Thread Event Target|title=",
+    "3935512|vis=False|iconic=False|class=MSCTFIME UI|title=MSCTFIME UI",
+    "4266092|vis=False|iconic=False|class=IME|title=Default IME"
+  ],
+  "minimized": [
+    "334744|vis=True|iconic=True|class=Tauri Window|title=Fetchweir",
+    "4458876|vis=False|iconic=False|class=tray_icon_app|title=",
+    "4135182|vis=True|iconic=False|class=dev.fetchweir.app-sic|title=dev.fetchweir.app-siw",
+    "138288|vis=True|iconic=False|class=Tao Thread Event Target|title=",
+    "3935512|vis=False|iconic=False|class=MSCTFIME UI|title=MSCTFIME UI",
+    "4266092|vis=False|iconic=False|class=IME|title=Default IME"
+  ],
+  "reply": "{\"ok\":true}",
+  "after": [
+    "334744|vis=True|iconic=False|class=Tauri Window|title=Fetchweir",
+    "4458876|vis=False|iconic=False|class=tray_icon_app|title=",
+    "4135182|vis=True|iconic=False|class=dev.fetchweir.app-sic|title=dev.fetchweir.app-siw",
+    "138288|vis=True|iconic=False|class=Tao Thread Event Target|title=",
+    "3935512|vis=False|iconic=False|class=MSCTFIME UI|title=MSCTFIME UI",
+    "4266092|vis=False|iconic=False|class=IME|title=Default IME"
+  ],
+  "windowCountBefore": 6,
+  "windowCountAfter": 6
+}

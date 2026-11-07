@@ -1046,6 +1046,12 @@
           sw.disabled = true;
           sw.title = '该选项仅在 Windows 生效';
         }
+        // 已开启管理员模式但当前不是提权进程：给出一次显式重启入口，
+        // 启动路径本身不再自动请求 UAC。
+        const restart = $('adminRestart');
+        if (restart) {
+          restart.hidden = !(elev.platform === 'windows' && elev.runAsAdmin && !elev.elevated);
+        }
       }
     };
     if (!IS_TAURI) {
@@ -1101,22 +1107,65 @@
     if (state.settings) state.settings.globalLimitBps = v * MB;
   }
 
+  /* 扩展安装状态：文件是否随包落盘 + 宿主是否已写进浏览器 HKCU。 */
+  state.extInfo = null;
+  async function loadExtensionInfo() {
+    try {
+      state.extInfo = await invoke('extension_info');
+    } catch (err) {
+      state.extInfo = null;
+    }
+    renderExtensionInfo();
+  }
+  function renderExtensionInfo() {
+    const tag = $('extStatusTag');
+    const reg = $('extRegText');
+    if (!tag || !reg) return;
+    const info = state.extInfo;
+    const nm = state.sniffNm || {};
+    const connected = !!nm.endpointPort;
+    const guide = $('extGuideStatus');
+    const dirText = $('extDirText');
+    if (!info) {
+      tag.textContent = '未连接';
+      tag.style.color = '';
+      reg.textContent = '未注册浏览器';
+      if (guide) guide.textContent = '无法读取扩展状态';
+      return;
+    }
+    tag.textContent = !info.present ? '扩展文件缺失' : (connected ? '已连接' : '已随包提供');
+    tag.style.color = !info.present ? 'var(--err)' : (connected ? 'var(--ok)' : '');
+    reg.textContent = info.browsers.length ? `宿主已注册：${info.browsers.join('、')}` : '宿主未注册';
+    if (guide) {
+      guide.textContent = `扩展文件：${info.present ? '已随安装包提供' : '缺失'} · Native Messaging 宿主：${
+        info.hostRegistered ? `${info.browsers.join('、')}（HKCU，无需管理员）` : '未注册'
+      }`;
+    }
+    if (dirText) dirText.textContent = info.dir ? `扩展目录：${info.dir}` : '扩展目录 —';
+  }
+
   function renderExtStatus() {
     const nm = state.sniffNm;
     const tag = $('extStatusTag');
     const reg = $('extRegText');
     if (!tag || !reg) return;
-    if (!nm) { tag.textContent = '未连接'; reg.textContent = '未注册浏览器'; return; }
-    tag.textContent = nm.endpointPort ? '桥接就绪' : '未连接';
-    tag.style.color = nm.endpointPort ? 'var(--ok)' : '';
-    const names = (nm.registered || []).filter(Boolean);
-    reg.textContent = names.length ? `${names.length} 个浏览器已注册：${names.join('、')}` : '未注册浏览器';
+    if (state.extInfo) {
+      renderExtensionInfo();
+    } else if (!nm) {
+      tag.textContent = '未连接';
+      reg.textContent = '未注册浏览器';
+    } else {
+      tag.textContent = nm.endpointPort ? '桥接就绪' : '未连接';
+      tag.style.color = nm.endpointPort ? 'var(--ok)' : '';
+      const names = (nm.registered || []).filter(Boolean);
+      reg.textContent = names.length ? `${names.length} 个浏览器已注册：${names.join('、')}` : '未注册浏览器';
+    }
     const port = $('sniffPort');
-    if (port) port.textContent = nm.endpointPort ? String(nm.endpointPort) : '—';
+    if (port) port.textContent = nm && nm.endpointPort ? String(nm.endpointPort) : '—';
     const ext = $('sniffExtState');
     if (ext) {
-      ext.textContent = nm.endpointPort ? '宿主已就绪' : '扩展未连接';
-      ext.style.color = nm.endpointPort ? 'var(--ok)' : '';
+      ext.textContent = nm && nm.endpointPort ? '宿主已就绪' : '扩展未连接';
+      ext.style.color = nm && nm.endpointPort ? 'var(--ok)' : '';
     }
   }
   function renderSniffStoreInfo() {
@@ -2192,6 +2241,60 @@
         }
       });
     }
+    const extManage = $('btnExtManage');
+    if (extManage) {
+      extManage.addEventListener('click', async () => {
+        const guide = $('extGuide');
+        if (!guide) return;
+        const opening = guide.hidden;
+        guide.hidden = !opening;
+        if (opening) await loadExtensionInfo();
+      });
+    }
+    const extOpen = $('btnExtOpen');
+    if (extOpen) {
+      extOpen.addEventListener('click', async () => {
+        try {
+          await invoke('open_extension_dir');
+        } catch (e) {
+          toast('打开扩展目录失败：' + (e && e.message ? e.message : e), 'err');
+        }
+      });
+    }
+    const extCopy = $('btnExtCopy');
+    if (extCopy) {
+      extCopy.addEventListener('click', async () => {
+        const steps = [
+          'Fetchweir 浏览器扩展安装步骤',
+          '1. 在应用设置 →「嗅探与浏览器」点「打开扩展文件夹」，找到其中的 extension 目录。',
+          '2. Chrome 打开 chrome://extensions（Edge 为 edge://extensions），右上角开启「开发者模式」。',
+          '3. 点「加载已解压的扩展程序」，选择该 extension 文件夹。',
+          '4. 打开任意网页，右下角出现 Fetchweir 浮动条即安装成功；点击浮动条可唤起应用。'
+        ].join('\n');
+        try {
+          await navigator.clipboard.writeText(steps);
+          toast('安装步骤已复制');
+        } catch (e) {
+          toast('复制失败，请手动按界面步骤操作', 'err');
+        }
+      });
+    }
+    const adminRestart = $('adminRestart');
+    if (adminRestart) {
+      adminRestart.addEventListener('click', async () => {
+        adminRestart.disabled = true;
+        try {
+          const ok = await invoke('restart_elevated');
+          if (!ok) {
+            toast('未获得管理员权限，已保持普通权限运行', 'err');
+            adminRestart.disabled = false;
+          }
+        } catch (e) {
+          toast('提权重启失败：' + (e && e.message ? e.message : e), 'err');
+          adminRestart.disabled = false;
+        }
+      });
+    }
     const swAdmin = $('swRunAsAdmin');
     if (swAdmin) {
       swAdmin.addEventListener('click', async () => {
@@ -2204,7 +2307,7 @@
           state.settings.runAsAdmin = next;
           paintSwitch('swRunAsAdmin', next);
           if (next && relaunching) toast('已请求管理员权限；在 UAC 中确认后应用会以提权重启');
-          else toast(next ? '已开启：下次启动会请求管理员权限' : '已关闭：恢复普通权限启动');
+          else toast(next ? '已开启：可点「以管理员身份重启」提权，正常启动不再弹权限框' : '已关闭：恢复普通权限启动');
         } catch (e) {
           toast('切换失败：' + (e && e.message ? e.message : e), 'err');
         } finally {
@@ -2616,6 +2719,7 @@
       renderSniff();
     } catch (err) { toast('读取嗅探记录失败：' + ((err && err.message) || err), 'err'); }
     loadSniffStatus();
+    loadExtensionInfo().catch(() => {});
     setView(view);
     performance.mark('fw:data');
     listenEvents().catch((err) => toast('订阅事件失败：' + ((err && err.message) || err), 'err'));

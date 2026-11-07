@@ -88,8 +88,8 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor"/></svg>
         <span>视频下载</span>
       </div>
-      <div class="sb" data-nav="settings" id="navSettings">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke="currentColor" stroke-width="1.5"/></svg>
+      <div class="sb" data-nav="settings" id="navSettings" style="margin-top:6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 14a1.6 1.6 0 0 0 .32 1.77l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.6 1.6 0 0 0 15 18.6a1.6 1.6 0 0 0-1 1.47V21a2 2 0 1 1-4 0v-.11A1.6 1.6 0 0 0 9 19.3a1.6 1.6 0 0 0-1.77.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.6 1.6 0 0 0 4.7 15a1.6 1.6 0 0 0-1.47-1H3a2 2 0 1 1 0-4h.11A1.6 1.6 0 0 0 4.7 9a1.6 1.6 0 0 0-.32-1.77l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.6 1.6 0 0 0 9 4.7h.09A1.6 1.6 0 0 0 10 3.23V3a2 2 0 1 1 4 0v.11a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.6 1.6 0 0 0 19.3 9v.09a1.6 1.6 0 0 0 1.47 1H21a2 2 0 1 1 0 4h-.11a1.6 1.6 0 0 0-1.49 1Z"/></svg>
         <span>设置</span>
       </div>
 
@@ -552,9 +552,10 @@
                   <div class="ctl"><button class="sw" id="swAutostart" role="switch" aria-checked="false"></button></div>
                 </div>
                 <div class="set-row" id="rowRunAsAdmin">
-                  <div class="lab">始终以管理员身份运行<small>每次启动请求 UAC；仅 Windows 生效</small></div>
+                  <div class="lab">始终以管理员身份运行<small>开启时请求一次 UAC；之后用右侧按钮提权重启，正常启动不再弹权限框</small></div>
                   <div class="ctl">
                     <span class="tag" id="elevationTag">普通权限</span>
+                    <button class="btn sm ghost" id="adminRestart" hidden>以管理员身份重启</button>
                     <button class="sw" id="swRunAsAdmin" role="switch" aria-checked="false"></button>
                   </div>
                 </div>
@@ -763,12 +764,25 @@
               <div class="sec-d">浏览器扩展、捕获策略与保留时长</div>
               <div class="card">
                 <div class="set-row">
-                  <div class="lab">浏览器扩展<small>通过 Native Messaging 连接本机</small></div>
+                  <div class="lab">浏览器扩展<small>随安装包提供，Native Messaging 宿主注册在当前用户（无需管理员）</small></div>
                   <div class="ctl">
                     <span class="tag" id="extStatusTag">未连接</span>
                     <span class="dim" id="extRegText">未注册浏览器</span>
-                    <button class="btn sm" id="btnExtManage" disabled title="当前版本未提供扩展安装管理界面">管理</button>
-                    <span class="tag">未生效</span>
+                    <button class="btn sm" id="btnExtManage">安装 / 管理</button>
+                  </div>
+                </div>
+                <div class="ext-guide" id="extGuide" hidden>
+                  <div class="ext-line" id="extGuideStatus">正在读取扩展状态…</div>
+                  <div class="ext-line dim" id="extDirText">扩展目录 —</div>
+                  <ol>
+                    <li>点「打开扩展文件夹」，记下其中的 <code>extension</code> 目录。</li>
+                    <li>Chrome 打开 <code>chrome://extensions</code>（Edge 为 <code>edge://extensions</code>），右上角开启「开发者模式」。</li>
+                    <li>点「加载已解压的扩展程序」，选择上一步的 <code>extension</code> 文件夹。</li>
+                    <li>打开任意网页，右下角出现 Fetchweir 浮动条即安装成功；点击浮动条可唤起本应用。</li>
+                  </ol>
+                  <div class="ext-actions">
+                    <button class="btn sm" id="btnExtOpen">打开扩展文件夹</button>
+                    <button class="btn sm ghost" id="btnExtCopy">复制安装步骤</button>
                   </div>
                 </div>
                 <div class="set-row disabled">

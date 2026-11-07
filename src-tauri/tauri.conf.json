@@ -39,6 +39,9 @@
     ],
     "category": "Utility",
     "externalBin": ["binaries/yt-dlp"],
+    "resources": {
+      "../extension": "extension"
+    },
     "shortDescription": "Fetchweir 下载管理器",
     "longDescription": "Fetchweir 是跨平台下载管理器，支持分段并发下载、断点续传与浏览器扩展资源嗅探。",
     "copyright": "© 2026 Fetchweir",

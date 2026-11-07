@@ -105,17 +105,9 @@ pub fn run() {
         nm::run_host();
     }
 
-    // 设置里开启「始终以管理员身份运行」后，每次启动都请求 UAC。
-    // 用户在 UAC 里拒绝时 ShellExecute 返回失败，这里保持普通权限继续运行。
-    // 冒烟/无头测试用 FW_NO_ELEVATE=1 关闭，避免弹出权限对话框。
-    if cfg!(windows) && std::env::var("FW_NO_ELEVATE").is_err() {
-        let saved = settings::load();
-        if saved.run_as_admin && !platform::is_elevated() {
-            if platform::request_elevation(Some("--elevated-launch")) {
-                std::process::exit(0);
-            }
-        }
-    }
+    // 正常启动不再自动请求 UAC：每次双击图标都弹权限框属于「打断式」行为。
+    // 需要提权时由用户在设置页点「以管理员身份重启」（显式一次），
+    // 或由开机自启的最高权限计划任务直接拉起，两条路径都不产生意外弹窗。
 
     tauri::Builder::default()
         // 必须是第一个注册的插件：先拿单实例锁，再初始化窗口与托盘。
@@ -313,9 +305,12 @@ pub fn run() {
             commands::save_settings,
             commands::reset_settings,
             commands::open_data_dir,
+            commands::extension_info,
+            commands::open_extension_dir,
             commands::install_info,
             commands::elevation_status,
             commands::set_run_as_admin,
+            commands::restart_elevated,
             commands::set_autostart,
             commands::open_path,
             commands::reveal_path,

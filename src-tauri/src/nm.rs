@@ -540,15 +540,66 @@ pub struct NmStatus {
     pub tier: String,
 }
 
+/// 已注册宿主的浏览器列表。注册表查询要拉子进程，缓存 15 秒。
+pub fn browser_registration() -> Vec<(String, bool)> {
+    #[cfg(target_os = "windows")]
+    {
+        use std::sync::Mutex;
+        use std::time::{Duration, Instant};
+        static CACHE: Mutex<Option<(Instant, Vec<(String, bool)>)>> = Mutex::new(None);
+        if let Ok(guard) = CACHE.lock() {
+            if let Some((at, list)) = guard.as_ref() {
+                if at.elapsed() < Duration::from_secs(15) {
+                    return list.clone();
+                }
+            }
+        }
+        let dir = settings::ensure_data_dir().join("nm");
+        let chromium_file = dir.join(format!("{HOST_NAME}.json"));
+        let firefox_file = dir.join(format!("{HOST_NAME}.firefox.json"));
+        let chromium_keys = [
+            ("Chrome", r"HKEY_CURRENT_USER\Software\Google\Chrome\NativeMessagingHosts"),
+            ("Chromium", r"HKEY_CURRENT_USER\Software\Chromium\NativeMessagingHosts"),
+            ("Edge", r"HKEY_CURRENT_USER\Software\Microsoft\Edge\NativeMessagingHosts"),
+            ("Brave", r"HKEY_CURRENT_USER\Software\BraveSoftware\Brave-Browser\NativeMessagingHosts"),
+            ("Vivaldi", r"HKEY_CURRENT_USER\Software\Vivaldi\NativeMessagingHosts"),
+        ];
+        let mut list: Vec<(String, bool)> = Vec::new();
+        for (name, key) in chromium_keys {
+            list.push((
+                name.to_string(),
+                registry_value_matches(&format!("{key}\\{HOST_NAME}"), chromium_file.as_path()),
+            ));
+        }
+        list.push((
+            "Firefox".to_string(),
+            registry_value_matches(
+                &format!(r"HKEY_CURRENT_USER\Software\Mozilla\NativeMessagingHosts\{HOST_NAME}"),
+                firefox_file.as_path(),
+            ),
+        ));
+        if let Ok(mut guard) = CACHE.lock() {
+            *guard = Some((Instant::now(), list.clone()));
+        }
+        list
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        Vec::new()
+    }
+}
+
 pub fn status() -> NmStatus {
     let ep = read_endpoint();
     NmStatus {
         host_name: HOST_NAME.to_string(),
         extension_id: EXTENSION_ID.to_string(),
         endpoint_port: ep.as_ref().map(|e| e.port).unwrap_or(0),
-        registered: std::fs::read_to_string(settings::ensure_data_dir().join("nm-register.log"))
-            .map(|s| s.lines().map(|l| l.to_string()).collect())
-            .unwrap_or_default(),
+        registered: browser_registration()
+            .into_iter()
+            .filter(|(_, ok)| *ok)
+            .map(|(name, _)| name)
+            .collect(),
         tier: settings::load().sniff_tier,
     }
 }
