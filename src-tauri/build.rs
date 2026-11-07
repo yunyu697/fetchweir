@@ -24,59 +24,41 @@ fn main() {
     tauri_build::build();
 
     // tauri-build 只把 Windows 资源（含 Common Controls v6 清单）链接进 bin，
-    // 测试 / example 二进制拿不到清单时会退回 comctl32 v5，进而因 TaskDialogIndirect
-    // 缺失而无法启动（STATUS_ENTRYPOINT_NOT_FOUND）。这里把所有目标都补上清单：
-    // windows-gnu 额外链接整份资源对象，windows-msvc 通过 /MANIFESTINPUT 合并。
+    // windows-gnu 下测试 / example 二进制不会从 libresource.a 里拉取该资源对象，
+    // 于是退回 comctl32 v5，因 TaskDialogIndirect 缺失而无法启动
+    // （STATUS_ENTRYPOINT_NOT_FOUND）。这里把已生成的 resource.rc 编译成 COFF
+    // 目标文件并作为 link-arg 提供给所有目标。
+    // windows-msvc 不需要：link.exe 会把 resource.lib 一并转换，清单已在其中；
+    // 再加 /MANIFESTINPUT 会与它冲突（CVT1100 duplicate resource MANIFEST）。
     #[cfg(windows)]
-    link_manifest_to_all_targets();
+    link_resource_for_all_targets();
 }
 
 #[cfg(windows)]
-fn link_manifest_to_all_targets() {
+fn link_resource_for_all_targets() {
+    if std::env::var("CARGO_CFG_TARGET_ENV").unwrap_or_default() != "gnu" {
+        return;
+    }
     let out_dir = match std::env::var("OUT_DIR") {
         Ok(v) => std::path::PathBuf::from(v),
         Err(_) => return,
     };
-    let env = std::env::var("CARGO_CFG_TARGET_ENV").unwrap_or_default();
-
-    if env == "gnu" {
-        let rc = out_dir.join("resource.rc");
-        if !rc.exists() {
-            return;
-        }
-        let obj = out_dir.join("resource-all.coff.o");
-        let ok = std::process::Command::new("windres")
-            .arg("-i")
-            .arg(&rc)
-            .arg("-o")
-            .arg(&obj)
-            .arg("--output-format=coff")
-            .status()
-            .map(|s| s.success())
-            .unwrap_or(false);
-        if ok {
-            println!("cargo:rustc-link-arg={}", obj.display());
-        }
+    let rc = out_dir.join("resource.rc");
+    if !rc.exists() {
         return;
     }
-
-    if env == "msvc" {
-        let manifest = out_dir.join("fetchweir-app.manifest");
-        let xml = r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <dependency>
-    <dependentAssembly>
-      <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls"
-        version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*" />
-    </dependentAssembly>
-  </dependency>
-</assembly>
-"#;
-        if std::fs::write(&manifest, xml).is_ok() {
-            // LNK1220：/MANIFESTINPUT 必须与 /MANIFEST:EMBED 一起使用
-            println!("cargo:rustc-link-arg=/MANIFEST:EMBED");
-            println!("cargo:rustc-link-arg=/MANIFESTINPUT:{}", manifest.display());
-        }
+    let obj = out_dir.join("resource-all.coff.o");
+    let ok = std::process::Command::new("windres")
+        .arg("-i")
+        .arg(&rc)
+        .arg("-o")
+        .arg(&obj)
+        .arg("--output-format=coff")
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false);
+    if ok {
+        println!("cargo:rustc-link-arg={}", obj.display());
     }
 }
 
