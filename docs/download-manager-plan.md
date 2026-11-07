@@ -605,11 +605,11 @@ downloading ──失败──► download-failed（可重试，保留镜像切�
 | macOS | 打开 dmg 引导用户完成，随后退出 | 无公证前不做静默替换；正式发布补签名与公证 |
 | Linux | 打开 AppImage / 提示用包管理器安装 deb | 与 §10 的分发结论一致 |
 
-### 12.6 实现状态（v1.0.0-alpha2 开发线）
+### 12.6 实现状态（v1.0.0）
 
 已落地：`src-tauri/src/update.rs` + 设置页「更新」卡片。行为与 §12.2–12.5 对齐，差异点单列。
 
-- **检查**：只读 `api.github.com/repos/{updateRepo}/releases`，草稿跳过；按平台后缀挑包（Windows `*-setup.exe`、macOS `*.dmg`、Linux `*.AppImage` 优先、`*.deb` 兜底）。预发布按 semver 预发布序比较：`alpha10 > alpha9`，`1.0.0 > 1.0.0-alphaN`。
+- **检查**：只读 `api.github.com/repos/{updateRepo}/releases`，草稿跳过；按平台后缀挑包（Windows 按当前安装范围选 `*-setup.exe` 或 `*-setup-allusers.exe`、macOS `*.dmg`、Linux `*.AppImage` 优先、`*.deb` 兜底）。预发布按 semver 预发布序比较：`alpha10 > alpha9`，`1.0.0 > 1.0.0-alphaN`。
 - **私有仓库**：仓库当前为 private，需在设置里填「访问令牌」，或设置环境变量 `FETCHWEIR_GITHUB_TOKEN`。未配置令牌时返回明确原因，不静默失败。
 - **镜像**：内置 GitHub 直连 / ghfast.top / gh-proxy.com 三个**前缀转发**镜像，下拉切换即时保存；公开仓库下载按「所选镜像 → 其余镜像」顺序自动回退，全部失败才报错。私有仓库的资源只能走带令牌的 API 端点，镜像不参与（代理无法携带鉴权）。
 - **下载**：`.part` 断点续传（取消后保留已下载字节）；`Content-Length` 与落盘字节数一致才判定成功。「仅下载」落到系统默认下载目录，「更新」落到数据目录 `updates/`。

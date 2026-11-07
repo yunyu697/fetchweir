@@ -266,11 +266,11 @@
 
   const DEMO_UPDATE = {
     stage: 'updateAvailable',
-    currentVersion: '1.0.0-alpha2',
-    latestVersion: '1.0.0-alpha3',
+    currentVersion: '1.0.0',
+    latestVersion: '1.0.1',
     notes: '· 修复 HLS 分片重试时的连接泄漏\n· 嗅探页支持按域名过滤\n· 视频解析结果增加编码与体积提示\n· 更新镜像切换后立即生效',
     publishedAt: '2026-11-05T09:20:00Z',
-    assetName: 'Fetchweir_1.0.0-alpha3_x64-setup.exe',
+    assetName: 'Fetchweir_1.0.1_x64-setup.exe',
     assetSize: 18.4 * MB,
     mirrors: [
       { id: 'github', label: 'GitHub 直连' },
@@ -2490,7 +2490,7 @@
       state.sniff = demoSniff();
       state.sniffNm = DEMO_NM;
       state.update = Object.assign({}, DEMO_UPDATE);
-      state.info = { version: '1.0.0-alpha2', dataDir: 'C:\\Users\\Tyler\\AppData\\Local\\Fetchweir' };
+      state.info = { version: '1.0.0', dataDir: 'C:\\Users\\Tyler\\AppData\\Roaming\\Fetchweir' };
       applyInfo(state.info);
       applyVisuals(state.settings);
       renderSettings();

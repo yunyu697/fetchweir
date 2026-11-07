@@ -10,11 +10,13 @@
 .EXAMPLE
   pwsh -File .\tools\Next-FwVersion.ps1 -FwBump alpha
 .EXAMPLE
+  pwsh -File .\tools\Next-FwVersion.ps1 -FwBump release -FwApply
+.EXAMPLE
   pwsh -File .\tools\Next-FwVersion.ps1 -FwBump patch -FwApply
 #>
 [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
 param(
-    [ValidateSet('patch', 'minor', 'major', 'alpha')]
+    [ValidateSet('patch', 'minor', 'major', 'alpha', 'release')]
     [string]$FwBump = 'patch',
 
     [switch]$FwApply,
@@ -56,6 +58,12 @@ $FwNextAlpha = $FwAlpha
 switch ($FwBump) {
     'alpha' {
         $FwNextAlpha = if ($FwAlpha -lt 1) { 1 } else { $FwAlpha + 1 }
+    }
+    'release' {
+        if ($FwAlpha -lt 1) {
+            throw "当前版本不是 alpha 预发布: $FwCurrent，无需转正式。"
+        }
+        $FwNextAlpha = -1
     }
     'patch' {
         $FwNextPatch = $FwPatch + 1

@@ -59,15 +59,27 @@ switch ($FwTask) {
         if ($FwScope -eq 'perMachine') {
             # 覆盖 NSIS 安装范围，安装到 Program Files 并写 HKLM 卸载项；
             # 产物改名带 -setup-allusers 后缀，供更新器按安装范围匹配。
+            # tauri 两种范围产出同名文件：先备份已构建的用户级包，perMachine 构建完再还原，
+            # 避免把用户级包覆盖成提权安装包。
+            $FwBundleRoot = if ($env:CARGO_TARGET_DIR) { $env:CARGO_TARGET_DIR } else { Join-Path $FwRepoRoot 'src-tauri\target' }
+            $FwNsisDir = Join-Path $FwBundleRoot 'release\bundle\nsis'
+            $FwVer = (Get-Content (Join-Path $FwRepoRoot 'version.json') -Raw | ConvertFrom-Json).version
+            $FwSetup = Join-Path $FwNsisDir "Fetchweir_${FwVer}_x64-setup.exe"
+            $FwBackup = "$FwSetup.userbak"
+            $FwHadUser = Test-Path $FwSetup
+            if ($FwHadUser) { Copy-Item $FwSetup $FwBackup -Force }
             $FwJson = '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}'
             & npm run build --prefix $FwRepoRoot -- --config $FwJson
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            $FwVer = (Get-Content (Join-Path $FwRepoRoot 'version.json') -Raw | ConvertFrom-Json).version
-            $FwBundleRoot = if ($env:CARGO_TARGET_DIR) { $env:CARGO_TARGET_DIR } else { Join-Path $FwRepoRoot 'src-tauri\target' }
-            $FwSetup = Join-Path $FwBundleRoot "release\bundle\nsis\Fetchweir_${FwVer}_x64-setup.exe"
             if (-not (Test-Path $FwSetup)) { throw "未找到 perMachine 安装包：$FwSetup" }
             $FwAllUsers = $FwSetup -replace '-setup\.exe$', '-setup-allusers.exe'
             Copy-Item $FwSetup $FwAllUsers -Force
+            if ($FwHadUser) {
+                Move-Item $FwBackup $FwSetup -Force
+                Write-Host '已还原用户级安装包'
+            } else {
+                Write-Host '未发现既有用户级安装包，请再跑一次默认范围构建' -ForegroundColor Yellow
+            }
             Write-Host "perMachine 安装包：$FwAllUsers"
         } else {
             & npm run build --prefix $FwRepoRoot

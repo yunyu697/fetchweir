@@ -68,13 +68,15 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: "Fetchweir ${{ github.ref_name }}"
           releaseBody: |
-            Fetchweir ${{ github.ref_name }} 自动构建产物。
+            Fetchweir ${{ github.ref_name }} 构建产物。
 
-            · Windows: NSIS 安装包
+            · Windows: NSIS 当前用户包（无需 UAC）+ 所有用户包（需 UAC）
             · Linux: deb / AppImage
-            · macOS: dmg
+            · macOS: 未签名 dmg（未公证，首次打开需手动放行）
 
-            更新说明与变更记录见仓库提交历史。
+            已知未验证：真实注销登录触发 ONLOGON、深色任务栏托盘实拍、多用户并发登录、
+            macOS 公证、Linux 系统级安装。完整说明与未验证原因见仓库
+            `docs/release-notes-v1.0.0.md`。
           releaseDraft: false
           prerelease: ${{ contains(github.ref_name, '-alpha') }}
           args: --bundles ${{ matrix.bundles }}
