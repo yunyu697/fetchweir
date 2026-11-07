@@ -4,7 +4,10 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 
 pub fn data_dir() -> PathBuf {
-    dirs::data_local_dir()
+    // 必须与安装目录分开：Windows「仅当前用户」安装落在 %LOCALAPPDATA%\Fetchweir，
+    // 如果数据也放这里，卸载时会被一并删掉。改用漫游目录，卸载/重装后设置与记录仍在。
+    dirs::data_dir()
+        .or_else(dirs::data_local_dir)
         .or_else(dirs::home_dir)
         .unwrap_or_else(|| PathBuf::from("."))
         .join("Fetchweir")
