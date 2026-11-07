@@ -2,6 +2,10 @@
 
 跨平台下载管理器（Rust + Tauri 2）。分段并发下载、断点续传、浏览器扩展资源嗅探、视频格式解析（yt-dlp sidecar）。
 
+当前版本 **1.0.0**（正式版）。发布说明见 [docs/release-notes-v1.0.0.md](docs/release-notes-v1.0.0.md)，
+其中区分「已实测 / 未验证 / 被环境挡住」并写明原因；`v1.0.0` tag 触发 CI 产出 Windows（两种安装范围）、
+Linux（deb / AppImage）与 macOS（未签名 dmg）产物。
+
 ## 完成度（如实分级）
 
 | 级别 | 内容 |
