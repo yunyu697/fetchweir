@@ -129,7 +129,9 @@ pub fn save_settings(engine: State<'_, Arc<Engine>>, settings: Settings) -> Resu
     next.update_mirror = engine.settings.read().unwrap().update_mirror.clone();
     settings::save(&next)?;
     engine.pacer.set_bps(next.global_limit_bps);
+    engine.budget.set_enabled(next.auto_concurrency);
     *engine.settings.write().unwrap() = next;
+    engine.step_budget();
     Ok(())
 }
 
@@ -139,7 +141,9 @@ pub fn reset_settings(engine: State<'_, Arc<Engine>>) -> Result<Settings, String
     let next = Settings::default();
     settings::save(&next)?;
     engine.pacer.set_bps(next.global_limit_bps);
+    engine.budget.set_enabled(next.auto_concurrency);
     *engine.settings.write().unwrap() = next.clone();
+    engine.step_budget();
     Ok(next)
 }
 

@@ -137,6 +137,7 @@ pub fn run() {
             let handle = app.handle().clone();
             let engine = engine::Engine::new(handle, settings);
             engine.spawn_ticker();
+            engine.spawn_budget_monitor();
             app.manage(engine);
             app.manage(update::Updater::new(app.handle().clone()));
 

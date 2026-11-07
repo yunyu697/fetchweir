@@ -17,7 +17,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::settings::Settings;
 
-use self::adaptive::{AdaptiveConn, ConnSlot};
+use self::adaptive::{AdaptiveConn, ConnSlot, GlobalBudget};
 use self::pacer::Pacer;
 use self::speed::SpeedMeter;
 
@@ -161,7 +161,6 @@ impl Task {
         file_name: String,
         user_named: bool,
         connections: u32,
-        auto_conn: bool,
         headers: Vec<(String, String)>,
     ) -> Self {
         let connections = connections.clamp(1, 16);
@@ -172,7 +171,7 @@ impl Task {
             file_name: Mutex::new(file_name),
             user_named,
             connections,
-            conn: AdaptiveConn::new(connections, auto_conn),
+            conn: AdaptiveConn::new(connections),
             headers,
             total: AtomicU64::new(0),
             done: AtomicU64::new(0),
@@ -276,6 +275,8 @@ pub struct Engine {
     next_id: AtomicU64,
     pub settings: RwLock<Settings>,
     pub pacer: Pacer,
+    /// 多任务共享的连接预算：按总吞吐统一降档/恢复，避免各任务独立下探。
+    pub budget: Arc<GlobalBudget>,
 }
 
 impl Engine {
@@ -302,6 +303,7 @@ impl Engine {
             tasks: Mutex::new(Vec::new()),
             next_id: AtomicU64::new(1),
             pacer: Pacer::new(settings.global_limit_bps),
+            budget: Arc::new(GlobalBudget::new(settings.auto_concurrency)),
             settings: RwLock::new(settings),
         })
     }
@@ -359,7 +361,6 @@ impl Engine {
             name,
             name_given,
             connections.unwrap_or(settings.connections).clamp(1, settings.max_connections.clamp(1, 16)),
-            settings.auto_concurrency,
             headers,
         ));
         self.tasks.lock().unwrap().push(task.clone());
@@ -482,6 +483,87 @@ impl Engine {
         });
     }
 
+    fn active_tasks(&self) -> Vec<Arc<Task>> {
+        let tasks = self.tasks.lock().unwrap();
+        tasks
+            .iter()
+            .filter(|t| t.state() == TaskState::Active)
+            .cloned()
+            .collect()
+    }
+
+    /// 按当前全局预算给每个活跃任务下发上限。返回 true 表示有任务的上限变化。
+    fn apply_budget_alloc(&self, active: &[Arc<Task>]) -> bool {
+        if active.is_empty() {
+            return false;
+        }
+        let alloc = self.budget.alloc(active.len() as u32);
+        let reason = self.budget.reason();
+        let mut any = false;
+        for (task, cap) in active.iter().zip(alloc) {
+            any |= task.conn.apply_global(Some(cap), reason.clone());
+        }
+        any
+    }
+
+    /// 全局预算监控：每 3 秒按所有活跃任务的总速率判定一次并重新分配。
+    pub fn spawn_budget_monitor(self: &Arc<Self>) {
+        let engine = self.clone();
+        tauri::async_runtime::spawn(async move {
+            let mut tick = tokio::time::interval(Duration::from_secs(3));
+            tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+            tick.tick().await;
+            loop {
+                tick.tick().await;
+                engine.step_budget();
+            }
+        });
+    }
+
+    pub fn step_budget(&self) {
+        let active = self.active_tasks();
+        if active.is_empty() {
+            self.budget.sync_tasks(0, 0);
+            return;
+        }
+        if !self.settings.read().unwrap().auto_concurrency {
+            self.budget.set_enabled(false);
+            let mut changed = false;
+            for task in &active {
+                changed |= task.conn.apply_global(None, None);
+            }
+            if changed {
+                for task in &active {
+                    self.emit_task(task);
+                }
+            }
+            return;
+        }
+        self.budget.set_enabled(true);
+        let base: u32 = active.iter().map(|t| t.connections).sum();
+        self.budget.sync_tasks(active.len() as u32, base);
+        let bps: u64 = active.iter().map(|t| t.speed.bps()).sum();
+        let changed = self.budget.observe(bps);
+        let allocated = self.apply_budget_alloc(&active);
+        if changed || allocated {
+            for task in &active {
+                self.emit_task(task);
+            }
+        }
+    }
+
+    /// 429/503 命中限流：由全局预算统一降档，立即重新分配并刷新快照。
+    fn on_throttle(&self) {
+        if !self.budget.note_throttle() {
+            return;
+        }
+        let active = self.active_tasks();
+        self.apply_budget_alloc(&active);
+        for task in &active {
+            self.emit_task(task);
+        }
+    }
+
     async fn run_task(self: Arc<Self>, task: Arc<Task>, token: CancellationToken, run_id: u64) {
         task.conn.begin_run();
         // 探测只发一次请求，网络抖动（TLS 重置、瞬时 5xx）会让整个任务直接失败；
@@ -583,30 +665,7 @@ impl Engine {
             }));
         }
 
-        // 自适应并发监控：3 秒一个窗口，只在档位变化时推送完整快照，
-        // 前端据此显示“已降低连接数”及原因。
-        {
-            let engine = self.clone();
-            let task = task.clone();
-            let token = token.clone();
-            tauri::async_runtime::spawn(async move {
-                let mut tick = tokio::time::interval(Duration::from_secs(3));
-                tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
-                tick.tick().await; // 第一次立即返回，跳过
-                loop {
-                    tokio::select! {
-                        _ = tick.tick() => {}
-                        _ = token.cancelled() => break,
-                    }
-                    if !same_run(&task, run_id) || task.state() != TaskState::Active {
-                        break;
-                    }
-                    if task.conn.observe(task.speed.bps()) {
-                        engine.emit_task(&task);
-                    }
-                }
-            });
-        }
+        // 并发上限由全局预算监控统一判定并下发，这里不再按任务单独采样。
 
         let mut first_err: Option<String> = None;
         for h in handles {
@@ -705,8 +764,8 @@ impl Engine {
                     // 429/503 是服务端限速：退避要更长，否则重试会继续撞限流；
                     // 同时立即触发自动降并发。各分段按 idx 错开，避免同一毫秒重试形成突发。
                     let throttled = matches!(&e, EngineError::Http(s) if s.starts_with("HTTP 429") || s.starts_with("HTTP 503"));
-                    if throttled && task.conn.note_throttle() {
-                        self.emit_task(&task);
+                    if throttled {
+                        self.on_throttle();
                     }
                     let base = if throttled { 1500 } else { 300 };
                     let backoff = Duration::from_millis(base * 2u64.pow(attempt.min(4)) + 97 * idx as u64);
