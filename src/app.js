@@ -2456,6 +2456,35 @@
       catch (err) { toast('切换镜像失败：' + ((err && err.message) || err), 'err'); }
     });
 
+    /* 设置页顶部分组导航：点击滚动到对应分组；滚动时同步高亮当前分组。
+     * 之前这排 <a> 只有 data-jump 没有监听，点了完全没反应。 */
+    const setNavLinks = $$('#setNav a');
+    const setScroller = $('viewSettings');
+    let setNavLock = 0;
+    const syncSetNav = () => {
+      if (!setScroller || setScroller.hidden || Date.now() < setNavLock) return;
+      const mark = setScroller.scrollTop + 28;
+      let active = setNavLinks[0];
+      setNavLinks.forEach((a) => {
+        const sec = document.getElementById(a.dataset.jump);
+        if (sec && sec.offsetTop <= mark) active = a;
+      });
+      // 最后一组滚不到顶端时，滚到底部即视为当前分组
+      if (setScroller.scrollTop + setScroller.clientHeight >= setScroller.scrollHeight - 2) {
+        active = setNavLinks[setNavLinks.length - 1];
+      }
+      setNavLinks.forEach((a) => a.classList.toggle('on', a === active));
+    };
+    setNavLinks.forEach((a) => a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const sec = document.getElementById(a.dataset.jump);
+      if (!sec || !setScroller) return;
+      setNavLock = Date.now() + 800;
+      setScroller.scrollTo({ top: Math.max(0, sec.offsetTop - 12), behavior: 'smooth' });
+      setNavLinks.forEach((x) => x.classList.toggle('on', x === a));
+    }));
+    if (setScroller) setScroller.addEventListener('scroll', syncSetNav, { passive: true });
+
     /* 关于 / 数据 */
     on('btnClearSniff', 'click', clearSniffItems);
     on('btnExportSettings', 'click', async () => {
