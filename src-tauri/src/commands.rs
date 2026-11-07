@@ -52,14 +52,7 @@ pub fn export_settings(engine: State<'_, Arc<Engine>>) -> Result<String, String>
 }
 
 fn settings_export_body(settings: &Settings) -> Result<String, String> {
-    let mut value = serde_json::to_value(settings).map_err(|e| e.to_string())?;
-    if let Some(obj) = value.as_object_mut() {
-        obj.insert(
-            "updateToken".to_string(),
-            serde_json::Value::String(String::new()),
-        );
-    }
-    serde_json::to_string_pretty(&value).map_err(|e| e.to_string())
+    serde_json::to_string_pretty(settings).map_err(|e| e.to_string())
 }
 
 fn write_settings_export(settings: &Settings, dir: &Path) -> Result<PathBuf, String> {
@@ -504,17 +497,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn export_writes_json_without_token() {
+    fn export_writes_json_settings() {
         let dir = std::env::temp_dir().join(format!("fw-export-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let mut settings = Settings::default();
         settings.download_dir = dir.to_string_lossy().to_string();
-        settings.update_token = "secret-token".to_string();
         let path = write_settings_export(&settings, &dir).unwrap();
         let raw = std::fs::read_to_string(&path).unwrap();
-        assert!(raw.contains("\"updateToken\": \"\""));
-        assert!(!raw.contains("secret-token"));
         assert!(raw.contains("\"downloadDir\""));
+        assert!(raw.contains("\"updateRepo\""));
+        // 客户端不再保存任何更新访问令牌
+        assert!(!raw.contains("updateToken"));
         std::fs::remove_file(&path).unwrap();
         std::fs::remove_dir_all(&dir).unwrap();
     }

@@ -113,3 +113,35 @@ jobs:
             throw '安装包执行级别与安装范围不符'
           }
           gh release upload "${{ github.ref_name }}" $fwDst --clobber
+
+  # 源码仓库保持私有：把产物、latest.json 与签名推到公开「发布产物」仓库，
+  # 客户端只读公开仓库，不携带任何令牌。
+  # 需要两个 secret：FW_RELEASES_PAT（公开仓库写权限）、FW_SIGNING_KEY（Ed25519 私钥）。
+  publish-public:
+    name: 发布到公开仓库
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 拉取本次 Release 产物
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --dir dist --clobber
+
+      - name: 生成签名清单并推送
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.FW_RELEASES_PAT }}
+          FW_RELEASES_PAT: ${{ secrets.FW_RELEASES_PAT }}
+          FW_SIGNING_KEY: ${{ secrets.FW_SIGNING_KEY }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:FW_RELEASES_PAT)) {
+            Write-Host '跳过：未配置 FW_RELEASES_PAT（公开仓库写权限的 PAT）'
+            exit 0
+          }
+          ./tools/Publish-FwRelease.ps1 -FwTag "$env:GITHUB_REF_NAME" -FwDir dist

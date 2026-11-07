@@ -34,6 +34,9 @@ tokio-util = { version = "0.7", features = ["rt"] }
 thiserror = "2"
 dirs = "6"
 url = "2"
+# 更新清单验签（Ed25519）与安装包 SHA256 校验。
+ring = "0.17"
+base64 = "0.22"
 # 单实例：第二次启动把参数转发给已有实例并退出。
 tauri-plugin-single-instance = "2"
 

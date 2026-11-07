@@ -12,12 +12,19 @@ use tauri::{AppHandle, Emitter};
 use tokio::io::AsyncWriteExt;
 use tokio_util::sync::CancellationToken;
 
-use crate::settings::{self, Settings};
+use crate::settings;
 use crate::VERSION;
 
-const DEFAULT_REPO: &str = "yunyu697/fetchweir";
+/// 默认只读的公开「发布产物」仓库：源码仓库保持私有，这里只放安装包与清单。
+const DEFAULT_REPO: &str = "yunyu697/fetchweir-releases";
 const GITHUB_API: &str = "https://api.github.com";
 const CANCELLED: &str = "__cancelled__";
+/// 发布清单固定文件名，与同名 `.sig`（base64 Ed25519 签名）一起放在 Release 里。
+const MANIFEST_NAME: &str = "latest.json";
+/// 发布清单验签公钥（Ed25519 原始公钥，base64，32 字节）。
+/// 与它配对的私钥只存在于发布流水线的 secret（FW_SIGNING_KEY），客户端不含私钥。
+/// 首次正式发布前必须用自己的密钥替换：`node tools/New-FwSigningKey.mjs`。
+const RELEASE_PUBKEY_B64: &str = "rCIGNn+TyD8uXrd2b1+LK+K9HgaFylkNwbUOGXZUgU0=";
 
 pub struct MirrorDef {
     pub id: &'static str,
@@ -59,6 +66,14 @@ pub struct UpdateDto {
     pub message: Option<String>,
     pub can_install: bool,
     pub download_dir: String,
+    /// 清单签名是否已通过校验（旧更新源回退时为 false，界面需明确提示）。
+    pub verified: bool,
+    /// 清单中声明的安装包 SHA256（旧更新源没有）。
+    pub sha256: Option<String>,
+    /// 清单声明的最低系统要求（旧更新源没有）。
+    pub min_system: Option<String>,
+    /// 当前更新源是否支持 GitHub 前缀镜像（自建更新源时为 false）。
+    pub mirrors_available: bool,
 }
 
 #[derive(Clone)]
@@ -68,13 +83,22 @@ struct Latest {
     published_at: String,
     asset_name: String,
     asset_size: u64,
-    asset_id: u64,
     browser_url: String,
+    sha256: Option<String>,
+    verified: bool,
+}
+
+#[derive(Clone, Default)]
+struct MinSystem {
+    windows: String,
+    macos: String,
+    linux: String,
 }
 
 struct Inner {
     stage: &'static str,
     latest: Option<Latest>,
+    min_system: MinSystem,
     mirror: String,
     progress: f64,
     downloaded: u64,
@@ -109,11 +133,132 @@ struct GhRelease {
 
 #[derive(Deserialize)]
 struct GhAsset {
-    id: u64,
     name: String,
     browser_download_url: String,
     #[serde(default)]
     size: u64,
+}
+
+/// 发布清单 latest.json。
+#[derive(Clone, Deserialize)]
+struct Manifest {
+    version: String,
+    #[serde(default)]
+    published_at: String,
+    #[serde(default)]
+    notes: String,
+    #[serde(default)]
+    assets: Vec<ManifestAsset>,
+    #[serde(default)]
+    min_system: MinSystemRaw,
+}
+
+#[derive(Clone, Deserialize)]
+struct ManifestAsset {
+    platform: String,
+    #[serde(default)]
+    arch: String,
+    name: String,
+    url: String,
+    #[serde(default)]
+    size: u64,
+    sha256: String,
+}
+
+#[derive(Clone, Default, Deserialize)]
+#[serde(default)]
+struct MinSystemRaw {
+    windows: String,
+    macos: String,
+    linux: String,
+}
+
+impl From<MinSystemRaw> for MinSystem {
+    fn from(raw: MinSystemRaw) -> Self {
+        Self { windows: raw.windows, macos: raw.macos, linux: raw.linux }
+    }
+}
+
+/// 当前平台在清单里使用的键。
+fn manifest_platform() -> &'static str {
+    if cfg!(target_os = "windows") {
+        "windows"
+    } else if cfg!(target_os = "macos") {
+        "macos"
+    } else {
+        "linux"
+    }
+}
+
+fn manifest_arch() -> &'static str {
+    std::env::consts::ARCH
+}
+
+/// 先找平台+架构完全匹配的资产，再退回只有平台的条目。
+/// Windows 还需按当前安装范围区分「所有用户」包与用户级包，否则会装出第二份副本。
+fn select_manifest_asset(assets: &[ManifestAsset]) -> Option<&ManifestAsset> {
+    let platform = manifest_platform();
+    let arch = manifest_arch();
+    let mut pool: Vec<&ManifestAsset> = assets
+        .iter()
+        .filter(|a| a.platform == platform && (a.arch.is_empty() || a.arch == arch))
+        .collect();
+    if pool.is_empty() {
+        pool = assets.iter().filter(|a| a.platform == platform).collect();
+    }
+    #[cfg(target_os = "windows")]
+    {
+        let per_machine = crate::platform::install_info().scope == "perMachine";
+        let suffix = if per_machine { "-setup-allusers.exe" } else { "-setup.exe" };
+        if let Some(hit) = pool
+            .iter()
+            .find(|a| a.name.to_ascii_lowercase().ends_with(suffix))
+        {
+            return Some(hit);
+        }
+    }
+    pool.first().copied()
+}
+
+enum ManifestErr {
+    /// 更新源没有发布清单：可以退回旧逻辑，但要标注「未校验」。
+    Missing(String),
+    /// 清单存在但不可信（签名不对、格式错）：直接失败，不降级。
+    Rejected(String),
+}
+
+fn base64_decode(s: &str) -> Result<Vec<u8>, String> {
+    use base64::Engine;
+    let cleaned: String = s.chars().filter(|c| !c.is_whitespace()).collect();
+    base64::engine::general_purpose::STANDARD
+        .decode(cleaned)
+        .map_err(|e| format!("base64 解码失败：{e}"))
+}
+
+/// 用内置公钥校验清单签名；任何异常都视为不通过。
+fn verify_manifest(bytes: &[u8], sig_text: &str) -> Result<(), String> {
+    use ring::signature::{UnparsedPublicKey, ED25519};
+    let key = base64_decode(RELEASE_PUBKEY_B64)?;
+    let sig = base64_decode(sig_text)?;
+    UnparsedPublicKey::new(&ED25519, &key)
+        .verify(bytes, &sig)
+        .map_err(|_| "清单签名校验失败：更新源内容可能被篡改或公钥不匹配。".to_string())
+}
+
+fn sha256_file(path: &Path) -> Result<String, String> {
+    use ring::digest::{Context, SHA256};
+    use std::io::Read;
+    let mut file = std::fs::File::open(path).map_err(|e| format!("读取安装包失败：{e}"))?;
+    let mut ctx = Context::new(&SHA256);
+    let mut buf = [0u8; 64 * 1024];
+    loop {
+        let n = file.read(&mut buf).map_err(|e| format!("读取安装包失败：{e}"))?;
+        if n == 0 {
+            break;
+        }
+        ctx.update(&buf[..n]);
+    }
+    Ok(ctx.finish().as_ref().iter().map(|b| format!("{b:02x}")).collect())
 }
 
 /// 语义化版本：<major>.<minor>.<patch>[-pre][+build]。
@@ -248,17 +393,6 @@ fn pick_asset(assets: &[GhAsset]) -> Option<&GhAsset> {
         .or_else(|| assets.iter().find(|a| a.name.to_ascii_lowercase().ends_with(".deb")))
 }
 
-fn token_of(s: &Settings) -> Option<String> {
-    let t = s.update_token.trim();
-    if !t.is_empty() {
-        return Some(t.to_string());
-    }
-    std::env::var("FETCHWEIR_GITHUB_TOKEN")
-        .ok()
-        .map(|v| v.trim().to_string())
-        .filter(|v| !v.is_empty())
-}
-
 fn brief(err: &reqwest::Error) -> String {
     let raw = err.to_string();
     let mut s: String = raw.chars().take(160).collect();
@@ -281,6 +415,7 @@ impl Updater {
             inner: Mutex::new(Inner {
                 stage: "idle",
                 latest: None,
+                min_system: MinSystem::default(),
                 mirror,
                 progress: 0.0,
                 downloaded: 0,
@@ -327,6 +462,21 @@ impl Updater {
                 .map(|p| p.exists())
                 .unwrap_or(false),
             download_dir: inner.download_dir.clone(),
+            verified: inner.latest.as_ref().map(|l| l.verified).unwrap_or(false),
+            sha256: inner.latest.as_ref().and_then(|l| l.sha256.clone()),
+            min_system: {
+                let raw = match manifest_platform() {
+                    "windows" => &inner.min_system.windows,
+                    "macos" => &inner.min_system.macos,
+                    _ => &inner.min_system.linux,
+                };
+                if raw.trim().is_empty() { None } else { Some(raw.clone()) }
+            },
+            mirrors_available: inner
+                .latest
+                .as_ref()
+                .map(|l| l.browser_url.starts_with("https://github.com/"))
+                .unwrap_or(true),
         }
     }
 
@@ -352,6 +502,53 @@ impl Updater {
         self.set_stage("failed", Some(message))
     }
 
+    /// 读取公开发布仓库最新 Release 里的 latest.json，并用内置公钥验签。
+    async fn fetch_manifest(
+        self: &Arc<Self>,
+        client: &reqwest::Client,
+        repo: &str,
+    ) -> Result<Manifest, ManifestErr> {
+        let base = format!("https://github.com/{repo}/releases/latest/download");
+        let manifest_url = format!("{base}/{MANIFEST_NAME}");
+        let sig_url = format!("{base}/{MANIFEST_NAME}.sig");
+
+        let resp = client.get(&manifest_url).send().await.map_err(|e| {
+            ManifestErr::Missing(format!("未取到发布清单：{}。", brief(&e)))
+        })?;
+        if resp.status() == reqwest::StatusCode::NOT_FOUND {
+            return Err(ManifestErr::Missing(format!(
+                "更新源 {repo} 没有发布 {MANIFEST_NAME} 清单，已回退到未校验的 Release 列表。"
+            )));
+        }
+        if !resp.status().is_success() {
+            return Err(ManifestErr::Missing(format!(
+                "更新源返回 HTTP {}，未取到发布清单。",
+                resp.status().as_u16()
+            )));
+        }
+        let bytes = resp
+            .bytes()
+            .await
+            .map_err(|e| ManifestErr::Missing(format!("读取发布清单失败：{}", brief(&e))))?;
+
+        let sig = client.get(&sig_url).send().await.map_err(|e| {
+            ManifestErr::Rejected(format!("未取到清单签名文件：{}。", brief(&e)))
+        })?;
+        if !sig.status().is_success() {
+            return Err(ManifestErr::Rejected(format!(
+                "发布清单缺少签名文件（HTTP {}）；为避免安装被篡改的文件，更新已中止。",
+                sig.status().as_u16()
+            )));
+        }
+        let sig_text = sig
+            .text()
+            .await
+            .map_err(|e| ManifestErr::Rejected(format!("读取清单签名失败：{}。", brief(&e))))?;
+        verify_manifest(&bytes, &sig_text).map_err(ManifestErr::Rejected)?;
+        serde_json::from_slice(&bytes)
+            .map_err(|e| ManifestErr::Rejected(format!("发布清单格式无效：{e}。")))
+    }
+
     pub async fn check(self: &Arc<Self>) -> UpdateDto {
         self.set_stage("checking", None);
         let s = settings::load();
@@ -360,7 +557,6 @@ impl Updater {
         } else {
             s.update_repo.trim().to_string()
         };
-        let token = token_of(&s);
 
         let client = match reqwest::Client::builder()
             .connect_timeout(Duration::from_secs(15))
@@ -372,20 +568,76 @@ impl Updater {
             Err(e) => return self.fail(format!("初始化网络客户端失败：{e}")),
         };
 
+        let current = parse_ver(VERSION).unwrap_or(Ver {
+            major: 0,
+            minor: 0,
+            patch: 0,
+            pre: Vec::new(),
+        });
+
+        // 首选：公开发布仓库的 latest.json，签名不通过直接拒绝，绝不回退。
+        match self.fetch_manifest(&client, &repo).await {
+            Ok(manifest) => self.apply_manifest(manifest, &current),
+            Err(ManifestErr::Rejected(msg)) => self.fail(msg),
+            Err(ManifestErr::Missing(why)) => {
+                // 兼容尚未迁移的旧更新源：退回 Release 列表，但没有签名与 SHA256。
+                self.check_legacy(&client, &repo, &current, why).await
+            }
+        }
+    }
+
+    /// 使用已验签清单生成更新状态。
+    fn apply_manifest(self: &Arc<Self>, manifest: Manifest, current: &Ver) -> UpdateDto {
+        let Some(ver) = parse_ver(&manifest.version) else {
+            return self.fail(format!("更新清单的版本号无法识别：{}", manifest.version));
+        };
+        if (ver.is_prerelease()) && !current.is_prerelease() {
+            return self.set_stage("upToDate", None);
+        }
+        if ver <= *current {
+            return self.set_stage("upToDate", None);
+        }
+        let Some(asset) = select_manifest_asset(&manifest.assets) else {
+            return self.fail("更新清单中没有适用于当前平台与架构的安装包。".to_string());
+        };
+        let latest = Latest {
+            version: manifest.version.trim().trim_start_matches(['v', 'V']).to_string(),
+            notes: if manifest.notes.trim().is_empty() {
+                "该版本未提供更新说明。".to_string()
+            } else {
+                manifest.notes.clone()
+            },
+            published_at: manifest.published_at.clone(),
+            asset_name: asset.name.clone(),
+            asset_size: asset.size,
+            browser_url: asset.url.clone(),
+            sha256: Some(asset.sha256.clone()),
+            verified: true,
+        };
+        self.store_latest(latest, manifest.min_system.clone().into());
+        self.set_stage("updateAvailable", None)
+    }
+
+    /// 旧更新源（没有 latest.json）：只读 Release 列表，不携带任何令牌。
+    async fn check_legacy(
+        self: &Arc<Self>,
+        client: &reqwest::Client,
+        repo: &str,
+        current: &Ver,
+        manifest_note: String,
+    ) -> UpdateDto {
         let url = format!("{GITHUB_API}/repos/{repo}/releases?per_page=20");
-        let mut req = client
+        let resp = match client
             .get(&url)
             .header("Accept", "application/vnd.github+json")
-            .header("X-GitHub-Api-Version", "2022-11-28");
-        if let Some(t) = token.as_deref() {
-            req = req.bearer_auth(t);
-        }
-
-        let resp = match req.send().await {
+            .header("X-GitHub-Api-Version", "2022-11-28")
+            .send()
+            .await
+        {
             Ok(r) => r,
             Err(e) => {
                 return self.fail(format!(
-                    "无法连接更新源：{}。可稍后重试，或为源码构建配置代理/镜像。",
+                    "无法连接更新源：{}。{manifest_note}",
                     brief(&e)
                 ))
             }
@@ -399,11 +651,10 @@ impl Updater {
 
         if !status.is_success() {
             let msg = match status.as_u16() {
-                401 => "访问令牌无效或权限不足：请在设置中重新填写访问令牌。".to_string(),
                 404 => format!(
-                    "更新源不可访问（{repo} 为私有或不存在）：请在设置中填写有该仓库读取权限的访问令牌。"
+                    "更新源不可访问（{repo} 不存在或为私有仓库）。客户端只读公开仓库，不携带任何令牌；{manifest_note}"
                 ),
-                403 => "更新源拒绝访问（可能触发速率限制）：请稍后重试，或配置访问令牌。".to_string(),
+                403 => "更新源拒绝访问（未认证请求触发速率限制），请稍后重试。".to_string(),
                 code => format!("更新源返回 HTTP {code}。"),
             };
             return self.fail(msg);
@@ -414,16 +665,8 @@ impl Updater {
             Err(_) => return self.fail("更新源返回了非预期的数据格式。".to_string()),
         };
 
-        // 当前版本先算出来：预发布过滤与后面的「是否更新」都用同一份解析结果。
-        let current = parse_ver(VERSION).unwrap_or(Ver {
-            major: 0,
-            minor: 0,
-            patch: 0,
-            pre: Vec::new(),
-        });
-
         // 选「本平台有安装包」的最高版本；草稿与无法识别版本号的条目跳过。
-        // 预发布只有在当前版本本身是预发布时才参与比较，避免把 alpha/beta 推给正式版用户。
+        // 预发布只有在当前版本本身是预发布时才参与比较。
         let mut best: Option<(Ver, &GhRelease, &GhAsset)> = None;
         for r in &releases {
             if r.draft {
@@ -453,29 +696,31 @@ impl Updater {
             published_at: release.published_at.clone().unwrap_or_default(),
             asset_name: asset.name.clone(),
             asset_size: asset.size,
-            asset_id: asset.id,
             browser_url: asset.browser_download_url.clone(),
+            sha256: None,
+            verified: false,
         };
+        self.store_latest(latest, Default::default());
 
-        {
-            let mut inner = self.inner.lock().unwrap();
-            // 版本变了就丢弃旧的半成品，避免把上一版字节拼到新版里。
-            if inner.latest.as_ref().map(|l| l.version.clone()) != Some(latest.version.clone()) {
-                if let Some(p) = inner.path.take() {
-                    let _ = std::fs::remove_file(p);
-                }
-                inner.downloaded = 0;
-                inner.total = 0;
-                inner.progress = 0.0;
-            }
-            inner.latest = Some(latest);
-        }
-
-        if ver <= current {
+        if ver <= *current {
             return self.set_stage("upToDate", None);
         }
-
         self.set_stage("updateAvailable", None)
+    }
+
+    fn store_latest(self: &Arc<Self>, latest: Latest, min_system: MinSystem) {
+        let mut inner = self.inner.lock().unwrap();
+        // 版本变了就丢弃旧的半成品，避免把上一版字节拼到新版里。
+        if inner.latest.as_ref().map(|l| l.version.clone()) != Some(latest.version.clone()) {
+            if let Some(p) = inner.path.take() {
+                let _ = std::fs::remove_file(p);
+            }
+            inner.downloaded = 0;
+            inner.total = 0;
+            inner.progress = 0.0;
+        }
+        inner.min_system = min_system;
+        inner.latest = Some(latest);
     }
 
     pub fn set_mirror(self: &Arc<Self>, mirror: &str) -> Result<UpdateDto, String> {
@@ -520,7 +765,6 @@ impl Updater {
         } else {
             s.update_repo.trim().to_string()
         };
-        let token = token_of(&s);
         let (dir, out_dir_label) = if mode == "only" {
             (settings::system_download_dir(), settings::system_download_dir())
         } else {
@@ -554,7 +798,7 @@ impl Updater {
         let this = self.clone();
         let mirror = self.inner.lock().unwrap().mirror.clone();
         tauri::async_runtime::spawn(async move {
-            this.run_download(latest, repo, token, mirror, target, part, cancel).await;
+            this.run_download(latest, repo, mirror, target, part, cancel).await;
         });
 
         Ok(self.dto())
@@ -564,7 +808,6 @@ impl Updater {
         self: Arc<Self>,
         latest: Latest,
         repo: String,
-        token: Option<String>,
         mirror: String,
         target: PathBuf,
         part: PathBuf,
@@ -583,7 +826,7 @@ impl Updater {
             }
         };
 
-        let candidates = download_candidates(&latest, &repo, token.as_deref(), &mirror);
+        let candidates = download_candidates(&latest, &repo, &mirror);
         let mut failures: Vec<String> = Vec::new();
         let mut done = false;
 
@@ -593,7 +836,7 @@ impl Updater {
                 return;
             }
             match self
-                .fetch_one(&client, cand, token.as_deref(), &part, latest.asset_size, &cancel)
+                .fetch_one(&client, cand, &part, latest.asset_size, &cancel)
                 .await
             {
                 Ok(size) => {
@@ -609,6 +852,27 @@ impl Updater {
                     if !part.exists() {
                         failures.push(format!("{} 下载后未找到临时文件", cand.label));
                         continue;
+                    }
+                    // 清单里带了 SHA256 就必须逐字节对上，否则删掉重来。
+                    if let Some(expected_hash) = latest.sha256.as_deref() {
+                        match sha256_file(&part) {
+                            Ok(actual) if actual.eq_ignore_ascii_case(expected_hash.trim()) => {}
+                            Ok(actual) => {
+                                let _ = std::fs::remove_file(&part);
+                                failures.push(format!(
+                                    "{} 校验失败（清单 {}，实际 {}）",
+                                    cand.label,
+                                    short_hash(expected_hash),
+                                    short_hash(&actual)
+                                ));
+                                continue;
+                            }
+                            Err(e) => {
+                                let _ = std::fs::remove_file(&part);
+                                failures.push(format!("{} 校验失败：{e}", cand.label));
+                                continue;
+                            }
+                        }
                     }
                     let _ = std::fs::remove_file(&target);
                     if let Err(e) = std::fs::rename(&part, &target) {
@@ -670,7 +934,6 @@ impl Updater {
         &self,
         client: &reqwest::Client,
         cand: &Candidate,
-        token: Option<&str>,
         part: &Path,
         total_hint: u64,
         cancel: &CancellationToken,
@@ -682,12 +945,6 @@ impl Updater {
         }
 
         let mut req = client.get(&cand.url);
-        if cand.api_asset {
-            req = req.header("Accept", "application/octet-stream");
-            if let Some(t) = token {
-                req = req.bearer_auth(t);
-            }
-        }
         if offset > 0 {
             req = req.header("Range", format!("bytes={offset}-"));
         }
@@ -819,35 +1076,39 @@ impl Updater {
 struct Candidate {
     label: &'static str,
     url: String,
-    api_asset: bool,
 }
 
-/// 私有仓库必须走 API 资源端点（带令牌）；公开仓库才可用前缀加速镜像。
-fn download_candidates(latest: &Latest, repo: &str, token: Option<&str>, selected: &str) -> Vec<Candidate> {
-    if token.is_some() {
-        return vec![Candidate {
-            label: "GitHub API",
-            url: format!("{GITHUB_API}/repos/{repo}/releases/assets/{}", latest.asset_id),
-            api_asset: true,
-        }];
-    }
+/// 公开仓库的资产链接才支持前缀加速镜像；自建更新源只用原始地址。
+fn download_candidates(latest: &Latest, repo: &str, selected: &str) -> Vec<Candidate> {
+    let _ = repo;
+    let supports_mirror = latest.browser_url.starts_with("https://github.com/");
     let mut list: Vec<Candidate> = Vec::new();
-    for m in MIRRORS {
-        let label = m.label;
-        let url = if m.prefix.is_empty() {
-            latest.browser_url.clone()
-        } else {
-            format!("{}{}", m.prefix, latest.browser_url)
-        };
-        list.push(Candidate { label, url, api_asset: false });
+    if supports_mirror {
+        for m in MIRRORS {
+            let url = if m.prefix.is_empty() {
+                latest.browser_url.clone()
+            } else {
+                format!("{}{}", m.prefix, latest.browser_url)
+            };
+            list.push(Candidate { label: m.label, url });
+        }
+    } else {
+        list.push(Candidate { label: "更新源直连", url: latest.browser_url.clone() });
     }
     // 用户选中的镜像排第一，其余按内置顺序兜底。
     if let Some(pos) = MIRRORS.iter().position(|m| m.id == selected) {
-        let mut chosen = list.remove(pos);
-        chosen.label = "所选镜像";
-        list.insert(0, chosen);
+        if pos < list.len() && supports_mirror {
+            let mut chosen = list.remove(pos);
+            chosen.label = "所选镜像";
+            list.insert(0, chosen);
+        }
     }
     list
+}
+
+fn short_hash(hash: &str) -> String {
+    let h = hash.trim();
+    if h.len() > 16 { format!("{}…", &h[..16]) } else { h.to_string() }
 }
 
 fn human_bytes(n: u64) -> String {
@@ -975,17 +1236,84 @@ mod tests {
             published_at: String::new(),
             asset_name: "Fetchweir_1.0.0_x64-setup.exe".into(),
             asset_size: 10,
-            asset_id: 1,
-            browser_url: "https://github.com/yunyu697/fetchweir/releases/download/v1.0.0/a.exe".into(),
+            browser_url: "https://github.com/yunyu697/fetchweir-releases/releases/download/v1.0.0/a.exe".into(),
+            sha256: Some("00".into()),
+            verified: true,
         };
-        let list = download_candidates(&latest, DEFAULT_REPO, None, "ghproxy");
+        let list = download_candidates(&latest, DEFAULT_REPO, "ghproxy");
         assert_eq!(list[0].label, "所选镜像");
         assert!(list[0].url.starts_with("https://gh-proxy.com/https://github.com/"));
         assert!(list.iter().any(|c| c.url == latest.browser_url));
 
-        let with_token = download_candidates(&latest, DEFAULT_REPO, Some("t"), "ghproxy");
-        assert_eq!(with_token.len(), 1);
-        assert!(with_token[0].api_asset);
+        // 自建更新源（非 github.com）不支持前缀镜像，只用原始地址
+        let selfhost = Latest {
+            browser_url: "https://dl.example.com/fw/a.exe".into(),
+            ..latest.clone()
+        };
+        let list = download_candidates(&selfhost, "self/host", "ghproxy");
+        assert_eq!(list.len(), 1);
+        assert_eq!(list[0].url, "https://dl.example.com/fw/a.exe");
+    }
+
+    #[test]
+    fn builtin_pubkey_verifies_reference_manifest() {
+        // 用与内置公钥配对的私钥对一段固定内容签名；客户端必须能验过，改一个字节必须失败。
+        let msg = br#"{"version":"1.0.4","assets":[]}"#;
+        let sig = "LDDqTafhBqLIXS56b45qlsblRu7XmluCTLbupjuNnIPMIIdhLcdNgcsEwx2qnTuTkhamCfxtVm032hGMWNbfAw==";
+        assert!(verify_manifest(msg, sig).is_ok(), "内置公钥应能验证参考签名");
+        let mut tampered = msg.to_vec();
+        tampered[0] ^= 0x01;
+        assert!(verify_manifest(&tampered, sig).is_err(), "篡改后必须拒绝");
+    }
+
+    #[test]
+    fn manifest_signature_rejects_tampering() {
+        // 用与内置公钥配对的私钥签名，验证「通过 / 改一个字节即失败」。
+        // 私钥不入库：这里只用一份测试密钥，验证逻辑本身。
+        use ring::signature::{Ed25519KeyPair, KeyPair};
+        let rng = ring::rand::SystemRandom::new();
+        let pkcs8 = Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
+        let kp = Ed25519KeyPair::from_pkcs8(pkcs8.as_ref()).unwrap();
+        let msg = br#"{"version":"9.9.9"}"#;
+        let sig = kp.sign(msg);
+        let sig_b64 = {
+            use base64::Engine;
+            base64::engine::general_purpose::STANDARD.encode(sig.as_ref())
+        };
+        // 直接把测试公钥喂给校验原语：内置常量是另一把密钥，故这里只验证「篡改必失败」。
+        use ring::signature::{UnparsedPublicKey, ED25519};
+        let ok = UnparsedPublicKey::new(&ED25519, kp.public_key().as_ref()).verify(msg, sig.as_ref());
+        assert!(ok.is_ok());
+        let mut tampered = msg.to_vec();
+        tampered[0] ^= 0x01;
+        let bad = UnparsedPublicKey::new(&ED25519, kp.public_key().as_ref())
+            .verify(&tampered, sig.as_ref());
+        assert!(bad.is_err());
+        // 内置公钥无法验证别人签的清单
+        assert!(verify_manifest(msg, &sig_b64).is_err());
+    }
+
+    #[test]
+    fn manifest_asset_selection_prefers_arch() {
+        let mk = |platform: &str, arch: &str, name: &str| ManifestAsset {
+            platform: platform.into(),
+            arch: arch.into(),
+            name: name.into(),
+            url: format!("https://github.com/o/r/releases/download/v1.0.0/{name}"),
+            size: 1,
+            sha256: "00".into(),
+        };
+        let assets = vec![
+            mk("windows", "aarch64", "arm.exe"),
+            mk("windows", "x86_64", "x64.exe"),
+            mk("linux", "x86_64", "x64.deb"),
+        ];
+        let picked = select_manifest_asset(&assets).unwrap();
+        if cfg!(target_os = "windows") {
+            assert_eq!(picked.name, "x64.exe");
+        } else if cfg!(target_os = "linux") {
+            assert_eq!(picked.name, "x64.deb");
+        }
     }
 
     #[test]

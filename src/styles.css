@@ -682,6 +682,11 @@ html[data-theme="light"] .sn-thumb .mini{color:#4A5573;opacity:.85}
 .update-panel[hidden]{display:none}
 .update-head{display:flex;align-items:baseline;gap:10px}
 .update-ver{font-size:13px;font-weight:650;color:var(--accent)}
+.update-badge{
+  font-size:10px;line-height:1;padding:3px 6px;border-radius:5px;
+  color:var(--ok,#3fb950);border:1px solid currentColor;
+}
+.update-badge[hidden]{display:none}
 .update-notes{
   font-size:11.5px;color:var(--fg-2);line-height:1.65;white-space:pre-wrap;
   max-height:132px;overflow-y:auto;padding-right:4px;

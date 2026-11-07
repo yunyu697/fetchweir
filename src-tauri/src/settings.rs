@@ -43,10 +43,9 @@ pub struct Settings {
     pub auto_concurrency: bool,
     pub global_limit_bps: u64,
     pub theme: String,
-    /// 更新源仓库（owner/name）。默认指向自有仓库，替换为公开镜像仓库也可。
+    /// 更新源仓库（owner/name）。默认为只放发布产物的公开仓库；
+    /// 客户端只读，不携带任何访问令牌。
     pub update_repo: String,
-    /// 私有仓库的读取令牌；为空时回退到 FETCHWEIR_GITHUB_TOKEN 环境变量。
-    pub update_token: String,
     /// 更新下载镜像 id（见 update::MIRRORS）。
     pub update_mirror: String,
     pub homepage: String,
@@ -82,8 +81,7 @@ impl Default for Settings {
             auto_concurrency: true,
             global_limit_bps: 0,
             theme: "dark".to_string(),
-            update_repo: "yunyu697/fetchweir".to_string(),
-            update_token: String::new(),
+            update_repo: "yunyu697/fetchweir-releases".to_string(),
             update_mirror: "github".to_string(),
             homepage: "https://github.com/yunyu697/fetchweir".to_string(),
             sniff_tier: "B".to_string(),

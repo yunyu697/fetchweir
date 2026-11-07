@@ -203,8 +203,7 @@
     autoConcurrency: true,
     globalLimitBps: 0,
     theme: 'dark',
-    updateRepo: 'yunyu697/fetchweir',
-    updateToken: '',
+    updateRepo: 'yunyu697/fetchweir-releases',
     updateMirror: 'github',
     homepage: 'https://github.com/yunyu697/fetchweir',
     sniffTier: 'B',
@@ -1115,7 +1114,6 @@
     renderInstallInfo();
     paintSwitch('swReduce', s.reduceMotion);
     $('setUpdateRepo').value = s.updateRepo || '';
-    $('setUpdateToken').value = s.updateToken || '';
     $('setHomepage').value = s.homepage || '';
     renderExtStatus();
     renderSniffStoreInfo();
@@ -1240,7 +1238,11 @@
 
     $('updateVer').textContent = hasLatest ? 'v' + u.latestVersion : '—';
     $('updateDate').textContent = u.publishedAt ? '发布于 ' + fmtWhen(Date.parse(u.publishedAt)) : '—';
-    $('updateNotes').textContent = u.notes || '没有提供更新说明。';
+    const badge = $('updateVerified');
+    badge.hidden = !(showDetail && u.verified);
+    badge.textContent = '签名已校验';
+    $('updateNotes').textContent = (u.verified === false && showDetail ? '【未校验来源】' : '') + (u.notes || '没有提供更新说明。');
+    if (u.minSystem && showDetail) $('updateNotes').textContent += `\n最低系统要求：${u.minSystem}`;
     renderUpdateMirrors(u);
 
     const pct = Math.max(0, Math.min(100, Number(u.progress) || 0));
@@ -1258,7 +1260,8 @@
     $('btnInstallUpdate').hidden = !canInstall;
     $('btnInstallUpdate').disabled = busy;
     $('btnOpenDownloadDir').hidden = !canInstall;
-    $('updateMirror').disabled = busy;
+    $('updateMirror').disabled = busy || u.mirrorsAvailable === false;
+    $('updateMirrorNote').hidden = u.mirrorsAvailable !== false;
 
     const msg = $('updateMsg');
     if (u.message && u.stage !== 'downloading') {
@@ -2411,7 +2414,6 @@
 
     /* 更新设置 */
     on('setUpdateRepo', 'input', () => { if (state.settings) { state.settings.updateRepo = $('setUpdateRepo').value.trim(); scheduleSave(800); } });
-    on('setUpdateToken', 'input', () => { if (state.settings) { state.settings.updateToken = $('setUpdateToken').value.trim(); scheduleSave(800); } });
     on('setHomepage', 'input', () => { if (state.settings) { state.settings.homepage = $('setHomepage').value.trim(); scheduleSave(800); } });
     on('btnCheckUpdate', 'click', async () => {
       if (isDemo) { demoCheckUpdate(); return; }

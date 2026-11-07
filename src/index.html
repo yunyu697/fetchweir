@@ -614,6 +614,7 @@
                     <div class="update-head">
                       <span class="update-ver" id="updateVer">—</span>
                       <span class="dim" id="updateDate">—</span>
+                      <span class="update-badge" id="updateVerified" hidden>签名已校验</span>
                     </div>
                     <div class="update-notes" id="updateNotes">—</div>
                     <div class="update-mirror-row">
@@ -621,6 +622,7 @@
                       <label class="field select-wrap">
                         <select id="updateMirror"></select>
                       </label>
+                      <span class="dim" id="updateMirrorNote" hidden>当前更新源为自建地址，镜像加速不可用</span>
                     </div>
                     <div class="update-progress">
                       <div class="bar"><i id="updateFill" style="width:0%"></i></div>
@@ -637,12 +639,12 @@
                   </div>
 
                   <div class="set-row">
-                    <div class="lab">更新源仓库<small>GitHub owner/repo</small></div>
+                    <div class="lab">更新源仓库<small>只读公开发布仓库</small></div>
                     <div class="ctl"><label class="field"><input id="setUpdateRepo" type="text" placeholder="owner/repo" autocomplete="off"></label></div>
                   </div>
                   <div class="set-row">
-                    <div class="lab">访问令牌<small>私有仓库可选，仅存本机</small></div>
-                    <div class="ctl"><label class="field"><input id="setUpdateToken" type="password" placeholder="可选" autocomplete="off"></label></div>
+                    <div class="lab">校验方式<small>清单签名 + 安装包 SHA256</small></div>
+                    <div class="ctl"><span class="dim">Ed25519 公钥内置；不匹配拒绝安装。旧更新源无清单时会标注「未校验」。</span></div>
                   </div>
                   <div class="set-row">
                     <div class="lab">项目主页<small>「打开主页」使用的地址</small></div>
