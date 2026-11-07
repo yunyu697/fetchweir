@@ -2311,7 +2311,8 @@
           '1. 在应用设置 →「嗅探与浏览器」点「打开扩展文件夹」，找到其中的 extension 目录。',
           '2. Chrome 打开 chrome://extensions（Edge 为 edge://extensions），右上角开启「开发者模式」。',
           '3. 点「加载已解压的扩展程序」，选择该 extension 文件夹。',
-          '4. 打开任意网页，右下角出现 Fetchweir 浮动条即安装成功；点击浮动条可唤起应用。'
+          '4. 打开任意网页，右下角出现 Fetchweir 浮动条即安装成功；点击浮动条可唤起应用。',
+          '5. 不要双击 .crx：Chrome / Edge 正式版会以 CRX_REQUIRED_PROOF_MISSING 拦截站外安装包；.crx 只用于内测或企业自建更新源。'
         ].join('\n');
         try {
           await navigator.clipboard.writeText(steps);
