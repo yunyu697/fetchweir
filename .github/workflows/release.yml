@@ -90,8 +90,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $fwVersion = (Get-Content version.json -Raw | ConvertFrom-Json).version
-          npm run tauri build -- --bundles nsis --config '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}'
+          $fwUser = Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1
+          $fwUserHash = (Get-FileHash $fwUser.FullName -Algorithm SHA256).Hash
+          npm run build -- --bundles nsis --config '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $fwSetup = Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1
           $fwDst = Join-Path $fwSetup.Directory "Fetchweir_${fwVersion}_x64-setup-allusers.exe"
-          Copy-Item $fwSetup.FullName $fwDst
+          Copy-Item $fwSetup.FullName $fwDst -Force
+          if ((Get-FileHash $fwDst -Algorithm SHA256).Hash -eq $fwUserHash) {
+            throw 'perMachine 包与用户级包字节相同，--config 未生效'
+          }
           gh release upload "${{ github.ref_name }}" $fwDst --clobber
