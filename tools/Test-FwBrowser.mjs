@@ -13,7 +13,8 @@ const EXE = process.argv[2];
 const EDGE = process.env.FW_EDGE_PATH || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const EXT = path.join(ROOT, 'extension');
-const DATA = path.join(process.env.LOCALAPPDATA || os.homedir(), 'Fetchweir');
+// 数据目录：设置存漫游目录（%APPDATA%\Fetchweir），与「仅当前用户」安装目录（%LOCALAPPDATA%）分开。
+const DATA = path.join(process.env.APPDATA || process.env.LOCALAPPDATA || os.homedir(), 'Fetchweir');
 const SHOTS = path.join(ROOT, 'docs', 'ui-shots');
 const EXT_ID = 'fjngndhalbkfkfcfhleflcgkicknkele';
 const HITS = [];

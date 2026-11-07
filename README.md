@@ -6,9 +6,9 @@
 
 | 级别 | 内容 |
 | --- | --- |
-| 已实现且本机实测 | 分段下载引擎与断点续传（本地回环集成测试）、限速与队列调度、任务表/详情/视频/嗅探/设置五屏渲染（无头截图，0 console error）、两种安装范围（仅当前用户 / 所有用户的安装、卸载与清理）、自启动开关（注册表与计划任务实测）、「始终以管理员身份运行」（令牌 `TokenIsElevated` + 完整性级别 `S-1-16-12288` 确认提权，计划任务 `RunLevel=HighestAvailable`，关闭后恢复普通权限）、单实例（普通与提权状态下第二实例退出码 0 且参数转发到达首实例）、扩展三档嗅探（真实 Chromium 加载扩展验证）、托盘实拍 |
+| 已实现且本机实测 | 分段下载引擎与断点续传（本地回环集成测试）、限速与队列调度、任务表/详情/视频/嗅探/设置五屏渲染（无头截图，0 console error）、两种安装范围（仅当前用户 / 所有用户的安装、卸载与清理）、自启动开关（注册表与计划任务实测）、「始终以管理员身份运行」（令牌 `TokenIsElevated` + 完整性级别 `S-1-16-12288` 确认提权，计划任务 `RunLevel=HighestAvailable`，关闭后恢复普通权限）、单实例（普通与提权状态下第二实例退出码 0 且参数转发到达首实例）、扩展三档嗅探与浮动条（真实 Chromium 加载扩展，8/8 通过，2026-11-07）、引擎内存卡（PSAPI 工作集，真实应用实测 41.4 MB）、设置页导出配置（真实应用写出 JSON，更新令牌清空）、托盘实拍 |
 | 已实现、未做全链路实机 | 更新检查与镜像下载（字节数校验，无签名校验）、yt-dlp 视频解析（本地样例，真实站点未跑） |
-| 未接通（界面禁用并标注） | 字幕轨下载、解析器独立更新、导出配置、通知中心、原生拖放导入 |
+| 未接通（界面禁用并标注） | 字幕轨下载、解析器独立更新、通知中心、原生拖放导入 |
 | 平台受限 | macOS 公证、Linux 发行版差异与系统级安装（本机与 CI 未验证） |
 
 ## 技术栈
@@ -36,7 +36,7 @@ pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle   # 安装包（Windows 
 
 ```powershell
 node tools/Verify-FwUI.mjs "file:///.../src/index.html?demo" docs/ui-shots/app-main.png 1280 800
-node tools/Test-FwBrowser.mjs            # 真实 Chromium 三档嗅探 + 浮动条
+node tools/Test-FwBrowser.mjs D:\fw-build\fetchweir\debug\fetchweir.exe   # 真实 Chromium 三档嗅探 + 浮动条
 node tools/Inspect-FwExeIcon.mjs         # exe 图标资源清单
 ```
 
