@@ -25,7 +25,7 @@
 | 引擎内存 | 真实应用读 `K32GetProcessMemoryInfo`，本机 41.4 MB |
 | 导出配置 | 真实应用写出 JSON，`updateToken` 为空，其余字段完整 |
 | 仅当前用户安装 | `/S` 静默安装退出码 0；开始菜单、桌面、HKCU 卸载项齐备；1.0.0 包实测 `DisplayVersion/FileVersion = 1.0.0`；卸载后 exe、卸载项、快捷方式清除 |
-| 所有用户安装 | 安装到 Program Files；公共开始菜单/桌面、HKLM 卸载项齐备；卸载后全部清空，数据保留 |
+| 所有用户安装 | 用**已发布的 `Fetchweir_1.0.0_x64-setup-allusers.exe`** 静默安装：`C:\Program Files\Fetchweir`，HKLM 卸载项 `DisplayVersion 1.0.0`，公共开始菜单与公共桌面快捷方式均指向该 exe；应用内「安装范围」显示「所有用户（Program Files）」；卸载后目录、HKLM 项、两个快捷方式全部清除，数据保留 |
 | 自启动 | HKCU Run 写入/删除实测；管理员模式改计划任务 `FetchweirElevated`（`ONLOGON` + `HighestAvailable`） |
 | 管理员运行 | 令牌 `TokenIsElevated` + 完整性级别 `S-1-16-12288`；关闭后恢复 `S-1-16-8192` |
 | 提权下 Native Messaging / 单实例 | 端点 pid 与提权进程一致；第二个实例退出码 0，参数到达首实例 |
@@ -44,8 +44,8 @@
 6. **提权开关的界面点击路径**：本轮用设置文件 + 提权命令完成开关效果核对，未通过界面点击复测。
 7. **真实站点的视频解析**：只有本地样例；真实站点受网络与地域影响，未纳入自动验证。
 8. **macOS / Linux 的更新安装动作**：只有代码路径，本机无对应环境。
-9. **1.0.0「所有用户」包未重复实装**：该安装逻辑在 `1.0.0-alpha2` 构建上已完整实装/卸载，
-   1.0.0 仅改版本号与更新器匹配，未重复占用前台执行 UAC 安装。
+9. **更新器的「按安装范围选包」分支**：代码已按 `*-setup-allusers.exe` / `*-setup.exe` 区分，
+   但当前 release 没有更高版本可更新，实际下载路径未跑通（只验证了范围检测与资产命名匹配）。
 
 ## 已知限制（界面已标注，不放假控件）
 
@@ -58,7 +58,7 @@
 | 资产 | 大小 | 核对结果 |
 | --- | --- | --- |
 | `Fetchweir_1.0.0_x64-setup.exe` | 25,099,355 B | 内嵌清单 `asInvoker`（安装不需 UAC） |
-| `Fetchweir_1.0.0_x64-setup-allusers.exe` | 25,100,748 B | 内嵌清单 `requireAdministrator`（安装需 UAC） |
+| `Fetchweir_1.0.0_x64-setup-allusers.exe` | 25,100,748 B | 内嵌清单 `requireAdministrator`（安装需 UAC）；已实际安装到 `C:\Program Files\Fetchweir` 并卸载清理 |
 | `Fetchweir_1.0.0_amd64.deb` | 43,359,450 B | CI 产出，未在 Linux 上安装验证 |
 | `Fetchweir_1.0.0_amd64.AppImage` | 123,853,304 B | 同上 |
 | `Fetchweir_1.0.0_aarch64.dmg` | 40,118,143 B | CI 产出，未签名未公证 |
