@@ -63,6 +63,7 @@
     sniffSel: new Set(),
     sniffNm: null,
     sniffChip: 'all',
+    sniffHideDup: false,
     video: { info: null, tab: 'video', sel: null, job: null, url: '' },
     themePref: 'dark',
     speedHistory: [],
@@ -795,39 +796,39 @@
     $('heroMax').textContent = `上限 ${settings.maxConnections || 16} 条`;
     $('segMeta').textContent = `${t.supportsRanges ? (t.connections || 1) + ' 段' : '单连接'} · 分块 512 KB`;
 
-    /* 分段图 */
+    /* 分段图：16 列按任务总进度依次填满，不伪造每段独立百分比 */
     const segBox = $('segmap');
     segBox.textContent = '';
-    const base = t.state === 'completed' ? 1 : t.state === 'queued' ? 0 : pct / 100;
+    const total = t.state === 'completed' ? 1 : t.state === 'queued' ? 0 : pct / 100;
     for (let s = 0; s < 16; s++) {
       const col = el('div', 'seg');
-      const frac = t.state === 'completed' ? 1 : Math.max(0, Math.min(1, base - s * 0.012));
+      const frac = Math.max(0, Math.min(1, total * 16 - s));
       const filled = Math.floor(frac * 6);
       for (let i = 0; i < 6; i++) {
         const cell = el('i');
         if (i < filled) cell.className = 'f';
-        else if (i === filled && t.state === 'active' && s < 12) cell.className = 'a';
+        else if (i === filled && t.state === 'active' && frac > 0) cell.className = 'a';
         col.append(cell);
       }
       segBox.append(col);
     }
 
-    /* 连接明细 */
+    /* 连接明细：后端只上报任务总速率，这里不做分连接速率与进度造假 */
     const connBody = $('connBody');
     connBody.textContent = '';
     if (t.state === 'active') {
       const n = Math.max(1, Math.min(16, t.connections || 1));
-      const per = t.speedBps / n;
       for (let i = 0; i < n; i++) {
         const row = el('div', 'conn-row');
         row.append(el('span', 'id', '#' + String(i + 1).padStart(2, '0')));
         const bar = el('div', 'bar');
         const fill = el('i');
-        fill.style.width = Math.max(2, Math.round(pct) - (i % 4) * 3) + '%';
+        fill.style.width = Math.round(pct) + '%';
         bar.append(fill);
-        row.append(bar, el('span', 'sp', (per / MB).toFixed(1) + ' MB/s'));
+        row.append(bar, el('span', 'sp', '—'));
         connBody.append(row);
       }
+      connBody.append(el('div', 'dim', '分连接速率与进度未上报，条形只表示任务总进度。'));
       $('connMeta').textContent = `${n} / ${settings.maxConnections || 16}`;
     } else {
       $('connMeta').textContent = t.state === 'completed' ? '已全部释放' : t.state === 'paused' ? '已释放' : t.state === 'failed' ? '已关闭' : '未建立';
@@ -1247,6 +1248,13 @@
     chips.append(el('span', 'tag', `视频 ${videoFmts.length} 条`));
     chips.append(el('span', 'tag', `音频 ${info.formats.filter((f) => !isVideoFmt(f)).length} 条`));
     if (maxH >= 2160) chips.append(el('span', 'tag hls', '4K'));
+    // 时长 / 协议 / DRM 都是解析器真实返回的字段，不在这里编造。
+    if (info.duration) chips.append(el('span', 'tag', `时长 ${fmtDuration(info.duration)}`));
+    const protos = [...new Set(info.formats.map((f) => f.protocol).filter(Boolean))];
+    if (protos.length) chips.append(el('span', 'tag', `协议 ${protos.slice(0, 3).join('/')}`));
+    const drmCount = info.formats.filter((f) => f.drm).length;
+    if (drmCount) chips.append(el('span', 'tag protected', `DRM 受保护 ${drmCount} 条`));
+    else if (info.formats.length) chips.append(el('span', 'tag ok', '无 DRM'));
     if (info.drmOnly) chips.append(el('span', 'tag protected', '仅 DRM 流'));
     if (info.message) chips.append(el('span', 'tag dup', '解析提示'));
 
@@ -1570,6 +1578,7 @@
     const domain = $('sniffDomain').value || '';
     const filtered = all.filter((item) => {
       if (state.sniffChip !== 'all' && bucketOf(item) !== state.sniffChip) return false;
+      if (state.sniffHideDup && (item.hits || 0) > 1) return false;
       if (minSize && (item.size || 0) < minSize) return false;
       if (domain && sniffHost(item) !== domain) return false;
       if (kw) {
@@ -2266,6 +2275,12 @@
     on('sniffKw', 'input', () => renderSniff());
     on('sniffMinSize', 'change', () => renderSniff());
     on('sniffDomain', 'change', () => renderSniff());
+    on('sniffHideDup', 'click', () => {
+      state.sniffHideDup = !state.sniffHideDup;
+      $('sniffHideDup').classList.toggle('on', state.sniffHideDup);
+      $('sniffHideDup').setAttribute('aria-pressed', String(state.sniffHideDup));
+      renderSniff();
+    });
     on('sniffTier', 'change', () => setTier($('sniffTier').value));
     on('btnSniffRefresh', 'click', async () => {
       await refreshSniff(true);
