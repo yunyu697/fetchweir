@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Fetchweir 应用图标">
+  <title>Fetchweir 图标：闸门与下泄箭头</title>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7E8DFF"/>
+      <stop offset="0.55" stop-color="#5A6DE6"/>
+      <stop offset="1" stop-color="#3746BF"/>
+    </linearGradient>
+  </defs>
+  <rect x="34" y="34" width="956" height="956" rx="222" fill="url(#tile)"/>
+  <!-- 闸墩：三段式开口，顶部横梁 + 两侧立柱 -->
+  <path d="M292 726 V352 a104 104 0 0 1 104-104h232a104 104 0 0 1 104 104V726"
+        fill="none" stroke="#FFFFFF" stroke-width="86" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 下泄箭头：穿过闸口 -->
+  <path d="M512 336 V566" fill="none" stroke="#FFFFFF" stroke-width="74" stroke-linecap="round"/>
+  <path d="M404 534 L512 652 L620 534" fill="none" stroke="#FFFFFF" stroke-width="74"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 下游水面（≤24px 版本省略） -->
+  <path d="M330 842 q46-38 92 0 t92 0 t92 0 t92 0" fill="none" stroke="#FFFFFF"
+        stroke-opacity="0.62" stroke-width="46" stroke-linecap="round"/>
+  <path d="M378 918 q46-34 92 0 t92 0 t92 0" fill="none" stroke="#FFFFFF"
+        stroke-opacity="0.34" stroke-width="38" stroke-linecap="round"/>
+</svg>

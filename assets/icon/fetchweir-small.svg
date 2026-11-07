@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Fetchweir 小尺寸图标">
+  <title>Fetchweir 小尺寸：去水波、去渐变、加粗笔画</title>
+  <rect x="14" y="14" width="996" height="996" rx="232" fill="#586BE4"/>
+  <path d="M286 736 V366 a96 96 0 0 1 96-96h260a96 96 0 0 1 96 96V736"
+        fill="none" stroke="#FFFFFF" stroke-width="112" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M512 330 V548" fill="none" stroke="#FFFFFF" stroke-width="100" stroke-linecap="round"/>
+  <path d="M406 518 L512 632 L618 518" fill="none" stroke="#FFFFFF" stroke-width="100"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
