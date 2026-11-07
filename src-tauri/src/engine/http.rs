@@ -20,20 +20,45 @@ pub fn validate_url(raw: &str) -> Result<(), EngineError> {
     }
 }
 
+/// 把浏览器上下文头（Referer / Cookie / UA）附加到一次请求上。
+/// 头名统一小写；空白值跳过。
+pub fn with_headers(
+    mut req: reqwest::RequestBuilder,
+    headers: &[(String, String)],
+) -> reqwest::RequestBuilder {
+    for (name, value) in headers {
+        if value.trim().is_empty() {
+            continue;
+        }
+        let lower = name.trim().to_ascii_lowercase();
+        match lower.as_str() {
+            "referer" => req = req.header("referer", value),
+            "cookie" => req = req.header("cookie", value),
+            "user-agent" => req = req.header("user-agent", value),
+            "origin" => req = req.header("origin", value),
+            _ => {}
+        }
+    }
+    req
+}
+
 /// 先用 `Range: bytes=0-0` 探测：能拿 206 说明支持分段，同时从
 /// `Content-Range` 得到总长度；不支持时退化为单连接直连。
 pub async fn probe(
     client: &Client,
     raw_url: &str,
     token: &CancellationToken,
+    headers: &[(String, String)],
 ) -> Result<ProbeMeta, EngineError> {
     let resp = tokio::select! {
         _ = token.cancelled() => return Err(EngineError::Aborted),
-        r = client
-            .get(raw_url)
-            .header(RANGE, "bytes=0-0")
-            .header(ACCEPT_ENCODING, "identity")
-            .send() => r?,
+        r = with_headers(
+            client
+                .get(raw_url)
+                .header(RANGE, "bytes=0-0")
+                .header(ACCEPT_ENCODING, "identity"),
+            headers,
+        ).send() => r?,
     };
 
     let status = resp.status();

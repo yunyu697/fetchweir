@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Fetchweir 下载接管",
+  "version": "1.0.0",
+  "description": "把浏览器里的下载与媒体资源交给本机 Fetchweir：嗅探清单、浮动条与静默接管。",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA15GzmrTQjulEvnNWZvDBAZlBTwGcY0uvCysIf1pZ0o1uitBdZAqYJSAhMxzk+LwLA4Do7Aj/2HF+wMbTQUnKHrosh3xSC+E2jX3xv4dmWsBWhla31RYFnGojJ742fY7GDPORPGAYNOJDHK9RnyjYq95iac0v3QRJtO0n63g2Oq9+KNOx3FYxz040smhOBqmUqpp3JZHjLXiO3xgeZMYFrUPiKYjob9juAVFr18K81AUapALw0SXzvV3Qs4MoApVMac0JDV7x2gHp7a8YZoFtROYdh1bs1Rxp25zMr0PSR6aEP7PvIZeaUoMLbUC/nqLO1DEPBAD/08zGUijabsM4LQIDAQAB",
+  "permissions": [
+    "webRequest",
+    "nativeMessaging",
+    "storage",
+    "tabs",
+    "scripting",
+    "contextMenus",
+    "notifications"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": false
+    }
+  ],
+  "action": {
+    "default_title": "Fetchweir：本页已发现的可下载资源",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}

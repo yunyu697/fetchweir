@@ -6,7 +6,9 @@ use serde::Serialize;
 use tauri::{AppHandle, Manager, State};
 
 use crate::engine::{Engine, TaskDto};
+use crate::nm::{self, NmStatus};
 use crate::settings::{self, Settings};
+use crate::sniff::{SniffItem, SniffStore};
 use crate::update::{UpdateDto, Updater};
 
 #[derive(Serialize)]
@@ -164,6 +166,69 @@ fn open_url(url: &str) -> Result<(), String> {
             .map_err(|e| e.to_string())?;
         Ok(())
     }
+}
+
+/* ---------- 资源嗅探 ---------- */
+
+#[tauri::command]
+pub fn list_sniff(store: State<'_, Arc<SniffStore>>) -> Vec<SniffItem> {
+    store.list()
+}
+
+#[tauri::command]
+pub fn clear_sniff(store: State<'_, Arc<SniffStore>>) -> usize {
+    store.clear()
+}
+
+#[tauri::command]
+pub fn remove_sniff(store: State<'_, Arc<SniffStore>>, id: String) -> bool {
+    store.remove(&id)
+}
+
+#[tauri::command]
+pub fn sniff_status() -> NmStatus {
+    nm::status()
+}
+
+#[tauri::command]
+pub fn set_sniff_tier(app: AppHandle, tier: String) -> Result<String, String> {
+    if !matches!(tier.as_str(), "A" | "B" | "C") {
+        return Err("档位只能是 A / B / C".to_string());
+    }
+    let mut next = settings::load();
+    next.sniff_tier = tier.clone();
+    settings::save(&next)?;
+    if let Some(engine) = app.try_state::<Arc<Engine>>() {
+        *engine.settings.write().unwrap() = next;
+    }
+    Ok(tier)
+}
+
+/// 把嗅探项交给引擎。受保护内容在这里硬拒绝，不依赖前端按钮状态。
+#[tauri::command]
+pub fn add_sniff_task(
+    app: AppHandle,
+    store: State<'_, Arc<SniffStore>>,
+    id: String,
+    save_dir: Option<String>,
+) -> Result<TaskDto, String> {
+    let item = store.get(&id).ok_or_else(|| "嗅探项不存在或已过期".to_string())?;
+    if item.protected || item.drm_suspect {
+        return Err(
+            item.note
+                .clone()
+                .unwrap_or_else(|| "检测到受保护内容（DRM/样本级加密），按产品边界不提供下载".to_string()),
+        );
+    }
+    let engine = app.state::<Arc<Engine>>().inner().clone();
+    let headers = vec![
+        ("referer".to_string(), item.referer.clone()),
+        ("cookie".to_string(), item.cookie.clone()),
+        ("user-agent".to_string(), item.ua.clone()),
+    ];
+    engine
+        .add_with_headers(item.url, save_dir, None, None, true, headers)
+        .map_err(|e| e.to_string())
 }
 
 /// 前端启动完成的探针：写标记文件，供无头冒烟测试判断 WebView 已加载且 IPC 可用。

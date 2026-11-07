@@ -121,6 +121,8 @@ pub struct Task {
     /// 用户显式指定了文件名：探测阶段不得用 URL / Content-Disposition 推断的名字覆盖它。
     pub user_named: bool,
     pub connections: u32,
+    /// 浏览器接管带来的额外请求头（Referer / Cookie / UA）。仅内存保存，不落盘。
+    pub headers: Vec<(String, String)>,
     pub total: AtomicU64,
     pub done: AtomicU64,
     pub state: Mutex<TaskState>,
@@ -145,6 +147,7 @@ impl Task {
         file_name: String,
         user_named: bool,
         connections: u32,
+        headers: Vec<(String, String)>,
     ) -> Self {
         Self {
             id,
@@ -153,6 +156,7 @@ impl Task {
             file_name: Mutex::new(file_name),
             user_named,
             connections: connections.clamp(1, 16),
+            headers,
             total: AtomicU64::new(0),
             done: AtomicU64::new(0),
             state: Mutex::new(TaskState::Queued),
@@ -296,6 +300,19 @@ impl Engine {
         connections: Option<u32>,
         auto_start: bool,
     ) -> Result<TaskDto, EngineError> {
+        self.add_with_headers(url, save_dir, file_name, connections, auto_start, Vec::new())
+    }
+
+    /// 带浏览器上下文的入队：Referer / Cookie 等只在内存里用于本次请求。
+    pub fn add_with_headers(
+        self: &Arc<Self>,
+        url: String,
+        save_dir: Option<String>,
+        file_name: Option<String>,
+        connections: Option<u32>,
+        auto_start: bool,
+        headers: Vec<(String, String)>,
+    ) -> Result<TaskDto, EngineError> {
         http::validate_url(&url)?;
         let settings = self.settings.read().unwrap().clone();
         let dir = save_dir
@@ -319,6 +336,7 @@ impl Engine {
             name,
             name_given,
             connections.unwrap_or(settings.connections),
+            headers,
         ));
         self.tasks.lock().unwrap().push(task.clone());
 
@@ -441,7 +459,7 @@ impl Engine {
     }
 
     async fn run_task(self: Arc<Self>, task: Arc<Task>, token: CancellationToken, run_id: u64) {
-        let meta = match http::probe(&self.client, &task.url, &token).await {
+        let meta = match http::probe(&self.client, &task.url, &token, &task.headers).await {
             Ok(meta) => meta,
             Err(e) => {
                 if !matches!(e, EngineError::Aborted) {
@@ -631,13 +649,15 @@ impl Engine {
         end: u64,
         token: &CancellationToken,
     ) -> Result<(), EngineError> {
-        let resp = self
-            .client
-            .get(url)
-            .header(reqwest::header::RANGE, format!("bytes={}-{}", from, end - 1))
-            .header(reqwest::header::ACCEPT_ENCODING, "identity")
-            .send()
-            .await?;
+        let resp = http::with_headers(
+            self.client
+                .get(url)
+                .header(reqwest::header::RANGE, format!("bytes={}-{}", from, end - 1))
+                .header(reqwest::header::ACCEPT_ENCODING, "identity"),
+            &task.headers,
+        )
+        .send()
+        .await?;
 
         let status = resp.status();
         if from > 0 && status == reqwest::StatusCode::OK {

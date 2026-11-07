@@ -45,6 +45,8 @@ pub struct Settings {
     /// 更新下载镜像 id（见 update::MIRRORS）。
     pub update_mirror: String,
     pub homepage: String,
+    /// 浮动条档位：A 自动出条 / B 仅顶层按网络信号 / C 只用徽标。
+    pub sniff_tier: String,
 }
 
 impl Default for Settings {
@@ -58,6 +60,7 @@ impl Default for Settings {
             update_token: String::new(),
             update_mirror: "github".to_string(),
             homepage: "https://github.com/yunyu697/fetchweir".to_string(),
+            sniff_tier: "B".to_string(),
         }
     }
 }
