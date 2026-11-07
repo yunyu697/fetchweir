@@ -228,6 +228,19 @@ enum ManifestErr {
     Rejected(String),
 }
 
+/// 清单根地址。默认走公开仓库的 latest release 资产目录。
+/// `FETCHWEIR_UPDATE_BASE` 是本地闭环验证用的钩子：指向本地静态服务时，
+/// 清单仍必须通过签名校验，改地址并不能伪造内容。
+fn manifest_base(repo: &str) -> String {
+    if let Ok(v) = std::env::var("FETCHWEIR_UPDATE_BASE") {
+        let v = v.trim().trim_end_matches('/');
+        if !v.is_empty() {
+            return v.to_string();
+        }
+    }
+    format!("https://github.com/{repo}/releases/latest/download")
+}
+
 fn base64_decode(s: &str) -> Result<Vec<u8>, String> {
     use base64::Engine;
     let cleaned: String = s.chars().filter(|c| !c.is_whitespace()).collect();
@@ -509,7 +522,7 @@ impl Updater {
         client: &reqwest::Client,
         repo: &str,
     ) -> Result<Manifest, ManifestErr> {
-        let base = format!("https://github.com/{repo}/releases/latest/download");
+        let base = manifest_base(repo);
         let manifest_url = format!("{base}/{MANIFEST_NAME}");
         let sig_url = format!("{base}/{MANIFEST_NAME}.sig");
 
@@ -551,6 +564,15 @@ impl Updater {
     }
 
     pub async fn check(self: &Arc<Self>) -> UpdateDto {
+        // 先丢掉上一次的清单：检查失败时界面不能继续展示旧版本的「签名已校验」，
+        // 否则篡改被拒后仍会显示一个可信的新版本号。
+        {
+            let mut inner = self.inner.lock().unwrap();
+            inner.latest = None;
+            inner.downloaded = 0;
+            inner.total = 0;
+            inner.progress = 0.0;
+        }
         self.set_stage("checking", None);
         let s = settings::load();
         let repo = if s.update_repo.trim().is_empty() {
