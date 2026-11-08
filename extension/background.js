@@ -27,6 +27,31 @@ async function loadConfig() {
 }
 loadConfig();
 
+/* ---------- 应用颜色主题：只缓存/转发，扩展不维护调色板 ---------- */
+let barTheme = null;
+const barThemeReady = chrome.storage.local.get('barTheme').then((v) => {
+  const t = v && v.barTheme;
+  if (t && t.palette && typeof t.palette === 'object') barTheme = t;
+}).catch(() => {});
+
+function absorbTheme(t) {
+  if (!t || typeof t !== 'object' || !t.palette || typeof t.palette !== 'object') return;
+  const next = { theme: t.theme === 'light' ? 'light' : 'dark', color: t.color || '', palette: t.palette };
+  if (JSON.stringify(next) === JSON.stringify(barTheme)) return;
+  barTheme = next;
+  chrome.storage.local.set({ barTheme: next }).catch(() => {});
+  broadcastTheme();
+}
+
+function broadcastTheme() {
+  if (!barTheme) return;
+  chrome.tabs.query({}, (list) => {
+    for (const t of list) {
+      if (t.id != null) chrome.tabs.sendMessage(t.id, { type: 'fw:theme', theme: barTheme }).catch(() => {});
+    }
+  });
+}
+
 /* ---------- canonical 去重键 ---------- */
 function canonical(raw) {
   try {
@@ -95,6 +120,12 @@ function ensurePort() {
         tier = msg.tier;
         chrome.storage.local.set({ tier }).catch(() => {});
         broadcastConfig();
+      } else if (msg.type === 'theme') {
+        // 宿主轮询到应用主题变化后主动推送。
+        absorbTheme(msg);
+      } else if (msg.barTheme) {
+        // 应答里顺带的最新主题，保证首帧就能拿到。
+        absorbTheme(msg.barTheme);
       }
     });
     port.onDisconnect.addListener(() => {
@@ -276,7 +307,15 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
         });
       }
     }
-    reply({ tier, connected: portReady, error: lastError });
+    barThemeReady.then(
+      () => reply({ tier, connected: portReady, error: lastError, theme: barTheme }),
+      () => reply({ tier, connected: portReady, error: lastError, theme: barTheme })
+    );
+    ensurePort();
+    return true;
+  }
+  if (msg.type === 'fw:theme') {
+    barThemeReady.then(() => reply({ theme: barTheme }), () => reply({ theme: barTheme }));
     ensurePort();
     return true;
   }

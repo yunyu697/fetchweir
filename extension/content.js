@@ -19,52 +19,59 @@
   let panel = null;
   let observer = null;
   let timer = null;
+  let barTheme = null;
+  let themeSettled = false;
+
+  /* 颜色只来自应用下发的 token；扩展不维护调色板。
+     每个变量都带中性回退（深灰底 + 明确前景），应用没跑或通道失败时也不会浅底浅字。 */
+  const THEME_VARS = {
+    bg: '--fw-bg', bg2: '--fw-bg2', bg3: '--fw-bg3',
+    line: '--fw-line', fg: '--fw-fg', fg2: '--fw-fg2', fg3: '--fw-fg3',
+    accent: '--fw-accent', accentSolid: '--fw-accent-solid',
+    accentSolid2: '--fw-accent-solid2', accentFg: '--fw-accent-fg',
+  };
 
   const CSS = `
 :host { all: initial; }
 .panel {
   position: fixed; right: 18px; bottom: 18px; width: 320px; max-width: calc(100vw - 24px);
-  background: rgba(13,15,20,.86); color: #E8ECF5; border: 1px solid rgba(108,140,255,.32);
-  border-radius: 14px; box-shadow: 0 18px 48px -12px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.04) inset;
-  backdrop-filter: blur(18px) saturate(1.2); font: 500 13px/1.45 system-ui, -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
+  background: var(--fw-bg, #1E1E23); color: var(--fw-fg, #F2F2F4);
+  border: 1px solid var(--fw-line, #3A3A43);
+  border-radius: 14px; box-shadow: 0 18px 48px -12px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.03) inset;
+  font: 500 13px/1.45 system-ui, -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
   overflow: hidden; pointer-events: auto; animation: in .22s cubic-bezier(.2,.9,.3,1);
 }
 @keyframes in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
 .head { display: flex; align-items: center; gap: 9px; padding: 11px 12px 9px; }
-.mark { width: 22px; height: 22px; border-radius: 7px; flex: none;
-  background: linear-gradient(150deg, #6C8CFF, #9A7BFF); display: grid; place-items: center; }
-.mark svg { width: 13px; height: 13px; }
+.mark { width: 22px; height: 22px; border-radius: 7px; flex: none; display: grid; place-items: center;
+  background: linear-gradient(150deg, var(--fw-accent-solid, #4B5563), var(--fw-accent-solid2, #374151)); }
+.mark svg { width: 13px; height: 13px; stroke: var(--fw-accent-fg, #FFFFFF); }
 .title { flex: 1; min-width: 0; }
 .title b { display: block; font-size: 12.5px; font-weight: 650; letter-spacing: .2px; }
-.title span { display: block; font-size: 11px; color: #8A93A6; margin-top: 1px;
+.title span { display: block; font-size: 11px; color: var(--fw-fg-2, #C2C2CA); margin-top: 1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .close { width: 22px; height: 22px; border: 0; border-radius: 6px; background: transparent;
-  color: #8A93A6; cursor: pointer; display: grid; place-items: center; }
-.close:hover { background: rgba(255,255,255,.08); color: #E8ECF5; }
+  color: var(--fw-fg-2, #C2C2CA); cursor: pointer; display: grid; place-items: center; }
+.close:hover { background: var(--fw-bg3, #2E2E36); color: var(--fw-fg, #F2F2F4); }
 .list { padding: 0 8px 8px; max-height: 210px; overflow: auto; display: grid; gap: 6px; }
 .row { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 9px;
-  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); }
+  background: var(--fw-bg2, #26262C); border: 1px solid var(--fw-line, #3A3A43); }
 .row .ico { width: 26px; height: 26px; border-radius: 7px; flex: none; display: grid; place-items: center;
-  font-size: 9px; font-weight: 700; letter-spacing: .3px; background: rgba(108,140,255,.16); color: #A9BCFF; }
+  font-size: 9px; font-weight: 700; letter-spacing: .3px;
+  background: var(--fw-accent-solid, #4B5563); color: var(--fw-accent-fg, #FFFFFF); }
 .row .meta { flex: 1; min-width: 0; }
 .row .name { font-size: 12px; font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.row .sub { font-size: 10.5px; color: #8A93A6; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { font-size: 10.5px; color: var(--fw-fg-2, #C2C2CA); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row .get { border: 0; border-radius: 6px; padding: 5px 9px; font-size: 11px; font-weight: 600;
-  background: #6C8CFF; color: #fff; cursor: pointer; }
-.row .get:disabled { background: rgba(255,255,255,.1); color: #8A93A6; cursor: not-allowed; }
-.foot { display: flex; align-items: center; gap: 8px; padding: 9px 12px 11px; border-top: 1px solid rgba(255,255,255,.07); }
-.foot .hint { flex: 1; font-size: 10.5px; color: #6F7889; }
-.foot button { border: 1px solid rgba(255,255,255,.12); background: transparent; color: #C9D2E4;
+  background: var(--fw-accent-solid, #4B5563); color: var(--fw-accent-fg, #FFFFFF); cursor: pointer; }
+.row .get:hover:not(:disabled) { background: var(--fw-accent-solid2, #374151); }
+.row .get:disabled { background: var(--fw-bg3, #2E2E36); color: var(--fw-fg-2, #C2C2CA); cursor: not-allowed; }
+.foot { display: flex; align-items: center; gap: 8px; padding: 9px 12px 11px; border-top: 1px solid var(--fw-line, #3A3A43); }
+.foot .hint { flex: 1; font-size: 10.5px; color: var(--fw-fg-2, #C2C2CA); }
+.foot button { border: 1px solid var(--fw-line, #3A3A43); background: transparent; color: var(--fw-fg, #F2F2F4);
   border-radius: 6px; padding: 5px 9px; font-size: 11px; cursor: pointer; }
-.foot button:hover { background: rgba(255,255,255,.07); }
-@media (prefers-color-scheme: light) {
-  .panel { background: rgba(255,255,255,.94); color: #12151C; border-color: rgba(108,140,255,.45);
-    box-shadow: 0 18px 44px -14px rgba(18,24,40,.35); }
-  .title span, .row .sub, .foot .hint { color: #5C667A; }
-  .row { background: rgba(108,140,255,.07); border-color: rgba(108,140,255,.16); }
-  .foot button { border-color: rgba(18,24,40,.14); color: #2A3242; }
-  .close { color: #5C667A; }
-}
+.foot button:hover { background: var(--fw-bg3, #2E2E36); }
+button:focus-visible { outline: 2px solid var(--fw-accent, #A9B4C4); outline-offset: 2px; }
 `;
 
   function svgIcon() {
@@ -105,6 +112,21 @@
   }
   const KIND_TEXT = { video: '视频', audio: '音频', hls: 'HLS 清单', dash: 'DASH 清单' };
 
+  /* 应用下发的 token 直接写成宿主元素的行内自定义属性，透过 Shadow DOM 继承。
+     不写死任何一套配色；收到新主题时只改属性，不重建面板，也不做颜色过渡。 */
+  function applyBarTheme(t) {
+    if (!t || typeof t !== 'object' || !t.palette || typeof t.palette !== 'object') return false;
+    barTheme = { theme: t.theme === 'light' ? 'light' : 'dark', color: t.color || '', palette: { ...t.palette } };
+    if (!host) return true;
+    for (const [key, cssVar] of Object.entries(THEME_VARS)) {
+      const v = t.palette[key];
+      if (typeof v === 'string' && v) host.style.setProperty(cssVar, v);
+      else host.style.removeProperty(cssVar);
+    }
+    host.dataset.fwTheme = barTheme.theme;
+    return true;
+  }
+
   function build() {
     if (host) return;
     host = document.createElement('div');
@@ -123,11 +145,18 @@
     panel = el('div', 'panel');
     shadow.appendChild(panel);
     document.documentElement.appendChild(host);
+    if (barTheme) applyBarTheme(barTheme);
     watch();
   }
 
   function render() {
     if (!panel) return;
+    // 首帧等主题先就绪：拿到就按应用配色画，拿不到（700ms）才用中性回退，避免先闪一套再换。
+    if (!themeSettled) {
+      host.style.display = 'none';
+      themeReady.then(render);
+      return;
+    }
     while (panel.firstChild) panel.removeChild(panel.firstChild);
     const media = items.filter((x) => ['video', 'audio', 'hls', 'dash'].includes(x.kind));
     const show = tier !== 'C' && !dismissed && media.length > 0;
@@ -253,12 +282,29 @@
     if (msg.type === 'fw:config') {
       if ('ABC'.includes(msg.tier)) tier = msg.tier;
       render();
+      return;
     }
+    if (msg.type === 'fw:theme') {
+      // 应用改主题后由后台广播；只替换 CSS 变量，面板不重建、页面不刷新。
+      applyBarTheme(msg.theme);
+    }
+  });
+
+  // 主题握手：向后台要当前缓存的 token；700ms 内没拿到就按中性回退画，避免闪变。
+  const themeReady = new Promise((resolve) => {
+    const timer = setTimeout(() => { themeSettled = true; resolve(); }, 700);
+    chrome.runtime.sendMessage({ type: 'fw:theme' })
+      .then((res) => { if (res && res.theme) applyBarTheme(res.theme); })
+      .catch(() => {})
+      .finally(() => { themeSettled = true; clearTimeout(timer); resolve(); });
   });
 
   // 首次握手：拿到档位与既有候选，并上报 DOM 媒体
   chrome.runtime.sendMessage({ type: 'fw:hello', items: collectDomMedia(), title: document.title })
-    .then((res) => { if (res && 'ABC'.includes(res.tier)) tier = res.tier; })
+    .then((res) => {
+      if (res && res.theme) applyBarTheme(res.theme);
+      if (res && 'ABC'.includes(res.tier)) tier = res.tier;
+    })
     .catch(() => {});
   setTimeout(reportDomMedia, 2500);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) reportDomMedia(); });
