@@ -35,7 +35,20 @@ $url = if ($FwTriple -like '*windows*') {
 $zip = Join-Path ([IO.Path]::GetTempPath()) ("fw-ffmpeg-" + [Guid]::NewGuid().ToString('N') + '.zip')
 $tmp = Join-Path ([IO.Path]::GetTempPath()) ("fw-ffmpeg-" + [Guid]::NewGuid().ToString('N'))
 Write-Host "下载 $url"
-Invoke-WebRequest -Uri $url -OutFile $zip -TimeoutSec 900
+# GitHub / gyan.dev 偶尔回 5xx，重试 3 次再报错。
+$attempt = 0
+while ($true) {
+    $attempt++
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $zip -TimeoutSec 900
+        break
+    } catch {
+        Write-Host "第 $attempt 次下载失败：$($_.Exception.Message)"
+        if ($attempt -ge 3) { throw }
+        Start-Sleep -Seconds (10 * $attempt)
+    }
+}
+if (-not (Test-Path $zip) -or (Get-Item $zip).Length -le 0) { throw "下载结果为空：$url" }
 Write-Host "解压…"
 Expand-Archive -Path $zip -DestinationPath $tmp -Force
 $exe = Get-ChildItem $tmp -Recurse -File -Filter 'ffmpeg.exe' | Select-Object -First 1

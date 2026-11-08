@@ -58,7 +58,29 @@ jobs:
 
       - name: 构建两个安装范围并落 dist
         shell: pwsh
-        run: ./tools/Build-Fw.ps1 -FwTask release
+        run: |
+          # tauri 打包时要现下 NSIS/WebView2 资产，GitHub 偶发 504（本轮就挂在这）。
+          # 整步重试 3 次；仍失败时把日志尾巴写进 annotation，未登录也能在检查页看到实际报错。
+          $fwLog = Join-Path $env:RUNNER_TEMP 'fw-build.log'
+          Remove-Item $fwLog -ErrorAction SilentlyContinue
+          $fwOk = $false
+          for ($i = 1; $i -le 3 -and -not $fwOk; $i++) {
+            Write-Host "构建第 $i 次…"
+            $LASTEXITCODE = 0
+            try {
+              & ./tools/Build-Fw.ps1 -FwTask release 2>&1 | Tee-Object -FilePath $fwLog -Append
+              if ($LASTEXITCODE -ne 0) { throw "退出码 $LASTEXITCODE" }
+              $fwOk = $true
+            } catch {
+              Write-Host "::warning title=构建失败（第 $i 次）::$($_.Exception.Message)"
+              if ($i -lt 3) { Start-Sleep -Seconds 20 }
+            }
+          }
+          if (-not $fwOk) {
+            $fwTail = ((Get-Content $fwLog -Tail 12) -join '%0A')
+            Write-Host "::error title=构建失败::$fwTail"
+            exit 1
+          }
 
       - name: 校验两包字节不同与内嵌执行级别
         shell: pwsh
