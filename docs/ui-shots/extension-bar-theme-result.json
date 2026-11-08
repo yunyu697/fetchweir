@@ -2,6 +2,11 @@
   "pass": true,
   "results": [
     {
+      "name": "首帧即应用配色，未先闪中性回退",
+      "pass": true,
+      "detail": "rgb(23, 17, 34)"
+    },
+    {
       "name": "dark/violet：悬浮条使用应用 token",
       "pass": true,
       "detail": {
@@ -526,15 +531,15 @@
       "pass": true,
       "detail": {
         "before": {
-          "timeOrigin": 1794155377756.8,
+          "timeOrigin": 1794155503062.5,
           "nav": 1,
-          "href": "http://127.0.0.1:60633/",
+          "href": "http://127.0.0.1:62299/",
           "button": "rgb(109, 40, 217)"
         },
         "after": {
-          "timeOrigin": 1794155377756.8,
+          "timeOrigin": 1794155503062.5,
           "nav": 1,
-          "href": "http://127.0.0.1:60633/",
+          "href": "http://127.0.0.1:62299/",
           "button": "rgb(10, 86, 172)"
         }
       }

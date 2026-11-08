@@ -327,13 +327,33 @@ try {
   await barPage.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false });
   await sleep(2500);
 
-  // 手动下发两条候选：一条普通视频、一条 DRM（用于核对禁用按钮对比度）
+  // 先把应用固定到暗色紫罗兰，供首帧检查使用
+  await evalIn(appConn, `document.querySelector('[data-theme-set="dark"]').click(); document.querySelector('[data-color-set="violet"]').click(); true`);
+  await sleep(2000);
+  const darkViolet = await appTokens(appConn);
+
+  // 刷新页面后立即下发候选：首帧悬浮条若先画中性再换色，这里会读到中性底。
+  await barPage.send('Page.navigate', { url: PAGE_URL });
+  await sleep(900);
   const pushed = await pushMedia(port, [
     { url: 'http://127.0.0.1/media/episode-01.mp4', kind: 'video', mime: 'video/mp4', size: 734003200 },
     { url: 'http://127.0.0.1/media/protected-show.mp4', kind: 'video', mime: 'video/mp4', size: 0, drmSuspect: true },
   ]);
   if (pushed == null) throw new Error('扩展后台未就绪，无法下发候选');
-  await sleep(1200);
+
+  let firstVisible = null;
+  for (let i = 0; i < 160; i++) {
+    const shown = await evalIn(barPage, `(() => {
+      const h = document.getElementById('fetchweir-bar-host');
+      return h ? getComputedStyle(h).display === 'block' : false;
+    })()`).catch(() => false);
+    if (shown) { firstVisible = await readBar(barPage); break; }
+    await sleep(25);
+  }
+  const firstPanel = firstVisible && parseColor(firstVisible.style.panel.background);
+  const firstOk = firstPanel && rgbText(firstPanel) === rgbText(hexToRgb(darkViolet.bg));
+  if (firstOk) ok('首帧即应用配色，未先闪中性回退', firstVisible.style.panel.background);
+  else bad('首帧出现非应用配色（可能闪变）', { panel: firstVisible && firstVisible.style.panel, token: darkViolet.bg });
 
   const combos = [
     ['dark', 'violet'], ['light', 'violet'],
