@@ -705,6 +705,36 @@ mod tests {
     }
 
     #[test]
+    fn throttle_stacks_on_speed_degrade_and_stops_at_floor() {
+        let b = GlobalBudget::new(true);
+        b.sync_tasks(2, 16);
+        age(&b, 30);
+        // 吞吐偏低先触发一次自动降档：16 -> 8。
+        assert!(!b.observe(576 * 1024));
+        age(&b, 30);
+        assert!(b.observe(576 * 1024));
+        assert_eq!(budget(&b), 8);
+
+        // 站点紧接着返回 429/503：在已降档的基础上继续砍半，而不是重置回 16。
+        assert!(!b.note_throttle());
+        assert!(!b.note_throttle());
+        assert!(b.note_throttle());
+        assert_eq!(budget(&b), 4, "429/503 叠加在吞吐降档之上继续砍半");
+
+        // 再命中一轮：降到每任务 1 条的下限 2，之后不再下探。
+        assert!(!b.note_throttle());
+        assert!(!b.note_throttle());
+        assert!(b.note_throttle());
+        assert_eq!(budget(&b), 2);
+        assert_eq!(b.alloc(2), vec![1, 1]);
+        assert!(!b.note_throttle());
+        assert!(!b.note_throttle());
+        assert!(!b.note_throttle(), "已在下限，返回 false 且不再改预算");
+        assert_eq!(budget(&b), 2);
+        assert!(b.info().degraded);
+    }
+
+    #[test]
     fn gate_respects_global_cap() {
         let gate = AdaptiveConn::new(8);
         assert!(gate.apply_global(Some(2), Some("全局并发降至 2 条".to_string())));
