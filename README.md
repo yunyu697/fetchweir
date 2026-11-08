@@ -3,14 +3,14 @@
 跨平台下载管理器（Rust + Tauri 2）。分段并发下载、断点续传、浏览器扩展资源嗅探、视频格式解析与音轨合并（yt-dlp + ffmpeg sidecar）。
 目前**只发布 Windows x64**；macOS / Linux 仅通过 CI 的编译与单测，产物未构建、运行时未验证。
 
-当前版本 **1.0.4**。发布说明见 [docs/release-notes-v1.0.4.md](docs/release-notes-v1.0.4.md)，
+当前版本 **1.0.5**。发布说明见 [docs/release-notes-v1.0.5.md](docs/release-notes-v1.0.5.md)，
 其中区分「已实测 / 未验证 / 被环境挡住」并写明原因。
 
-**发布口径**：CI 在 tag 上只校验 `version.json`，**不打包、不上传**；安装包在本地构建，
-Release 由本地产物手动创建（`gh release create` 上传安装包与签名清单）。
-本轮**只构建了 Windows x64**（currentUser / perMachine 两个包），macOS dmg 与 Linux
-deb/AppImage **未在本地构建**，因此本次 Release 里没有这两个平台的产物。
-构建命令见下方「构建与测试」。
+**发布口径**：推送 tag 后 CI 构建两个安装范围包并上传 Release（`.github/workflows/release.yml`），
+同时校验两包字节不同与内嵌执行级别（`asInvoker` / `requireAdministrator`）。
+CI 只构建 **Windows x64**：macOS 缺 arm64 版 ffmpeg sidecar 且没有公证/签名流程，
+Linux 的 deb/AppImage 安装路径未实测，不做"看起来支持"的产物。
+仓库未配置 `FW_SIGNING_KEY` 时，流水线会显式标注本次为**未签名发布**，客户端检测不到该版本。
 
 ## 平台支持矩阵（只写实测到的）
 
@@ -33,7 +33,7 @@ deb/AppImage **未在本地构建**，因此本次 Release 里没有这两个平
 | 已实现、未做全链路实机 | 更新检查与镜像下载（Ed25519 清单验签 + SHA256 校验；应用内 GUI 全流程已用真实 Release 作源实测：检查 → 发现新版本 → 下载 → SHA256 → 落盘，逐阶段截图；镜像加速下载未逐一实测） |
 | 已实现且真实站点实测 | 视频解析 → 选档 → 下载 → ffprobe 校验：Bilibili（15 档矩阵，1080p H.264 纯视频流 + 最佳音轨自动合并、纯音频档）、archive.org（直链整文件走自家引擎），界面字段与 yt-dlp `-J` 逐档一致；YouTube/Vimeo 被 bot 校验 / 403 挡住，见 [docs/视频站点实测.md](docs/视频站点实测.md) |
 | 未接通（界面禁用并标注） | 字幕轨下载、解析器独立更新、通知中心、原生拖放导入 |
-| 平台受限 | macOS 公证、Linux 发行版差异与系统级安装（本机与 CI 未验证）；v1.0.4 未构建 dmg/deb/AppImage |
+| 平台受限 | macOS 公证、Linux 发行版差异与系统级安装（本机与 CI 未验证）；v1.0.5 未构建 dmg/deb/AppImage（macOS 缺 arm64 ffmpeg sidecar 与公证流程，Linux 安装路径未实测） |
 
 ## 技术栈
 
