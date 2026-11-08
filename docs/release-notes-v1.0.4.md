@@ -1,5 +1,13 @@
 # Fetchweir 1.0.4 发布说明
 
+> **本次发布的平台范围**：只有 **Windows x64**（currentUser 与 perMachine 两个安装包）。
+> macOS 的 `.dmg` 与 Linux 的 `.deb` / `.AppImage` **本轮未在本地构建**，本 Release 里
+> 没有这两个平台的产物。macOS 公证、Linux 发行版差异与系统级安装仍未验证。
+>
+> **已知限制**：字幕轨下载、解析器独立更新、通知中心、原生拖放导入未接通（界面禁用并标注）；
+> `windows-gnu` 链接器会报 `.rsrc merge failure: multiple non-default manifests`（不影响功能）；
+> 连接明细不展示分连接速率；设置页未实现的选项标注「未生效」。详见 `README.md`「已知限制」。
+
 ## 一、设置页顶部分组导航
 
 v1.0.2 用户反馈「设置界面顶部那一排按钮没有功能」。核对结果：那一排是
@@ -46,24 +54,26 @@ v1.0.2 用户反馈「设置界面顶部那一排按钮没有功能」。核对�
 | `1.0.3+build.7` vs `1.0.3` | 相等 |
 | 非法版本（`1.2`、`1.0.3-`、空串） | 解析失败，不会当成 0.0.0 误报 |
 
-## 三、更新机制（保留验签能力，当前不发版）
+## 三、更新机制（公开主仓库 + 签名清单）
 
-私有源码仓库匿名访问 `releases/latest` 会 404，这是「更新检查异常」的另一半原因。本版做了这些：
+源码仓库已公开（`yunyu697/fetchweir`），更新源与 Release 都在同一个仓库，
+不再维护单独的产物仓库。本版做了这些：
 
 - 客户端不再携带任何令牌；本地设置里的「访问令牌」输入框与 `updateToken` 字段已删除。
+- 默认更新源改为 `https://github.com/yunyu697/fetchweir/releases/latest/download`。
 - 支持带签名的 `latest.json` 清单（版本、发布时间、说明、最低系统要求、
-  各平台资产名/大小/SHA256）与 `latest.json.sig`（Ed25519 签名）。
+  各平台资产名/大小/SHA256）与 `latest.json.sig`（Ed25519 签名），两个文件随本版
+  Release 一起上传。
 - 客户端用内置公钥验签，**签名不通过直接中止**；下载完成后校验 SHA256，不匹配则删除并拒绝安装。
 - 旧更新源没有清单时回退到 Release 列表，但界面明确标注「未校验来源」。
 - 显式指定的更新源（`FETCHWEIR_UPDATE_BASE`）不回退：没清单就报「未找到可用的更新源」。
 - 镜像选项按来源判定：资产不是 `github.com` 直链（自建源）时下拉框禁用并提示
   「镜像加速不可用」，不留点了没反应的选项。
 
-**发布口径已调整**：GitHub 上的 tag 只作版本标记，CI 不打包、不创建 Release，
-安装包全部在本地用 `pwsh tools/Build-Fw.ps1 -FwTask release` 生成。
-因此默认更新源下没有任何清单可读，检查更新会明确显示「未找到可用的更新源」，
-不会静默失败，也不会把空结果说成有新版本（实测见 `docs/更新机制.md`）。
-将来接入自建 HTTPS 源时无需改客户端，把清单与签名放上去即可。
+**发布口径**：CI 在 tag 上只校验 `version.json`，不打包、不上传；安装包在本地用
+`pwsh tools/Build-Fw.ps1 -FwTask release` 生成，Release 用 `gh release create` 手动创建，
+把两个 Windows 安装包与签名清单一起挂上去。清单生成用 `tools/New-FwManifest.mjs`，
+签名用 `tools/Sign-FwManifest.mjs`。
 
 > 本版源码里的 `RELEASE_PUBKEY_B64` 已固定为本项目公钥，`dist` 里的两个安装包
 > 都是替换之后构建的。签名私钥只保存在本机 `.secrets/update-signing.pem`；
@@ -72,12 +82,12 @@ v1.0.2 用户反馈「设置界面顶部那一排按钮没有功能」。核对�
 
 ### 1.0.0 ~ 1.0.3 用户必须手动升级
 
-这几个版本内置的是**旧公钥**。一旦启用托管清单，用新私钥签出的 `latest.json`
-在它们那里验签必然失败，更新检查会直接中止（这是设计行为，不是故障）。因此：
+这几个版本内置的是**旧公钥**。用新私钥签出的 `latest.json` 在它们那里验签必然失败，
+更新检查会直接中止（这是设计行为，不是故障）。因此：
 
-- 当前自动更新尚未启用，所有用户都通过**本地构建的安装包手动安装**；
-- 将来启用托管源时，这批用户**收不到自动更新**，必须在发布说明里引导手动下载安装包；
-- 1.0.4 是这批用户的"迁移版本"：装上它之后内置公钥才与新私钥配对。
+- 这批用户**收不到自动更新**，必须手动下载本版安装包覆盖安装；
+- 1.0.4 是这批用户的"迁移版本"：装上它之后内置公钥才与新私钥配对；
+- 1.0.4 及之后的版本可以走「检查更新 → 验签 → 下载 → SHA256 校验」。
 
 方案取舍、清单格式与密钥约束见 `docs/更新机制.md`。
 
@@ -91,7 +101,7 @@ v1.0.2 用户反馈「设置界面顶部那一排按钮没有功能」。核对�
   只有商店或企业策略（托管设备）可用。界面与复制出的步骤已写明这一点，`.crx` 只用于内测/企业。
 - 分发组合与成本见 `docs/浏览器扩展分发.md`。
 
-## 五、CI 状态（v1.0.3 历史记录）
+## 五、CI 与计费（v1.0.3 历史记录）
 
 - tag `v1.0.3` 的 release run（`42360405263`）**失败**，三个打包 job 均未启动（0 个步骤，3~4 秒结束）。
 - GitHub 注解原文：*“The job was not started because recent account payments have failed or
@@ -99,14 +109,18 @@ v1.0.2 用户反馈「设置界面顶部那一排按钮没有功能」。核对�
 - 因此 **v1.0.3 没有 Release，也没有任何安装包产出**（`gh release view v1.0.3` 返回 not found）。
 - 对照：v1.0.2 的五个产物当时仍在（`x64-setup.exe` 25,135,098 B、`x64-setup-allusers.exe`
   25,132,995 B、`amd64.deb` 43,413,904 B、`amd64.AppImage` 123,902,456 B、`aarch64.dmg` 40,179,674 B）。
-- 从 v1.0.4 起发布口径改为「tag 只作版本标记、安装包只在本地构建」，CI 不再打包，
-  上面的计费失败不再阻塞发布；workflow 只校验 tag 与 `version.json` 一致。
+- 从 v1.0.4 起发布方式改为「CI 在 tag 上只校验版本号；安装包本地构建，Release 手动创建」。
+  v1.0.4 的 Release 由本地产物上传，不依赖 CI 打包，也不受上述计费失败影响。
 
-## 六、发版步骤（本地）
+## 六、发版步骤（本地构建 + 手动 Release）
 
 1. `pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask release`
-   —— 一条命令产出 currentUser 与 perMachine 两个安装包，落到 `dist/` 并打印 SHA256。
+   —— 产出 currentUser 与 perMachine 两个安装包，落到 `dist/` 并打印 SHA256。
 2. 核对终端打印的版本号与 `version.json` 一致、两个包都来自本次构建。
-3. 把安装包与发布说明一起分发；1.0.0 ~ 1.0.3 用户手动覆盖安装。
-4. 需要版本标记时再打 tag（仅标记，不触发打包、不建 Release）。
-5. 不需要配置 `FW_RELEASES_PAT` / `FW_SIGNING_KEY`：CI 不打包、不签名，私钥只留在本机。
+3. `node tools/New-FwManifest.mjs` 生成 `dist/latest.json`；
+   把本机私钥放进 `FW_SIGNING_KEY` 后跑
+   `node tools/Sign-FwManifest.mjs --in dist/latest.json` 生成 `latest.json.sig`。
+4. 在对应提交打 tag `v1.0.4` 并推送（CI 只做版本校验，不打包）。
+5. `gh release create v1.0.4 --notes-file docs/release-notes-v1.0.4.md` 上传两个 exe 与
+   `latest.json` / `latest.json.sig`。
+6. `gh release view v1.0.4` 核对资产；1.0.0 ~ 1.0.3 用户手动覆盖安装。

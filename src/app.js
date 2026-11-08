@@ -203,7 +203,7 @@
     autoConcurrency: true,
     globalLimitBps: 0,
     theme: 'dark',
-    updateRepo: 'yunyu697/fetchweir-releases',
+    updateRepo: 'yunyu697/fetchweir',
     updateMirror: 'github',
     homepage: 'https://github.com/yunyu697/fetchweir',
     sniffTier: 'B',

@@ -1,10 +1,10 @@
 name: tag-version-check
 
-# tag 只作为版本标记，不再发版：
+# CI 在 tag 上只做版本校验：
 #   · 不创建 Release，不上传任何安装包或清单资产；
 #   · 不读取 FW_SIGNING_KEY / FW_RELEASES_PAT 等 secret；
-#   · 只校验 tag 与 version.json 是否一致（版本标记要有唯一来源）。
-# 安装包全部在本地生成：pwsh tools/Build-Fw.ps1 -FwTask release
+#   · 只校验 tag 与 version.json 是否一致（版本号唯一来源）。
+# 发布流程：本地出包 + 手动 `gh release create`（见 docs/发布检查清单.md）。
 on:
   push:
     tags: ['v*']

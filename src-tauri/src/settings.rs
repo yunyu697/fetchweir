@@ -81,7 +81,7 @@ impl Default for Settings {
             auto_concurrency: true,
             global_limit_bps: 0,
             theme: "dark".to_string(),
-            update_repo: "yunyu697/fetchweir-releases".to_string(),
+            update_repo: "yunyu697/fetchweir".to_string(),
             update_mirror: "github".to_string(),
             homepage: "https://github.com/yunyu697/fetchweir".to_string(),
             sniff_tier: "B".to_string(),

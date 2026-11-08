@@ -15,8 +15,8 @@ use tokio_util::sync::CancellationToken;
 use crate::settings;
 use crate::VERSION;
 
-/// 默认只读的公开「发布产物」仓库：源码仓库保持私有，这里只放安装包与清单。
-const DEFAULT_REPO: &str = "yunyu697/fetchweir-releases";
+/// 默认只读的公开发布仓库：源码仓库已公开，安装包与清单就挂在同一个仓库的 Release 上。
+const DEFAULT_REPO: &str = "yunyu697/fetchweir";
 const GITHUB_API: &str = "https://api.github.com";
 const CANCELLED: &str = "__cancelled__";
 /// 发布清单固定文件名，与同名 `.sig`（base64 Ed25519 签名）一起放在 Release 里。
@@ -1275,7 +1275,7 @@ mod tests {
             published_at: String::new(),
             asset_name: "Fetchweir_1.0.0_x64-setup.exe".into(),
             asset_size: 10,
-            browser_url: "https://github.com/yunyu697/fetchweir-releases/releases/download/v1.0.0/a.exe".into(),
+            browser_url: "https://github.com/yunyu697/fetchweir/releases/download/v1.0.0/a.exe".into(),
             sha256: Some("00".into()),
             verified: true,
         };
