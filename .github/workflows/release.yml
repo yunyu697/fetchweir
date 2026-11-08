@@ -56,10 +56,20 @@ jobs:
       - name: 安装前端依赖
         run: npm ci --no-audit --no-fund
 
+      - name: 预置 NSIS 工具链
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # tauri 打包前会联网下 NSIS，而 github.com/.../releases/download 的资产连续 504
+          # （两次 CI 都挂在 "Downloading .../nsis-3.13.zip"）。提前按 tauri 的缓存目录放好，
+          # 走 API 资产端点下载。tauri-cli 升级后 NSIS 版本会变，届时同步改这个脚本。
+          ./tools/Cache-FwNsis.ps1
+
       - name: 构建两个安装范围并落 dist
         shell: pwsh
         run: |
-          # tauri 打包时要现下 NSIS/WebView2 资产，GitHub 偶发 504（本轮就挂在这）。
+          # NSIS 已在上一步预置；这里兜底重试，覆盖 WebView2 等其它联网资产的偶发 5xx。
           # 整步重试 3 次；仍失败时把日志尾巴写进 annotation，未登录也能在检查页看到实际报错。
           $fwLog = Join-Path $env:RUNNER_TEMP 'fw-build.log'
           Remove-Item $fwLog -ErrorAction SilentlyContinue
