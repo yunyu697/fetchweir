@@ -15,21 +15,16 @@ const TAURI = path.join(ROOT, 'src-tauri', 'icons');
 const EXT = path.join(ROOT, 'extension', 'icons');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const COLOR = path.join(OUT, 'fetchweir.svg');
-const SMALL = path.join(OUT, 'fetchweir-small.svg');
-const MONO_D = path.join(OUT, 'fetchweir-mono-dark.svg');
-const MONO_L = path.join(OUT, 'fetchweir-mono-light.svg');
+// 品牌源稿：亮色版用于程序图标（exe/安装包/快捷方式/托盘），亮暗两版供界面按主题取用。
+const LIGHT = path.join(ROOT, 'src', 'assets', 'brand-light.svg');
+const SMALL = path.join(ROOT, 'src', 'assets', 'brand-light-small.svg');
 
-/** 渲染任务：小尺寸改用简化稿，单色稿保留透明背景 */
+/** 渲染任务：小尺寸改用简化稿（加粗笔画），保证 16px 下仍有两个独立形状 */
 function jobs() {
   const list = [];
-  const colorSmall = new Set([16, 20, 24]);
+  const small = new Set([16, 20, 24]);
   for (const size of [1024, 512, 310, 284, 256, 150, 142, 128, 107, 89, 71, 64, 50, 48, 44, 32, 30, 24, 20, 16]) {
-    list.push({ svg: colorSmall.has(size) ? SMALL : COLOR, size, out: `color-${size}.png` });
-  }
-  for (const size of [128, 64, 48, 32, 24, 20, 16]) {
-    list.push({ svg: MONO_D, size, out: `mono-dark-${size}.png` });
-    list.push({ svg: MONO_L, size, out: `mono-light-${size}.png` });
+    list.push({ svg: small.has(size) ? SMALL : LIGHT, size, out: `color-${size}.png` });
   }
   return list;
 }
@@ -156,8 +151,6 @@ function install() {
   copy('color-128.png', TAURI, '128x128.png');
   copy('color-256.png', TAURI, '128x128@2x.png');
   copy('color-32.png', TAURI, '32x32.png');
-  copy('mono-dark-32.png', TAURI, 'tray-dark.png');
-  copy('mono-light-32.png', TAURI, 'tray-light.png');
   buildIco([16, 20, 24, 32, 48, 64, 128, 256], path.join(TAURI, 'icon.ico'));
   buildIcns(path.join(TAURI, 'icon.icns'));
   for (const [name, size] of [

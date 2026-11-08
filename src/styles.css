@@ -67,10 +67,11 @@ body{
 .brand{display:flex;align-items:center;gap:9px}
 .mark{
   width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
-  background:linear-gradient(150deg,var(--accent),var(--accent-2));
-  box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 40%,transparent);
+  overflow:hidden;flex:0 0 auto;
 }
-.mark svg{display:block}
+.mark img{width:24px;height:24px;display:none}
+html[data-theme="dark"] .mark img.brand-logo-dark{display:block}
+html[data-theme="light"] .mark img.brand-logo-light{display:block}
 .brand-name{font-size:13px;font-weight:650;letter-spacing:.01em}
 .brand-sub{font-size:10px;color:var(--fg-3);letter-spacing:.14em;text-transform:uppercase;margin-top:-2px}
 .spacer{flex:1}
