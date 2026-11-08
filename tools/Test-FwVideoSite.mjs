@@ -118,12 +118,21 @@ try {
   if (result.tools && result.tools.ffmpeg) ok('后端找到 ffmpeg', result.tools.ffmpeg);
   else bad('后端找到 ffmpeg', JSON.stringify(result.tools));
 
-  // 切到视频页，填 URL，按 Enter 触发解析。
+  // 打开「视频解析」工具页（navVideoTool），并确认它真的可见——不能对着隐藏 DOM 操作。
+  let visible = false;
   for (let i = 0; i < 20; i++) {
-    await evaluate(`document.getElementById('navVideo').click(); 'ok'`);
+    await evaluate(`document.getElementById('navVideoTool').click(); 'ok'`);
     await sleep(250);
-    if (await evaluate(`!document.getElementById('viewVideo').hidden`)) break;
+    visible = await evaluate(`(() => {
+      const v = document.getElementById('viewVideo');
+      const u = document.getElementById('videoUrl');
+      return !v.hidden && !!u && u.offsetParent !== null;
+    })()`);
+    if (visible) break;
   }
+  if (!visible) throw new Error('视频解析工具页没有打开（viewVideo 仍隐藏）');
+  ok('视频解析工具页可见', 'viewVideo 显示，URL 输入框可交互');
+  await shot('0-page');
   await evaluate(`(() => {
     const i = document.getElementById('videoUrl');
     i.value = ${JSON.stringify(PAGE)};

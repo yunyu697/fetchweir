@@ -4,73 +4,73 @@
   "formats": [
     {
       "id": "30080",
-      "text": "1920×1080H.26425MP42629 kbps66.6 MB 需转封装",
+      "text": "1920×1080 H.264 25 MP4 2629 kbps 66.6 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100113",
-      "text": "1920×1080HEVC25MP4749 kbps19.0 MB 需转封装",
+      "text": "1920×1080 HEVC 25 MP4 749 kbps 19.0 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100026",
-      "text": "1920×1080AV125MP4604 kbps15.3 MB 需转封装",
+      "text": "1920×1080 AV1 25 MP4 604 kbps 15.3 MB 需合并音轨",
       "off": false
     },
     {
       "id": "30064",
-      "text": "1280×720H.26425MP41753 kbps44.4 MB 需转封装",
+      "text": "1280×720 H.264 25 MP4 1753 kbps 44.4 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100111",
-      "text": "1280×720HEVC25MP4359 kbps9.1 MB 需转封装",
+      "text": "1280×720 HEVC 25 MP4 359 kbps 9.1 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100024",
-      "text": "1280×720AV125MP4292 kbps7.4 MB 需转封装",
+      "text": "1280×720 AV1 25 MP4 292 kbps 7.4 MB 需合并音轨",
       "off": false
     },
     {
       "id": "30032",
-      "text": "852×480H.26425MP4787 kbps19.9 MB 需转封装",
+      "text": "852×480 H.264 25 MP4 787 kbps 19.9 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100110",
-      "text": "852×480HEVC25MP4219 kbps5.5 MB 需转封装",
+      "text": "852×480 HEVC 25 MP4 219 kbps 5.5 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100023",
-      "text": "852×480AV125MP4184 kbps4.7 MB 需转封装",
+      "text": "852×480 AV1 25 MP4 184 kbps 4.7 MB 需合并音轨",
       "off": false
     },
     {
       "id": "30016",
-      "text": "640×360H.26425MP4350 kbps8.9 MB 需转封装",
+      "text": "640×360 H.264 25 MP4 350 kbps 8.9 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100109",
-      "text": "640×360HEVC25MP4153 kbps3.9 MB 需转封装",
+      "text": "640×360 HEVC 25 MP4 153 kbps 3.9 MB 需合并音轨",
       "off": false
     },
     {
       "id": "100022",
-      "text": "640×360AV125MP4156 kbps3.9 MB 需转封装",
+      "text": "640×360 AV1 25 MP4 156 kbps 3.9 MB 需合并音轨",
       "off": false
     }
   ],
   "picked": {
     "formatId": "30216",
-    "row": "音频AAC—M4A44 kbps1.1 MB仅音频",
+    "row": "音频 AAC — M4A 44 kbps 1.1 MB 仅音频",
     "hint": "已选择 30216 · M4A",
     "video": "—",
     "audio": "AAC",
     "total": "1.1 MB",
-    "compat": "AAC 音轨M4A 容器",
+    "compat": "AAC 音轨 M4A 容器",
     "btnDisabled": false
   },
   "jobEvents": [
@@ -100,9 +100,24 @@
   },
   "checks": [
     {
+      "name": "后端找到 yt-dlp",
+      "pass": true,
+      "detail": "D:\\fw-build\\fetchweir\\release\\yt-dlp.exe"
+    },
+    {
+      "name": "后端找到 ffmpeg",
+      "pass": true,
+      "detail": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
+    },
+    {
+      "name": "视频解析工具页可见",
+      "pass": true,
+      "detail": "viewVideo 显示，URL 输入框可交互"
+    },
+    {
       "name": "界面解析出格式行",
       "pass": true,
-      "detail": "12 行，标签计数 {\"video\":\"12\",\"audio\":\"3\"}，用时 2951ms"
+      "detail": "12 行，标签计数 {\"video\":\"12\",\"audio\":\"3\"}，用时 5013ms"
     },
     {
       "name": "格式矩阵与解析器逐档一致",
@@ -112,12 +127,12 @@
     {
       "name": "选中格式后「加入下载」可用",
       "pass": true,
-      "detail": "{\"hint\":\"已选择 30216 · M4A\",\"video\":\"—\",\"audio\":\"AAC\",\"total\":\"1.1 MB\",\"compat\":\"AAC 音轨M4A 容器\",\"btnDisabled\":false}"
+      "detail": "{\"hint\":\"已选择 30216 · M4A\",\"video\":\"—\",\"audio\":\"AAC\",\"total\":\"1.1 MB\",\"compat\":\"AAC 音轨 M4A 容器\",\"btnDisabled\":false}"
     },
     {
       "name": "下载完成",
       "pass": true,
-      "detail": "{\"mode\":\"delegate\",\"ms\":3562,\"path\":\"C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Local\\\\Temp\\\\fw-video-e2e\\\\bili-audio\\\\【官方 MV】Never Gonna Give You Up - Rick Astley.m4a\"}"
+      "detail": "{\"mode\":\"delegate\",\"ms\":3558,\"path\":\"C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Local\\\\Temp\\\\fw-video-e2e\\\\bili-audio\\\\【官方 MV】Never Gonna Give You Up - Rick Astley.m4a\"}"
     },
     {
       "name": "成品文件已落盘",
@@ -135,6 +150,10 @@
       "detail": "按预期"
     }
   ],
+  "tools": {
+    "ytdlp": "D:\\fw-build\\fetchweir\\release\\yt-dlp.exe",
+    "ffmpeg": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
+  },
   "tabs": {
     "video": "12",
     "audio": "3"
@@ -142,17 +161,17 @@
   "audioFormats": [
     {
       "id": "30280",
-      "text": "音频AAC—M4A204 kbps5.2 MB仅音频",
+      "text": "音频 AAC — M4A 204 kbps 5.2 MB 仅音频",
       "off": false
     },
     {
       "id": "30232",
-      "text": "音频AAC—M4A103 kbps2.6 MB仅音频",
+      "text": "音频 AAC — M4A 103 kbps 2.6 MB 仅音频",
       "off": false
     },
     {
       "id": "30216",
-      "text": "音频AAC—M4A44 kbps1.1 MB仅音频",
+      "text": "音频 AAC — M4A 44 kbps 1.1 MB 仅音频",
       "off": false
     }
   ],

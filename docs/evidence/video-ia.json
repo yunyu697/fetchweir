@@ -4,28 +4,28 @@
   "formats": [
     {
       "id": "2",
-      "text": "1280×720——AVI—316.9 MB含音轨",
+      "text": "1280×720 — — AVI — 316.9 MB 含音轨",
       "off": false
     },
     {
       "id": "1",
-      "text": "640×360——MP4—59.0 MB推荐",
+      "text": "640×360 — — MP4 — 59.0 MB 推荐",
       "off": false
     },
     {
       "id": "0",
-      "text": "533×300——OGV—44.8 MB含音轨",
+      "text": "533×300 — — OGV — 44.8 MB 含音轨",
       "off": false
     }
   ],
   "picked": {
     "formatId": "1",
-    "row": "640×360——MP4—59.0 MB推荐",
+    "row": "640×360 — — MP4 — 59.0 MB 推荐",
     "hint": "已选择 1 · MP4",
     "video": "640×360 · — · —",
     "audio": "含于所选文件",
     "total": "59.0 MB",
-    "compat": "站点未标注编码MP4 容器",
+    "compat": "站点未标注编码 MP4 容器",
     "btnDisabled": false
   },
   "jobEvents": [],
@@ -62,9 +62,14 @@
       "detail": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
     },
     {
+      "name": "视频解析工具页可见",
+      "pass": true,
+      "detail": "viewVideo 显示，URL 输入框可交互"
+    },
+    {
       "name": "界面解析出格式行",
       "pass": true,
-      "detail": "3 行，标签计数 {\"video\":\"3\",\"audio\":\"0\"}，用时 3566ms"
+      "detail": "3 行，标签计数 {\"video\":\"3\",\"audio\":\"0\"}，用时 5052ms"
     },
     {
       "name": "格式矩阵与解析器逐档一致",
@@ -74,12 +79,12 @@
     {
       "name": "选中格式后「加入下载」可用",
       "pass": true,
-      "detail": "{\"hint\":\"已选择 1 · MP4\",\"video\":\"640×360 · — · —\",\"audio\":\"含于所选文件\",\"total\":\"59.0 MB\",\"compat\":\"站点未标注编码MP4 容器\",\"btnDisabled\":false}"
+      "detail": "{\"hint\":\"已选择 1 · MP4\",\"video\":\"640×360 · — · —\",\"audio\":\"含于所选文件\",\"total\":\"59.0 MB\",\"compat\":\"站点未标注编码 MP4 容器\",\"btnDisabled\":false}"
     },
     {
       "name": "下载完成",
       "pass": true,
-      "detail": "{\"mode\":\"direct\",\"ms\":8204,\"path\":\"C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Local\\\\Temp\\\\fw-video-e2e\\\\ia\\\\big_buck_bunny_720p_surround.mp4\"}"
+      "detail": "{\"mode\":\"direct\",\"ms\":9632,\"path\":\"C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Local\\\\Temp\\\\fw-video-e2e\\\\ia\\\\big_buck_bunny_720p_surround.mp4\"}"
     },
     {
       "name": "成品文件已落盘",
@@ -130,7 +135,7 @@
       "connLimit": 8,
       "connReason": null,
       "connections": 8,
-      "createdAt": 1794126667789,
+      "createdAt": 1794126928056,
       "doneBytes": 0,
       "error": null,
       "fileName": "big_buck_bunny_720p_surround.mp4",
@@ -153,7 +158,7 @@
     "speedBps": 0,
     "state": "completed",
     "error": null,
-    "createdAt": 1794126667789,
+    "createdAt": 1794126928056,
     "supportsRanges": true,
     "connections": 8,
     "connBase": 8,
