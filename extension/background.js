@@ -41,6 +41,12 @@ function absorbTheme(t) {
   barTheme = next;
   chrome.storage.local.set({ barTheme: next }).catch(() => {});
   broadcastTheme();
+  // 徽标底色同样跟随应用强调色，换主题后已打开的标签页立即重刷。
+  chrome.tabs.query({}, (list) => {
+    for (const t of list) {
+      if (t.id != null) updateBadge(t.id);
+    }
+  });
 }
 
 function broadcastTheme() {
@@ -190,12 +196,17 @@ function scheduleSend() {
   }, SEND_DELAY);
 }
 
+function badgeColor() {
+  const solid = barTheme && barTheme.palette && barTheme.palette.accentSolid;
+  return typeof solid === 'string' && solid ? solid : '#4B5563';
+}
+
 function updateBadge(tabId) {
   const bag = tabs.get(tabId);
   const n = bag ? [...bag.values()].filter((x) => ['video', 'audio', 'hls', 'dash'].includes(x.kind)).length : 0;
   const text = n > 0 ? String(n) : '';
   chrome.action.setBadgeText({ tabId, text }).catch(() => {});
-  chrome.action.setBadgeBackgroundColor({ tabId, color: '#6C8CFF' }).catch(() => {});
+  chrome.action.setBadgeBackgroundColor({ tabId, color: badgeColor() }).catch(() => {});
 }
 
 /* ---------- webRequest 监听（顶层注册，MV3 要求同步注册） ---------- */
