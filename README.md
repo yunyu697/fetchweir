@@ -93,6 +93,12 @@ gecko id 固定为 `fetchweir@yunyu697`，与 Native Messaging 的 `allowed_exte
 
 ## 已知限制
 
+- **安装包未做代码签名**：项目暂无代码签名证书，`Fetchweir_*_x64-setup.exe` 以未签名形式发布。
+  新用户首次运行会触发 Windows SmartScreen 拦截，需点「更多信息」→「仍要运行」才能继续；
+  请只从本仓库 Releases 页下载，不要从第三方站点获取。
+- **浏览器扩展需要手动加载**：发布包内没有"已安装"的扩展，也没有一键安装入口；
+  必须解压扩展目录后，在 `chrome://extensions` 开启开发者模式，选择「加载已解压的扩展程序」。
+  Native Messaging 宿主清单由应用自动注册，这一步不需要手动改注册表。
 - `windows-gnu` 链接器会报 `.rsrc merge failure: multiple non-default manifests`：rustc 默认清单与
   Tauri 的 Common-Controls 清单同为资源 id 1，保留前者；不使用 Win32 通用控件对话框，功能不受影响。
 - 连接明细不展示分连接速率：后端只上报任务总速率，界面不做平均分配造假。
