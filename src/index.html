@@ -788,7 +788,7 @@
                     <li>点「加载已解压的扩展程序」，选择上一步的 <code>extension</code> 文件夹。</li>
                     <li>打开任意网页，右下角出现 Fetchweir 浮动条即安装成功；点击浮动条可唤起本应用。</li>
                   </ol>
-                  <div class="ext-line dim">.crx 安装包只用于内测或企业自建更新源：Chrome / Edge 正式版会拦截站外 .crx（CRX_REQUIRED_PROOF_MISSING），双击通常装不上。日常使用请用上面的「加载已解压」；上架商店请用 Edge 加载项商店或 Firefox 签名 XPI。详见 docs/浏览器扩展分发.md。</div>
+                  <div class="ext-line dim">第一版只支持「加载已解压」这一条安装路径。.crx 双击会被 Chrome / Edge 正式版拦截（CRX_REQUIRED_PROOF_MISSING），只有企业策略下发的受管设备可用；Edge 加载项商店上架与 Firefox AMO 签名本版未配置。详见 docs/浏览器扩展分发.md。</div>
                   <div class="ext-actions">
                     <button class="btn sm" id="btnExtOpen">打开扩展文件夹</button>
                     <button class="btn sm ghost" id="btnExtCopy">复制安装步骤</button>
