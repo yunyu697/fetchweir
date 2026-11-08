@@ -330,6 +330,7 @@ pub fn run() {
             commands::add_sniff_task,
             commands::sniff_status,
             commands::set_sniff_tier,
+            commands::set_bar_theme,
             commands::probe_video,
             commands::add_video_task,
             commands::cancel_video,

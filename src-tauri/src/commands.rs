@@ -360,6 +360,30 @@ pub fn set_sniff_tier(app: AppHandle, tier: String) -> Result<String, String> {
     Ok(tier)
 }
 
+/// 前端把当前解析后的颜色 token 交给宿主，供扩展悬浮条跟随。
+/// token 的唯一来源仍是 styles.css，这里只做校验与落盘，不定义任何颜色。
+#[tauri::command(async)]
+pub fn set_bar_theme(theme: String, color: String, palette: serde_json::Value) -> Result<(), String> {
+    if !matches!(theme.as_str(), "dark" | "light") {
+        return Err("主题只能是 dark / light".to_string());
+    }
+    let Some(map) = palette.as_object() else {
+        return Err("palette 必须是对象".to_string());
+    };
+    if map.is_empty() {
+        return Err("palette 不能为空".to_string());
+    }
+    for (key, value) in map {
+        let Some(text) = value.as_str() else {
+            return Err(format!("palette.{key} 必须是字符串"));
+        };
+        if text.len() > 64 {
+            return Err(format!("palette.{key} 过长"));
+        }
+    }
+    nm::write_bar_theme(&theme, &color, &palette).map_err(|e| e.to_string())
+}
+
 /// 把嗅探项交给引擎。受保护内容在这里硬拒绝，不依赖前端按钮状态。
 #[tauri::command(async)]
 pub fn add_sniff_task(

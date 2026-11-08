@@ -6,7 +6,7 @@ use std::net::{TcpStream, ToSocketAddrs};
 #[cfg(any(target_os = "macos", all(unix, not(target_os = "macos"))))]
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
@@ -246,7 +246,69 @@ fn drain_inbox(app: &AppHandle, store: &Arc<SniffStore>) {
 
 /* ============ 宿主侧：stdio NM 帧 ============ */
 
+/// 应用当前主题的落盘位置。palette 由前端从 styles.css 的计算值读出后上报，
+/// 宿主只负责搬运，不在 Rust 侧维护第二份调色板。
+fn bar_theme_path() -> PathBuf {
+    settings::ensure_data_dir().join("bar-theme.json")
+}
+
+fn read_bar_theme() -> Option<Value> {
+    let raw = std::fs::read_to_string(bar_theme_path()).ok()?;
+    let v: Value = serde_json::from_str(&raw).ok()?;
+    let theme = v.get("theme")?.as_str()?;
+    if theme != "dark" && theme != "light" {
+        return None;
+    }
+    v.get("palette")?.as_object()?;
+    Some(json!({
+        "theme": theme,
+        "color": v.get("color").and_then(|c| c.as_str()).unwrap_or(""),
+        "palette": v.get("palette").cloned().unwrap_or(Value::Null),
+    }))
+}
+
+pub fn write_bar_theme(theme: &str, color: &str, palette: &Value) -> std::io::Result<()> {
+    let payload = json!({
+        "theme": theme,
+        "color": color,
+        "palette": palette,
+        "at": std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis() as u64)
+            .unwrap_or(0),
+    });
+    let dir = settings::ensure_data_dir();
+    let path = dir.join("bar-theme.json");
+    let tmp = dir.join("bar-theme.json.tmp");
+    let raw = serde_json::to_vec(&payload).map_err(std::io::Error::other)?;
+    std::fs::write(&tmp, raw)?;
+    std::fs::rename(&tmp, &path)
+}
+
+/// 轮询主题文件并主动推给扩展：应用里换主题后，已打开的页面无需刷新。
+fn spawn_theme_pusher(out: Arc<Mutex<std::io::Stdout>>) {
+    std::thread::spawn(move || {
+        let mut last: Option<String> = None;
+        loop {
+            if let Some(theme) = read_bar_theme() {
+                let key = theme.to_string();
+                if last.as_deref() != Some(key.as_str()) {
+                    last = Some(key);
+                    let mut frame = theme;
+                    if let Some(obj) = frame.as_object_mut() {
+                        obj.insert("type".to_string(), json!("theme"));
+                        write_frame(&out, &frame);
+                    }
+                }
+            }
+            std::thread::sleep(Duration::from_millis(700));
+        }
+    });
+}
+
 pub fn run_host() -> ! {
+    let out = Arc::new(Mutex::new(std::io::stdout()));
+    spawn_theme_pusher(out.clone());
     loop {
         let mut len = [0u8; 4];
         if std::io::stdin().read_exact(&mut len).is_err() {
@@ -263,7 +325,7 @@ pub fn run_host() -> ! {
         let msg: Value = match serde_json::from_slice(&buf) {
             Ok(v) => v,
             Err(e) => {
-                write_frame(&json!({"ok": false, "error": format!("请求不是合法 JSON: {e}")}));
+                write_frame(&out, &json!({"ok": false, "error": format!("请求不是合法 JSON: {e}")}));
                 continue;
             }
         };
@@ -283,8 +345,12 @@ pub fn run_host() -> ! {
         let mut payload = reply;
         if let Some(obj) = payload.as_object_mut() {
             obj.insert("tier".to_string(), json!(tier));
+            // 应答顺带最新主题：扩展在 hello/ping 阶段即可拿到首帧配色。
+            if let Some(theme) = read_bar_theme() {
+                obj.insert("barTheme".to_string(), theme);
+            }
         }
-        write_frame(&payload);
+        write_frame(&out, &payload);
     }
 }
 
@@ -335,9 +401,9 @@ fn launch_app() {
     let _ = std::process::Command::new(exe).spawn();
 }
 
-fn write_frame(value: &Value) {
+fn write_frame(out: &Arc<Mutex<std::io::Stdout>>, value: &Value) {
     let bytes = serde_json::to_vec(value).unwrap_or_default();
-    let mut out = std::io::stdout();
+    let Ok(mut out) = out.lock() else { return };
     let _ = out.write_all(&(bytes.len() as u32).to_le_bytes());
     let _ = out.write_all(&bytes);
     let _ = out.flush();

@@ -309,12 +309,43 @@
     const resolved = state.themePref === 'system' ? (mqLight.matches ? 'light' : 'dark') : state.themePref;
     document.documentElement.dataset.theme = resolved;
     $$('[data-theme-set]').forEach((b) => b.classList.toggle('on', b.dataset.themeSet === state.themePref));
+    syncBarTheme();
   }
   /* 颜色主题与明暗完全独立：只切换 data-color，由 CSS 提供整组 token。 */
   function applyColorTheme(name) {
     const color = COLOR_THEMES.includes(name) ? name : 'violet';
     document.documentElement.dataset.color = color;
     $$('[data-color-set]').forEach((b) => b.classList.toggle('on', b.dataset.colorSet === color));
+    syncBarTheme();
+  }
+
+  /* 扩展悬浮条跟随：token 的唯一来源仍是 styles.css，这里只读计算值并上报给宿主。
+     扩展不保存调色板，Rust 只落盘/转发；换主题时宿主主动推送，页面无需刷新。 */
+  const BAR_TOKENS = {
+    bg: '--panel', bg2: '--panel-2', bg3: '--panel-3',
+    line: '--line', fg: '--fg', fg2: '--fg-2', fg3: '--fg-3',
+    accent: '--accent', accentSolid: '--accent-solid',
+    accentSolid2: '--accent-solid-2', accentFg: '--accent-fg',
+  };
+  let barThemeTimer = null;
+  function syncBarTheme() {
+    if (!IS_TAURI) return;
+    clearTimeout(barThemeTimer);
+    // 同一轮里 data-theme 与 data-color 会连续变，合并后再读最终组合。
+    barThemeTimer = setTimeout(() => {
+      const cs = getComputedStyle(document.documentElement);
+      const palette = {};
+      for (const [key, name] of Object.entries(BAR_TOKENS)) {
+        const value = cs.getPropertyValue(name).trim();
+        if (value) palette[key] = value;
+      }
+      if (!palette.bg || !palette.fg) return;
+      invoke('set_bar_theme', {
+        theme: document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
+        color: document.documentElement.dataset.color || 'violet',
+        palette,
+      }).catch(() => {});
+    }, 60);
   }
   function applyVisuals(s) {
     if (!s) return;
