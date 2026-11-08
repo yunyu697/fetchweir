@@ -1,0 +1,142 @@
+{
+  "pass": true,
+  "tasks": 4,
+  "conns": 4,
+  "timeline": [
+    {
+      "tMs": 4,
+      "connLimitPerTask": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "totalBudget": 16,
+      "totalSpeedBps": 0,
+      "states": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ],
+      "degraded": false,
+      "reason": null
+    },
+    {
+      "tMs": 14964,
+      "connLimitPerTask": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "totalBudget": 8,
+      "totalSpeedBps": 515767,
+      "states": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ],
+      "degraded": true,
+      "reason": "每连接仅 31 KB/s（持续 6 秒），全局并发自动降至 8 条"
+    },
+    {
+      "tMs": 21392,
+      "connLimitPerTask": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "totalBudget": 16,
+      "totalSpeedBps": 262012,
+      "states": [
+        "active",
+        "active",
+        "active",
+        "active"
+      ],
+      "degraded": false,
+      "reason": null
+    }
+  ],
+  "final": [
+    {
+      "id": 1,
+      "state": "active",
+      "connLimit": 4,
+      "connBase": 4,
+      "degraded": false,
+      "reason": null,
+      "speedBps": 65577,
+      "doneBytes": 2293760,
+      "totalBytes": 6291456
+    },
+    {
+      "id": 2,
+      "state": "active",
+      "connLimit": 4,
+      "connBase": 4,
+      "degraded": false,
+      "reason": null,
+      "speedBps": 65580,
+      "doneBytes": 2293760,
+      "totalBytes": 6291456
+    },
+    {
+      "id": 3,
+      "state": "active",
+      "connLimit": 4,
+      "connBase": 4,
+      "degraded": false,
+      "reason": null,
+      "speedBps": 65422,
+      "doneBytes": 2293760,
+      "totalBytes": 6291456
+    },
+    {
+      "id": 4,
+      "state": "active",
+      "connLimit": 4,
+      "connBase": 4,
+      "degraded": false,
+      "reason": null,
+      "speedBps": 65433,
+      "doneBytes": 2293760,
+      "totalBytes": 6291456
+    }
+  ],
+  "results": [
+    {
+      "name": "起跑为 4 个任务 × 4 连接",
+      "pass": true,
+      "detail": "{\"tMs\":4,\"connLimitPerTask\":[4,4,4,4],\"totalBudget\":16,\"totalSpeedBps\":0,\"states\":[\"active\",\"active\",\"active\",\"active\"],\"degraded\":false,\"reason\":null}"
+    },
+    {
+      "name": "全局预算降到每任务 2 条（合计 8）",
+      "pass": true,
+      "detail": "{\"atMs\":20683,\"reason\":\"每连接仅 31 KB/s（持续 6 秒），全局并发自动降至 8 条\",\"states\":[\"active\",\"active\",\"active\",\"active\"],\"doneBytes\":[2195456,2195456,2195456,2195456]}"
+    },
+    {
+      "name": "降档窗口内 4 个任务都在继续下载",
+      "pass": true,
+      "detail": "[66733,66735,66529,66517]"
+    },
+    {
+      "name": "降档后 4 秒判定「未提升总速率」，恢复 4 条并取消降档标记",
+      "pass": true,
+      "detail": "{\"atMs\":21392,\"connLimit\":[4,4,4,4],\"reason\":[null,null,null,null]}"
+    },
+    {
+      "name": "恢复后 9 秒不再反复降档",
+      "pass": true,
+      "detail": "[\"4/3440640\",\"4/3440640\",\"4/3440640\",\"4/3440640\"]"
+    },
+    {
+      "name": "每个任务都有实际字节落盘",
+      "pass": true,
+      "detail": "[3440640,3440640,3440640,3440640]"
+    }
+  ]
+}

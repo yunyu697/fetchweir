@@ -735,6 +735,48 @@ mod tests {
     }
 
     #[test]
+    fn eight_tasks_skip_floor_probe_and_revert() {
+        let b = GlobalBudget::new(true);
+        b.sync_tasks(8, 32);
+        age(&b, 30);
+        assert!(!b.observe(2048 * 1024));
+        age(&b, 30);
+        assert!(b.observe(2048 * 1024));
+        assert_eq!(budget(&b), 16);
+        assert_eq!(b.alloc(8), vec![2; 8], "8 个任务时降到每任务 2 条");
+
+        // 8 条/任务的档位掉到 600KB/s：最低并发是 8 条（>3），不做最低并发试探，
+        // 直接判定「站点总带宽受限」，恢复到 32 条并锁定。
+        age(&b, 30);
+        assert!(b.observe(600 * 1024));
+        assert_eq!(budget(&b), 32);
+        assert!(!b.info().degraded);
+        assert!(b.info().reason.as_deref().unwrap_or("").contains("已恢复至 32 条"));
+        assert_eq!(b.alloc(8), vec![4; 8]);
+    }
+
+    #[test]
+    fn eight_tasks_throttle_stacks_to_one_each() {
+        let b = GlobalBudget::new(true);
+        b.sync_tasks(8, 32);
+        for _ in 0..3 {
+            b.note_throttle();
+        }
+        assert_eq!(budget(&b), 16, "429/503 先把 32 砍半到 16");
+        assert_eq!(b.alloc(8), vec![2; 8]);
+        for _ in 0..3 {
+            b.note_throttle();
+        }
+        assert_eq!(budget(&b), 8, "再砍半到每任务 1 条（floor）");
+        assert_eq!(b.alloc(8), vec![1; 8]);
+        for _ in 0..3 {
+            b.note_throttle();
+        }
+        assert_eq!(budget(&b), 8, "已在下限，8 个任务时不再继续降");
+        assert!(b.info().degraded);
+    }
+
+    #[test]
     fn gate_respects_global_cap() {
         let gate = AdaptiveConn::new(8);
         assert!(gate.apply_global(Some(2), Some("全局并发降至 2 条".to_string())));
