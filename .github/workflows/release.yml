@@ -22,6 +22,9 @@ jobs:
   windows:
     name: Windows x64 构建与发布
     runs-on: windows-latest
+    # 各下载脚本据此走 GitHub API 资产端点（releases/download 直链会持续 504）。
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -58,8 +61,6 @@ jobs:
 
       - name: 预置 NSIS 工具链
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # tauri 打包前会联网下 NSIS，而 github.com/.../releases/download 的资产连续 504
           # （两次 CI 都挂在 "Downloading .../nsis-3.13.zip"）。提前按 tauri 的缓存目录放好，

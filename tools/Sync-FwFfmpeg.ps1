@@ -35,18 +35,25 @@ $url = if ($FwTriple -like '*windows*') {
 $zip = Join-Path ([IO.Path]::GetTempPath()) ("fw-ffmpeg-" + [Guid]::NewGuid().ToString('N') + '.zip')
 $tmp = Join-Path ([IO.Path]::GetTempPath()) ("fw-ffmpeg-" + [Guid]::NewGuid().ToString('N'))
 Write-Host "下载 $url"
-# GitHub / gyan.dev 偶尔回 5xx，重试 3 次再报错。
-$attempt = 0
-while ($true) {
-    $attempt++
-    try {
-        Invoke-WebRequest -Uri $url -OutFile $zip -TimeoutSec 900
-        break
-    } catch {
-        Write-Host "第 $attempt 次下载失败：$($_.Exception.Message)"
-        if ($attempt -ge 3) { throw }
-        Start-Sleep -Seconds (10 * $attempt)
+if ($FwTriple -like '*windows*') {
+    # gyan.dev 不是 GitHub 资产，自己重试。
+    $attempt = 0
+    while ($true) {
+        $attempt++
+        try {
+            Invoke-WebRequest -Uri $url -OutFile $zip -TimeoutSec 900
+            break
+        } catch {
+            Write-Host "第 $attempt 次下载失败：$($_.Exception.Message)"
+            if ($attempt -ge 3) { throw }
+            Start-Sleep -Seconds (10 * $attempt)
+        }
     }
+} else {
+    # BtbN 的发布 tag 字面就叫 latest，走公共实现的「精确 tag」分支。
+    $asset = if ($FwTriple -like '*apple-darwin*') { 'ffmpeg-master-latest-macos64-gpl.zip' } else { 'ffmpeg-master-latest-linux64-gpl.zip' }
+    . (Join-Path $PSScriptRoot 'Get-FwGitHubAsset.ps1')
+    Get-FwGitHubReleaseAsset -FwRepo 'BtbN/FFmpeg-Builds' -FwTag 'latest' -FwAsset $asset -FwOut $zip
 }
 if (-not (Test-Path $zip) -or (Get-Item $zip).Length -le 0) { throw "下载结果为空：$url" }
 Write-Host "解压…"

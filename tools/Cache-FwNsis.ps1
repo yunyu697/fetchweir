@@ -31,40 +31,12 @@ if (-not $FwForce -and (Test-Path (Join-Path $FwNsisDir 'makensis.exe')) -and (T
     exit 0
 }
 
-function Get-FwReleaseAsset {
-    param([string]$FwRepo, [string]$FwTag, [string]$FwAsset, [string]$FwOut, [string]$FwSha1)
-    $FwDirect = "https://github.com/$FwRepo/releases/download/$FwTag/$FwAsset"
-    $FwToken = if ($env:GH_TOKEN) { $env:GH_TOKEN } else { $env:GITHUB_TOKEN }
-    for ($FwAttempt = 1; $FwAttempt -le 3; $FwAttempt++) {
-        try {
-            if ($FwToken) {
-                # 直链走的是 release 资产 CDN，本仓库两次 CI 都在这里连续 504；
-                # API 资产端点返回 302 到另一套签名地址，实测可用。
-                $FwHeaders = @{ Authorization = "Bearer $FwToken"; 'User-Agent' = 'fetchweir-ci' }
-                $FwRel = Invoke-RestMethod -Uri "https://api.github.com/repos/$FwRepo/releases/tags/$FwTag" -Headers $FwHeaders -TimeoutSec 120
-                $FwFound = $FwRel.assets | Where-Object { $_.name -eq $FwAsset } | Select-Object -First 1
-                if (-not $FwFound) { throw "tag $FwTag 下没有资产 $FwAsset" }
-                $FwHeaders['Accept'] = 'application/octet-stream'
-                Invoke-WebRequest -Uri $FwFound.url -Headers $FwHeaders -OutFile $FwOut -TimeoutSec 300
-            } else {
-                Invoke-WebRequest -Uri $FwDirect -OutFile $FwOut -TimeoutSec 300
-            }
-            if (-not (Test-Path $FwOut) -or (Get-Item $FwOut).Length -le 0) { throw "下载结果为空：$FwAsset" }
-            $FwActual = (Get-FileHash $FwOut -Algorithm SHA1).Hash
-            if ($FwActual -ne $FwSha1) { throw "sha1 不符：$FwAsset 期望 $FwSha1 实际 $FwActual" }
-            return
-        } catch {
-            Write-Host "第 $FwAttempt 次下载失败（$FwAsset）：$($_.Exception.Message)"
-            if ($FwAttempt -ge 3) { throw }
-            Start-Sleep -Seconds (10 * $FwAttempt)
-        }
-    }
-}
+. (Join-Path $PSScriptRoot 'Get-FwGitHubAsset.ps1')
 
 $FwZip = Join-Path ([IO.Path]::GetTempPath()) ("fw-nsis-" + [Guid]::NewGuid().ToString('N') + '.zip')
 $FwTmp = Join-Path ([IO.Path]::GetTempPath()) ("fw-nsis-" + [Guid]::NewGuid().ToString('N'))
 try {
-    Get-FwReleaseAsset -FwRepo 'tauri-apps/binary-releases' -FwTag "nsis-$FwNsisVersion" `
+    Get-FwGitHubReleaseAsset -FwRepo 'tauri-apps/binary-releases' -FwTag "nsis-$FwNsisVersion" `
         -FwAsset "nsis-$FwNsisVersion.zip" -FwOut $FwZip -FwSha1 $FwNsisZipSha1
 
     if (Test-Path $FwNsisDir) { Remove-Item $FwNsisDir -Recurse -Force }
@@ -75,7 +47,7 @@ try {
     Copy-Item (Join-Path $FwInner.FullName '*') $FwNsisDir -Recurse -Force
 
     New-Item -ItemType Directory $FwUtilsDir -Force | Out-Null
-    Get-FwReleaseAsset -FwRepo 'tauri-apps/nsis-tauri-utils' -FwTag "nsis_tauri_utils-v$FwUtilsVersion" `
+    Get-FwGitHubReleaseAsset -FwRepo 'tauri-apps/nsis-tauri-utils' -FwTag "nsis_tauri_utils-v$FwUtilsVersion" `
         -FwAsset 'nsis_tauri_utils.dll' -FwOut $FwUtilsDll -FwSha1 $FwUtilsDllSha1
 
     if (-not (Test-Path (Join-Path $FwNsisDir 'makensis.exe'))) { throw "缺少 makensis.exe：$FwNsisDir" }

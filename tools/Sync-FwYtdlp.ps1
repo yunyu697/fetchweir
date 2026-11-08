@@ -30,19 +30,9 @@ elseif ($FwTriple -like '*apple-darwin*') { 'yt-dlp_macos' }
 else { 'yt-dlp_linux' }
 $url = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/$asset"
 Write-Host "下载 $asset → $target"
-# GitHub 的 release 资产偶尔回 504（本轮 CI 就栽在这），重试 3 次再报错。
-$attempt = 0
-while ($true) {
-    $attempt++
-    try {
-        Invoke-WebRequest -Uri $url -OutFile $target -TimeoutSec 300
-        break
-    } catch {
-        Write-Host "第 $attempt 次下载失败：$($_.Exception.Message)"
-        if ($attempt -ge 3) { throw }
-        Start-Sleep -Seconds (10 * $attempt)
-    }
-}
+# releases/download 直链会持续 504，公共实现优先走 GitHub API 资产端点，失败再退回直链并重试。
+. (Join-Path $PSScriptRoot 'Get-FwGitHubAsset.ps1')
+Get-FwGitHubReleaseAsset -FwRepo 'yt-dlp/yt-dlp' -FwAsset $asset -FwOut $target
 if (-not (Test-Path $target) -or (Get-Item $target).Length -le 0) { throw "下载结果为空：$url" }
 if (-not $IsWindows -and -not $IsMacOS) { chmod +x $target 2>$null }
 Write-Host "完成：$target（$((Get-Item $target).Length) 字节）"
