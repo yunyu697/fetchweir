@@ -290,8 +290,12 @@ impl GlobalBudget {
             g.budget.min(base).max(tasks)
         };
         let budget = g.budget;
+        // 429/503 命中跨任务集合变化保留（10 秒窗口内仍有效），
+        // 否则新任务一入队就把刚收到的限流信号清掉。
+        let throttles = std::mem::take(&mut g.throttles);
         Self::reset(&mut g);
         g.budget = budget;
+        g.throttles = throttles;
     }
 
     fn reset(g: &mut GlobalInner) {
@@ -350,6 +354,11 @@ impl GlobalBudget {
         g.last_bps = bps;
         if bps > g.peak_bps {
             g.peak_bps = bps;
+        }
+        // 入队前攒下的 429/503：预算刚开始判定时补算，不能等下一次命中。
+        g.throttles.retain(|t| now.duration_since(*t) < THROTTLE_WINDOW);
+        if Self::apply_throttle(&mut g, now) {
+            return true;
         }
         if now.duration_since(g.started) < WARMUP {
             return false;
@@ -511,11 +520,20 @@ impl GlobalBudget {
     pub fn note_throttle(&self) -> bool {
         let now = Instant::now();
         let mut g = self.inner.lock().unwrap();
-        if !g.enabled || g.tasks == 0 {
+        if !g.enabled {
             return false;
         }
+        // 任务还没纳入预算（首个 tick 之前）也要先记下命中，否则刚入队就撞上
+        // 429/503 的那几次会被丢掉，等预算开始判定时又得重新攒。
         g.throttles.retain(|t| now.duration_since(*t) < THROTTLE_WINDOW);
         g.throttles.push(now);
+        Self::apply_throttle(&mut g, now)
+    }
+
+    fn apply_throttle(g: &mut GlobalInner, now: Instant) -> bool {
+        if g.tasks == 0 {
+            return false;
+        }
         let floor = floor_for(g.tasks, g.base);
         if g.throttles.len() < THROTTLE_HITS || g.budget <= floor {
             return false;
@@ -702,6 +720,19 @@ mod tests {
         assert!(!b.note_throttle());
         assert!(b.note_throttle());
         assert_eq!(budget(&b), 4);
+    }
+
+    #[test]
+    fn throttles_before_first_sync_are_kept() {
+        let b = GlobalBudget::new(true);
+        // 刚入队、预算还没同步时连续撞上限流：先记下，不改任何预算。
+        assert!(!b.note_throttle());
+        assert!(!b.note_throttle());
+        assert!(!b.note_throttle());
+        assert_eq!(budget(&b), 0);
+        b.sync_tasks(2, 16);
+        assert!(b.observe(0), "首个 tick 补算入队前的 429/503");
+        assert_eq!(budget(&b), 8);
     }
 
     #[test]

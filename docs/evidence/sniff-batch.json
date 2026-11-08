@@ -1,0 +1,1431 @@
+{
+  "labels": [
+    "ok-a.bin",
+    "ok-b.bin",
+    "ok-c.bin",
+    "ok-d.bin",
+    "ok-e.bin",
+    "ok-f.bin",
+    "ok-g.bin",
+    "ok-h.bin",
+    "flaky.bin",
+    "throttle.bin",
+    "missing.bin"
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "url": "http://127.0.0.1:62238/ok-a.bin",
+      "fileName": "ok-a.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-a.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819154,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 6,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 2,
+      "url": "http://127.0.0.1:62238/ok-b.bin",
+      "fileName": "ok-b.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-b.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819158,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 6,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 3,
+      "url": "http://127.0.0.1:62238/ok-c.bin",
+      "fileName": "ok-c.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-c.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819162,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 6,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 4,
+      "url": "http://127.0.0.1:62238/ok-d.bin",
+      "fileName": "ok-d.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-d.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819165,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 6,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 5,
+      "url": "http://127.0.0.1:62238/ok-e.bin",
+      "fileName": "ok-e.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-e.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819168,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 5,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 6,
+      "url": "http://127.0.0.1:62238/ok-f.bin",
+      "fileName": "ok-f.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-f.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819173,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 5,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 7,
+      "url": "http://127.0.0.1:62238/ok-g.bin",
+      "fileName": "ok-g.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-g.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819175,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 5,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 8,
+      "url": "http://127.0.0.1:62238/ok-h.bin",
+      "fileName": "ok-h.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\ok-h.bin",
+      "totalBytes": 8388608,
+      "doneBytes": 8388608,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819179,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 5,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 9,
+      "url": "http://127.0.0.1:62238/flaky.bin",
+      "fileName": "flaky.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\flaky.bin",
+      "totalBytes": 4194304,
+      "doneBytes": 4194304,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819183,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 4,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 10,
+      "url": "http://127.0.0.1:62238/throttle.bin",
+      "fileName": "throttle.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\throttle.bin",
+      "totalBytes": 4194304,
+      "doneBytes": 4194304,
+      "speedBps": 0,
+      "state": "completed",
+      "error": null,
+      "createdAt": 1794127819187,
+      "supportsRanges": true,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 4,
+      "connDegraded": true,
+      "connReason": null
+    },
+    {
+      "id": 11,
+      "url": "http://127.0.0.1:62238/missing.bin",
+      "fileName": "missing.bin",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch\\missing.bin",
+      "totalBytes": 0,
+      "doneBytes": 0,
+      "speedBps": 0,
+      "state": "failed",
+      "error": "网络错误：HTTP 404 Not Found",
+      "createdAt": 1794127819190,
+      "supportsRanges": false,
+      "connections": 8,
+      "connBase": 8,
+      "connLimit": 4,
+      "connDegraded": true,
+      "connReason": "10 秒内 5 次 429/503，全局并发自动降至 44 条"
+    }
+  ],
+  "samples": [
+    {
+      "t": 4,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 262144,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 262144,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 262144,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 131072,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 262144,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 262144,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 131072,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 262144,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 196608,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 163840,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "active",
+          "conns": 8,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": null,
+          "error": null
+        }
+      ]
+    },
+    {
+      "t": 1123,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1114112,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1114112,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1114112,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 983040,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1114112,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1114112,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 983040,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1114112,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 851968,
+          "total": 4194304,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 720896,
+          "total": 4194304,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        }
+      ]
+    },
+    {
+      "t": 2173,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1572864,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1572864,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1572864,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1441792,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1572864,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1572864,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1441792,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1572864,
+          "total": 8388608,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1310720,
+          "total": 4194304,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 1179648,
+          "total": 4194304,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "failed",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": "网络错误：HTTP 404 Not Found"
+        }
+      ]
+    },
+    {
+      "t": 4256,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 2457600,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 2457600,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 2457600,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 2326528,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 2424832,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 2424832,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 2293760,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 2424832,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 2162688,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 2031616,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "failed",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": "网络错误：HTTP 404 Not Found"
+        }
+      ]
+    },
+    {
+      "t": 9809,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 5357568,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 5324800,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 5341184,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 5193728,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 4718592,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 4718592,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 4587520,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "active",
+          "conns": 4,
+          "asked": 8,
+          "done": 4718592,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "failed",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": "网络错误：HTTP 404 Not Found"
+        }
+      ]
+    },
+    {
+      "t": 10064,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "active",
+          "conns": 6,
+          "asked": 8,
+          "done": 5505024,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "active",
+          "conns": 6,
+          "asked": 8,
+          "done": 5505024,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "active",
+          "conns": 6,
+          "asked": 8,
+          "done": 5505024,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 6,
+          "asked": 8,
+          "done": 5390336,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 4915200,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 4915200,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 4784128,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 4915200,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "failed",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": "网络错误：HTTP 404 Not Found"
+        }
+      ]
+    },
+    {
+      "t": 18487,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "active",
+          "conns": 6,
+          "asked": 8,
+          "done": 8290304,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "active",
+          "conns": 5,
+          "asked": 8,
+          "done": 8257536,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "failed",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": "网络错误：HTTP 404 Not Found"
+        }
+      ]
+    },
+    {
+      "t": 18743,
+      "tasks": [
+        {
+          "id": 1,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 2,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 3,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 4,
+          "state": "completed",
+          "conns": 6,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 5,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 6,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 7,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 8,
+          "state": "completed",
+          "conns": 5,
+          "asked": 8,
+          "done": 8388608,
+          "total": 8388608,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 9,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 10,
+          "state": "completed",
+          "conns": 4,
+          "asked": 8,
+          "done": 4194304,
+          "total": 4194304,
+          "reason": null,
+          "error": null
+        },
+        {
+          "id": 11,
+          "state": "failed",
+          "conns": 4,
+          "asked": 8,
+          "done": 0,
+          "total": 0,
+          "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+          "error": "网络错误：HTTP 404 Not Found"
+        }
+      ]
+    }
+  ],
+  "server": {
+    "reqs": {
+      "ok-a.bin": 13,
+      "ok-b.bin": 13,
+      "ok-c.bin": 13,
+      "ok-d.bin": 13,
+      "ok-e.bin": 13,
+      "ok-f.bin": 13,
+      "ok-g.bin": 13,
+      "ok-h.bin": 13,
+      "flaky.bin": 13,
+      "throttle.bin": 13,
+      "missing.bin": 3
+    },
+    "r503": 2,
+    "r429": 3,
+    "r404": 3,
+    "active": 0,
+    "activePeak": 76,
+    "perActive": {
+      "ok-a.bin": 0,
+      "ok-b.bin": 0,
+      "ok-c.bin": 0,
+      "ok-d.bin": 0,
+      "ok-e.bin": 0,
+      "ok-f.bin": 0,
+      "ok-g.bin": 0,
+      "ok-h.bin": 0,
+      "flaky.bin": 0,
+      "throttle.bin": 0
+    },
+    "perPeak": {
+      "ok-a.bin": 9,
+      "ok-b.bin": 9,
+      "ok-c.bin": 9,
+      "ok-d.bin": 8,
+      "ok-e.bin": 9,
+      "ok-f.bin": 9,
+      "ok-g.bin": 8,
+      "ok-h.bin": 9,
+      "flaky.bin": 8,
+      "throttle.bin": 8
+    },
+    "perReq": {
+      "ok-a.bin": 13,
+      "ok-b.bin": 13,
+      "ok-c.bin": 13,
+      "ok-d.bin": 13,
+      "ok-e.bin": 13,
+      "ok-f.bin": 13,
+      "ok-g.bin": 13,
+      "ok-h.bin": 13,
+      "flaky.bin": 13,
+      "throttle.bin": 13,
+      "missing.bin": 3
+    }
+  },
+  "checks": [
+    {
+      "name": "下载目录已切到临时目录",
+      "pass": true,
+      "detail": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch"
+    },
+    {
+      "name": "Native 端点收下 11 条嗅探项",
+      "pass": true,
+      "detail": "[{\"ok\":true,\"total\":1},{\"ok\":true,\"total\":2},{\"ok\":true,\"total\":3},{\"ok\":true,\"total\":4},{\"ok\":true,\"total\":5},{\"ok\":true,\"total\":6},{\"ok\":true,\"total\":7},{\"ok\":true,\"total\":8},{\"ok\":true,\"total\":9},{\"ok\":true,\"total\":10},{\"ok\":true,\"total\":11}]"
+    },
+    {
+      "name": "嗅探页可见且列出 11 项",
+      "pass": true,
+      "detail": "viewSniff 显示"
+    },
+    {
+      "name": "界面选中 11 项",
+      "pass": true,
+      "detail": "11 · 按钮「添加到下载（11）」"
+    },
+    {
+      "name": "一次多选入队 11 个任务",
+      "pass": true,
+      "detail": "id=1,2,3,4,5,6,7,8,9,10,11"
+    },
+    {
+      "name": "11 个任务全部到达终态",
+      "pass": true,
+      "detail": "18743ms"
+    },
+    {
+      "name": "成品都落在设置里的下载目录",
+      "pass": true,
+      "detail": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch"
+    },
+    {
+      "name": "11 个任务同时下载（没有任务数上限）",
+      "pass": true,
+      "detail": "活跃峰值 11"
+    },
+    {
+      "name": "429/503 命中后全局并发自动砍半",
+      "pass": true,
+      "detail": "1123ms：10 秒内 5 次 429/503，全局并发自动降至 44 条（起跑 88 → 44）"
+    },
+    {
+      "name": "服务端并发峰值不超用户设定总和",
+      "pass": true,
+      "detail": "峰值 76 ≤ 88 + 每任务 1 条探测"
+    },
+    {
+      "name": "503 两次后重试成功",
+      "pass": true,
+      "detail": "flaky 完成，服务端记录 503 × 2"
+    },
+    {
+      "name": "404 任务进入失败态并带原因",
+      "pass": true,
+      "detail": "网络错误：HTTP 404 Not Found"
+    },
+    {
+      "name": "任务列表用「需处理」表达部分失败",
+      "pass": true,
+      "detail": "列表里出现需处理状态"
+    },
+    {
+      "name": "成品字节一致 ok-a.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-b.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-c.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-d.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-e.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-f.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-g.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 ok-h.bin",
+      "pass": true,
+      "detail": "8388608 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 flaky.bin",
+      "pass": true,
+      "detail": "4194304 字节，sha256 与源一致"
+    },
+    {
+      "name": "成品字节一致 throttle.bin",
+      "pass": true,
+      "detail": "4194304 字节，sha256 与源一致"
+    },
+    {
+      "name": "清理完成",
+      "pass": true,
+      "detail": "剩余任务 0，嗅探项已移除"
+    },
+    {
+      "name": "下载目录已还原",
+      "pass": true,
+      "detail": "D:\\Users\\Tyler Zhang\\Downloads"
+    }
+  ],
+  "before": [],
+  "after": [],
+  "downloadDir": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-sniff-batch",
+  "selection": {
+    "selText": "11",
+    "addText": "添加到下载（11）"
+  },
+  "maxActive": 11,
+  "maxConnSum": 88,
+  "baseConnSum": 88,
+  "connTimeline": [
+    {
+      "t": 4,
+      "active": 11,
+      "conns": 88,
+      "reason": null
+    },
+    {
+      "t": 1123,
+      "active": 11,
+      "conns": 44,
+      "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条"
+    },
+    {
+      "t": 2173,
+      "active": 10,
+      "conns": 40,
+      "reason": "10 秒内 5 次 429/503，全局并发自动降至 44 条"
+    },
+    {
+      "t": 4256,
+      "active": 10,
+      "conns": 44,
+      "reason": null
+    },
+    {
+      "t": 9809,
+      "active": 8,
+      "conns": 36,
+      "reason": null
+    },
+    {
+      "t": 10064,
+      "active": 8,
+      "conns": 44,
+      "reason": null
+    },
+    {
+      "t": 18487,
+      "active": 2,
+      "conns": 11,
+      "reason": null
+    }
+  ],
+  "throttleReason": "10 秒内 5 次 429/503，全局并发自动降至 44 条",
+  "halvedConnSum": 44,
+  "listHasError": true,
+  "files": {
+    "ok-a.bin": {
+      "size": 8388608,
+      "sha256": "b16bd32b101132fd0102461bc75ea65442c37293ac881ae953486c8ac26a7388",
+      "expect": "b16bd32b101132fd0102461bc75ea65442c37293ac881ae953486c8ac26a7388"
+    },
+    "ok-b.bin": {
+      "size": 8388608,
+      "sha256": "001224bdbc0a675a104bc57050e10365bce70ab7ca449685f8142460b0dd5ba5",
+      "expect": "001224bdbc0a675a104bc57050e10365bce70ab7ca449685f8142460b0dd5ba5"
+    },
+    "ok-c.bin": {
+      "size": 8388608,
+      "sha256": "5619774a29b55e4a3a21fcbe72342d3493d0f4d856d7c110aeb205354859a44a",
+      "expect": "5619774a29b55e4a3a21fcbe72342d3493d0f4d856d7c110aeb205354859a44a"
+    },
+    "ok-d.bin": {
+      "size": 8388608,
+      "sha256": "53e001215b79141de170e46d7417833adefc2b2e3f296b1550c8cf774705203b",
+      "expect": "53e001215b79141de170e46d7417833adefc2b2e3f296b1550c8cf774705203b"
+    },
+    "ok-e.bin": {
+      "size": 8388608,
+      "sha256": "3cfe9f4bebaf397ecc5e160c6866399243c8712409d5053d3596c00b0ddd47e7",
+      "expect": "3cfe9f4bebaf397ecc5e160c6866399243c8712409d5053d3596c00b0ddd47e7"
+    },
+    "ok-f.bin": {
+      "size": 8388608,
+      "sha256": "79abc07c18dbd64f3f756932e743ffc51e0f15e8c829d170d04ae03dea0247d9",
+      "expect": "79abc07c18dbd64f3f756932e743ffc51e0f15e8c829d170d04ae03dea0247d9"
+    },
+    "ok-g.bin": {
+      "size": 8388608,
+      "sha256": "b850dda97b2c00055ee10ba703ce231427056ed16bb25714e3f2e2021fab6081",
+      "expect": "b850dda97b2c00055ee10ba703ce231427056ed16bb25714e3f2e2021fab6081"
+    },
+    "ok-h.bin": {
+      "size": 8388608,
+      "sha256": "d52be9259a28cd771e0b8f4676e100c26de04e9bc7af59bcc1003c99f9f17d9f",
+      "expect": "d52be9259a28cd771e0b8f4676e100c26de04e9bc7af59bcc1003c99f9f17d9f"
+    },
+    "flaky.bin": {
+      "size": 4194304,
+      "sha256": "441334f7204da371ff6755ea4096fd11f21a8852c33b2cc7baa67ad0ce3574c8",
+      "expect": "441334f7204da371ff6755ea4096fd11f21a8852c33b2cc7baa67ad0ce3574c8"
+    },
+    "throttle.bin": {
+      "size": 4194304,
+      "sha256": "048496a1c31d8bd0f2d575eadd122c1ad3fc4c934cc5585434aa1da017eceb5f",
+      "expect": "048496a1c31d8bd0f2d575eadd122c1ad3fc4c934cc5585434aa1da017eceb5f"
+    }
+  },
+  "pass": true
+}
