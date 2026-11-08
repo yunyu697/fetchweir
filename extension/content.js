@@ -26,7 +26,7 @@
      每个变量都带中性回退（深灰底 + 明确前景），应用没跑或通道失败时也不会浅底浅字。 */
   const THEME_VARS = {
     bg: '--fw-bg', bg2: '--fw-bg2', bg3: '--fw-bg3',
-    line: '--fw-line', fg: '--fw-fg', fg2: '--fw-fg2', fg3: '--fw-fg3',
+    line: '--fw-line', fg: '--fw-fg', fg2: '--fw-fg-2',
     accent: '--fw-accent', accentSolid: '--fw-accent-solid',
     accentSolid2: '--fw-accent-solid2', accentFg: '--fw-accent-fg',
   };
