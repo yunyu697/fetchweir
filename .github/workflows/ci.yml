@@ -31,6 +31,10 @@ jobs:
           - os: macos-latest
             triple: aarch64-apple-darwin
     runs-on: ${{ matrix.os }}
+    # 下载 sidecar 走 GitHub API：未登录也能用，但 runner 出口 IP 共享、额度很低；
+    # 带 token 既减少 403/限流，也让下载走 API 资产端点（releases/download 直链会 504）。
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
