@@ -1346,12 +1346,17 @@ mod tests {
             mk("windows", "aarch64", "arm.exe"),
             mk("windows", "x86_64", "x64.exe"),
             mk("linux", "x86_64", "x64.deb"),
+            mk("macos", "aarch64", "arm.dmg"),
+            mk("macos", "x86_64", "x64.dmg"),
         ];
         let picked = select_manifest_asset(&assets).unwrap();
         if cfg!(target_os = "windows") {
             assert_eq!(picked.name, "x64.exe");
         } else if cfg!(target_os = "linux") {
             assert_eq!(picked.name, "x64.deb");
+        } else if cfg!(target_os = "macos") {
+            let want = if cfg!(target_arch = "aarch64") { "arm.dmg" } else { "x64.dmg" };
+            assert_eq!(picked.name, want);
         }
     }
 
