@@ -1,0 +1,575 @@
+{
+  "pass": true,
+  "results": [
+    {
+      "name": "dark/violet：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "dark/violet：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 15.68,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 8.1,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 14.9,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 7.7,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 8.1,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 7.1,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 7.1,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 7.14,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "light/violet：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "light/violet：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 18.13,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 7.48,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 17.09,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 7.05,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 7.48,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 7.1,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 7.1,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 6.37,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "dark/azure：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "dark/azure：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 15.18,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 8.34,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 14.04,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 7.71,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 8.34,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 7.13,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 7.13,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 6.8,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "light/azure：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "light/azure：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 17.98,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 7.18,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 17.15,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 6.84,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 7.18,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 7.14,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 7.14,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 6.3,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "dark/emerald：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "dark/emerald：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 15.31,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 8.67,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 14.08,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 7.98,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 8.67,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 6.97,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 6.97,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 6.9,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "light/emerald：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "light/emerald：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 17.93,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 7.57,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 17.09,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 7.21,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 7.57,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 8.05,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 8.05,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 6.68,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "dark/amber：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "dark/amber：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 15.46,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 9.13,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 14.49,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 8.56,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 9.13,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 6.5,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 6.5,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 7.74,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "light/amber：悬浮条使用应用 token",
+      "pass": true,
+      "detail": {
+        "panel": true,
+        "row": true,
+        "button": true,
+        "title": true,
+        "sub": true
+      }
+    },
+    {
+      "name": "light/amber：对比度",
+      "pass": true,
+      "detail": [
+        {
+          "name": "标题",
+          "ratio": 17.09,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "标题栏站点名",
+          "ratio": 6.86,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源名",
+          "ratio": 16.04,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "资源副信息",
+          "ratio": 6.44,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "底部提示",
+          "ratio": 6.86,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "主按钮",
+          "ratio": 6.5,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "类型徽标",
+          "ratio": 6.5,
+          "need": 4.5,
+          "pass": true
+        },
+        {
+          "name": "禁用按钮（豁免项，仅要求可读）",
+          "ratio": 5.82,
+          "need": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "name": "应用换主题后悬浮条实时更新（未刷新页面）",
+      "pass": true,
+      "detail": {
+        "before": {
+          "timeOrigin": 1794155377756.8,
+          "nav": 1,
+          "href": "http://127.0.0.1:60633/",
+          "button": "rgb(109, 40, 217)"
+        },
+        "after": {
+          "timeOrigin": 1794155377756.8,
+          "nav": 1,
+          "href": "http://127.0.0.1:60633/",
+          "button": "rgb(10, 86, 172)"
+        }
+      }
+    },
+    {
+      "name": "非视频页不出悬浮条",
+      "pass": true,
+      "detail": {
+        "present": false,
+        "display": null
+      }
+    },
+    {
+      "name": "中性回退（无应用时）",
+      "pass": true,
+      "detail": {
+        "panel": "rgb(30, 30, 35)",
+        "pairs": [
+          {
+            "name": "标题",
+            "ratio": 14.85,
+            "need": 4.5
+          },
+          {
+            "name": "副信息",
+            "ratio": 8.5,
+            "need": 4.5
+          },
+          {
+            "name": "主按钮",
+            "ratio": 7.56,
+            "need": 4.5
+          }
+        ]
+      }
+    }
+  ]
+}
