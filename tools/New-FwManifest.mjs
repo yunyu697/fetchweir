@@ -22,10 +22,8 @@ const version = arg('version', JSON.parse(readFileSync(join(repoRoot, 'version.j
 const repo = arg('repo', 'yunyu697/fetchweir');
 const distDir = resolve(arg('dist', join(repoRoot, 'dist')));
 const outPath = resolve(arg('out', join(distDir, 'latest.json')));
-const notes = arg(
-  'notes',
-  `Fetchweir ${version}：设置页分组导航接线、版本比较修正、更新清单 Ed25519 验签。详见 Release 说明。`
-);
+// 默认不写死具体变更：写死的摘要会在下一个版本变成误导性的“本版说明”。
+const notes = arg('notes', `Fetchweir ${version}：详见 Release 说明。`);
 
 // Windows 两种安装范围的产物；更新器会按当前安装范围选后缀匹配的包。
 const windowsAssets = [
