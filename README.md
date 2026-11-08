@@ -71,6 +71,11 @@ Windows 默认「仅当前用户」安装：程序在 `%LOCALAPPDATA%\Fetchweir`
 3. 应用启动时会幂等注册 Native Messaging 宿主清单（Chrome/Chromium/Edge/Firefox 六处注册表键）。
 4. 扩展三档：A 主动浮动条、B 徽标+右键、C 仅记录；在「资源嗅探」页可切换。
 
+Firefox（140+）：`pwsh tools/Build-FwExtensionFirefox.ps1` 生成 `dist/extension-firefox/`，
+打开 `about:debugging#/runtime/this-firefox` → 临时载入附加组件 → 选该目录的 `manifest.json`。
+gecko id 固定为 `fetchweir@yunyu697`，与 Native Messaging 的 `allowed_extensions` 配对；
+清单已通过 `web-ext lint`（0 error / 0 warning），运行时往返尚未联调。
+
 ## 已知限制
 
 - `windows-gnu` 链接器会报 `.rsrc merge failure: multiple non-default manifests`：rustc 默认清单与
