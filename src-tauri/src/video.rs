@@ -104,12 +104,62 @@ fn is_http(u: &str) -> bool {
     u.starts_with("https://") || u.starts_with("http://")
 }
 
+fn has_video(f: &FormatDto) -> bool {
+    !matches!(f.vcodec.as_str(), "" | "none")
+}
+
 fn has_audio(f: &FormatDto) -> bool {
     !matches!(f.acodec.as_str(), "" | "none")
 }
 
-fn has_video(f: &FormatDto) -> bool {
-    !matches!(f.vcodec.as_str(), "" | "none")
+/// 只有「纯视频」才需要把另一条音轨合并进来；纯音频格式本身就是完整文件。
+fn mux_needed(vcodec: &str, acodec: &str) -> bool {
+    let video = !matches!(vcodec, "" | "none");
+    let audio = !matches!(acodec, "" | "none");
+    video && !audio
+}
+
+/// 完整文件（音视频已在同一个文件里）。
+/// 有些站点只给画面尺寸、不标注编码（archive.org 的直链 mp4/ogv），这类按整文件处理。
+fn complete_file(f: &FormatDto) -> bool {
+    if f.vcodec.is_empty() && f.acodec.is_empty() {
+        return f.height > 0;
+    }
+    has_video(f) && has_audio(f)
+}
+
+/// ffmpeg 位置：优先环境变量，其次主程序目录（安装后 sidecar 位置），
+/// 再找开发态 binaries，最后查 PATH。
+pub fn ffmpeg_path() -> Option<PathBuf> {
+    if let Ok(p) = std::env::var("FETCHWEIR_FFMPEG") {
+        let pb = PathBuf::from(p);
+        if pb.exists() {
+            return Some(pb);
+        }
+    }
+    let name = if cfg!(windows) { "ffmpeg.exe" } else { "ffmpeg" };
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            let local = dir.join(name);
+            if local.exists() {
+                return Some(local);
+            }
+        }
+    }
+    let dev = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("binaries")
+        .join(if cfg!(windows) {
+            "ffmpeg-x86_64-pc-windows-msvc.exe"
+        } else {
+            "ffmpeg"
+        });
+    if dev.exists() {
+        return Some(dev);
+    }
+    let path_var = std::env::var_os("PATH")?;
+    std::env::split_paths(&path_var)
+        .map(|d| d.join(name))
+        .find(|p| p.exists())
 }
 
 pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, String> {
@@ -190,10 +240,8 @@ pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, Str
                 needs_mux: false,
                 recommended: false,
             };
-            // 只有单条流是纯视频或纯音频时才需要转封装；m3u8/http_dash 的单条
-            // 格式通常已同时含音视频，不需要 ffmpeg。
-            let single_track = (has_video(&dto) && !has_audio(&dto)) || (has_audio(&dto) && !has_video(&dto));
-            dto.needs_mux = single_track;
+            // 纯视频流需要配一条音轨合并；纯音频流本身完整，可直接下载。
+            dto.needs_mux = mux_needed(&dto.vcodec, &dto.acodec);
             formats.push(dto);
         }
     }
@@ -202,7 +250,7 @@ pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, Str
     // 推荐：优先 1080p 以内、音视频合一的 mp4；否则取体积最大的合一格式。
     let pick = formats
         .iter()
-        .filter(|f| !f.drm && !f.needs_mux && has_video(f) && has_audio(f))
+        .filter(|f| !f.drm && !f.needs_mux && complete_file(f))
         .max_by(|a, b| {
             let score = |f: &FormatDto| {
                 let mp4 = if f.ext == "mp4" { 1 } else { 0 };
@@ -265,11 +313,22 @@ pub fn download(
     if info.drm_only {
         return Err("该页面全部格式受保护，按产品边界不提供下载".to_string());
     }
+    // 保存目录可能来自 TEMP 等环境变量，本身是 8.3 短路径；统一还原成长路径。
+    let save_dir = save_dir.map(normalize_dir);
     if fmt.needs_mux {
-        return Err("该格式只含单条流，需要转封装；v1 未随包 ffmpeg，请选择音视频合并的格式".to_string());
+        // 纯视频流：交给解析器取该视频 + 最佳音轨，由 ffmpeg 合并。
+        let ff = ffmpeg_path().ok_or_else(|| {
+            "该格式只含视频流，需要 ffmpeg 合并音轨；未找到 ffmpeg（应随安装包提供，或用 FETCHWEIR_FFMPEG 指定）"
+                .to_string()
+        })?;
+        let spec = format!("{format_id}+bestaudio/best");
+        return delegate(app, host, url, format_id, save_dir, Some(spec), Some(ff));
     }
+    // 纯音频格式（如 B 站的 m4a 音轨）必须由解析器处理：它的直链带签名与请求头。
+    let audio_only = !has_video(fmt) && has_audio(fmt);
     // 只有真正的直链文件才交给自家引擎；m3u8_native / http_dash 必须由解析器处理。
-    let direct = matches!(fmt.protocol.as_str(), "http" | "https" | "ftp") && is_http(&fmt.url);
+    let direct =
+        !audio_only && matches!(fmt.protocol.as_str(), "http" | "https" | "ftp") && is_http(&fmt.url);
     if direct {
         let engine = app.state::<Arc<crate::engine::Engine>>().inner().clone();
         let task = engine
@@ -277,7 +336,7 @@ pub fn download(
             .map_err(|e| e.to_string())?;
         return Ok(json!({"mode": "direct", "task": task}));
     }
-    delegate(app, host, url, format_id, save_dir)
+    delegate(app, host, url, format_id, save_dir, None, None)
 }
 
 fn delegate(
@@ -286,11 +345,14 @@ fn delegate(
     url: &str,
     format_id: &str,
     save_dir: Option<String>,
+    spec: Option<String>,
+    ffmpeg: Option<PathBuf>,
 ) -> Result<Value, String> {
     let exe = ytdlp_path().ok_or_else(|| "未找到视频解析器（yt-dlp sidecar）".to_string())?;
     let dir = save_dir
         .filter(|s| !s.trim().is_empty())
         .unwrap_or_else(|| crate::settings::system_download_dir().to_string_lossy().to_string());
+    let dir = normalize_dir(dir);
     let job_id = {
         let mut n = host.next_job.lock().unwrap();
         let id = *n;
@@ -298,18 +360,26 @@ fn delegate(
         id
     };
 
-    let mut child = crate::platform::hidden_tokio_command(&exe)
-        .arg("-f")
-        .arg(format_id)
+    let mut cmd = crate::platform::hidden_tokio_command(&exe);
+    cmd.arg("-f")
+        .arg(spec.unwrap_or_else(|| format_id.to_string()))
         .arg("--no-playlist")
         .arg("--newline")
         .arg("--no-warnings")
+        // Windows 控制台默认用本地代码页输出；标题含中文时路径会变成乱码字节，
+        // 读日志按 UTF-8 解码就会整行失败。强制 UTF-8 后路径才能被正确取回。
+        .arg("--encoding")
+        .arg("utf-8")
         .arg("--print")
-        .arg("after_move:filepath")
+        .arg("after_move:FETCHWEIR:%(filepath)s")
         .arg("-P")
         .arg(&dir)
         .arg("-o")
-        .arg("%(title)s.%(ext)s")
+        .arg("%(title)s.%(ext)s");
+    if let Some(ff) = ffmpeg.as_ref().and_then(|p| p.parent()) {
+        cmd.arg("--ffmpeg-location").arg(ff);
+    }
+    let mut child = cmd
         .arg(url)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
@@ -326,8 +396,12 @@ fn delegate(
 
     tauri::async_runtime::spawn(async move {
         use tokio::io::{AsyncBufReadExt, BufReader};
-        let mut lines = BufReader::new(stdout).lines();
-        let mut err_lines = BufReader::new(stderr).lines();
+        // 按字节读行再按 UTF-8 有损解码：解析器偶尔仍会吐出非 UTF-8 字节，
+        // 不能因为一行编码坏掉就中断整个进度监听（早前会丢掉成品路径）。
+        let mut out = BufReader::new(stdout);
+        let mut err = BufReader::new(stderr);
+        let mut out_line: Vec<u8> = Vec::new();
+        let mut err_line: Vec<u8> = Vec::new();
         let mut path: Option<String> = None;
         let mut last = json!({"jobId": job_id, "stage": "starting", "percent": 0.0});
 
@@ -337,34 +411,32 @@ fn delegate(
 
         loop {
             tokio::select! {
-                line = lines.next_line() => {
-                    match line {
-                        Ok(Some(text)) => {
-                            let t = text.trim();
-                            if let Some(p) = parse_progress(t) {
-                                last = json!({
-                                    "jobId": job_id,
-                                    "stage": "running",
-                                    "percent": p.percent,
-                                    "speed": p.speed,
-                                    "eta": p.eta,
-                                    "message": t.chars().take(160).collect::<String>(),
-                                });
-                                emit(&app2, last.clone());
-                            } else if t.starts_with('/') || t.starts_with("C:\\") || t.contains(".mp4") || t.contains(".webm") || t.contains(".mkv") {
-                                path = Some(t.to_string());
-                            }
-                        }
-                        Ok(None) => break,
-                        Err(_) => break,
+                n = out.read_until(b'\n', &mut out_line) => {
+                    if n.unwrap_or(0) == 0 { break; }
+                    let text = String::from_utf8_lossy(&out_line);
+                    let t = text.trim();
+                    if let Some(printed) = t.strip_prefix("FETCHWEIR:") {
+                        path = Some(output_path(printed, &dir));
+                    } else if let Some(p) = parse_progress(t) {
+                        last = json!({
+                            "jobId": job_id,
+                            "stage": "running",
+                            "percent": p.percent,
+                            "speed": p.speed,
+                            "eta": p.eta,
+                            "message": t.chars().take(160).collect::<String>(),
+                        });
+                        emit(&app2, last.clone());
                     }
+                    out_line.clear();
                 },
-                line = err_lines.next_line() => {
-                    if let Ok(Some(text)) = line {
-                        let t: String = text.chars().take(200).collect();
-                        if !t.trim().is_empty() {
-                            emit(&app2, json!({"jobId": job_id, "stage": "running", "percent": last.get("percent").and_then(|v| v.as_f64()).unwrap_or(0.0), "message": t}));
-                        }
+                n = err.read_until(b'\n', &mut err_line) => {
+                    if n.unwrap_or(0) == 0 { break; }
+                    let text = String::from_utf8_lossy(&err_line);
+                    let t: String = text.trim().chars().take(200).collect();
+                    err_line.clear();
+                    if !t.trim().is_empty() {
+                        emit(&app2, json!({"jobId": job_id, "stage": "running", "percent": last.get("percent").and_then(|v| v.as_f64()).unwrap_or(0.0), "message": t}));
                     }
                 }
             }
@@ -391,6 +463,38 @@ struct Progress {
     percent: f64,
     speed: String,
     eta: String,
+}
+
+/// `--print after_move:` 打出的实际落盘路径：相对文件名按保存目录拼接，
+/// 含非 ASCII 文件名时 Windows 上可能是 8.3 短路径，统一还原成存在的长路径。
+fn output_path(printed: &str, dir: &str) -> String {
+    let p = PathBuf::from(printed);
+    let abs = if p.is_absolute() {
+        p
+    } else {
+        PathBuf::from(dir).join(p)
+    };
+    let real = std::fs::canonicalize(&abs).unwrap_or(abs);
+    strip_verbatim(real.to_string_lossy().into_owned())
+}
+
+/// 保存目录若是 8.3 短路径，还原成长路径；还原失败时原样返回。
+fn normalize_dir(dir: String) -> String {
+    match std::fs::canonicalize(&dir) {
+        Ok(p) => strip_verbatim(p.to_string_lossy().into_owned()),
+        Err(_) => dir,
+    }
+}
+
+/// `canonicalize` 在 Windows 上返回 `\\?\C:\...` 形式，去掉前缀才是用户能看懂的路径。
+fn strip_verbatim(s: String) -> String {
+    if let Some(rest) = s.strip_prefix(r"\\?\UNC\") {
+        return format!(r"\\{rest}");
+    }
+    if let Some(rest) = s.strip_prefix(r"\\?\") {
+        return rest.to_string();
+    }
+    s
 }
 
 /// 解析 `[download]  12.3% of ~ 1.20GiB at 5.34MiB/s ETA 00:34`
@@ -462,7 +566,25 @@ pub fn status() -> Value {
 
 #[cfg(test)]
 mod tests {
-    use super::parse_progress;
+    use super::{mux_needed, output_path, parse_progress, strip_verbatim};
+
+    #[test]
+    fn output_path_joins_relative_and_strips_verbatim() {
+        assert_eq!(strip_verbatim(r"\\?\C:\a\b.mp4".into()), r"C:\a\b.mp4");
+        assert_eq!(strip_verbatim(r"\\?\UNC\srv\share\b.mp4".into()), r"\\srv\share\b.mp4");
+        assert_eq!(strip_verbatim("/tmp/a.m4a".into()), "/tmp/a.m4a");
+        // 文件不存在时 canonicalize 失败，退回拼接结果，不丢路径
+        let got = output_path("no-such-file.m4a", "/tmp/fw-test");
+        assert!(got.replace('\\', "/").ends_with("fw-test/no-such-file.m4a"), "{got}");
+    }
+
+    #[test]
+    fn mux_only_for_video_only_streams() {
+        assert!(mux_needed("avc1.640028", "none"), "纯视频流需要配音轨");
+        assert!(!mux_needed("avc1.640028", "mp4a.40.2"), "已含音轨不合并");
+        assert!(!mux_needed("none", "mp4a.40.2"), "纯音频本身完整");
+        assert!(!mux_needed("", ""), "解析器没给编码信息时不臆测");
+    }
 
     #[test]
     fn parse_download_line() {

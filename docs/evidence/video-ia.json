@@ -1,0 +1,165 @@
+{
+  "page": "https://archive.org/details/BigBuckBunny_124",
+  "label": "ia",
+  "formats": [
+    {
+      "id": "2",
+      "text": "1280×720——AVI—316.9 MB含音轨",
+      "off": false
+    },
+    {
+      "id": "1",
+      "text": "640×360——MP4—59.0 MB推荐",
+      "off": false
+    },
+    {
+      "id": "0",
+      "text": "533×300——OGV—44.8 MB含音轨",
+      "off": false
+    }
+  ],
+  "picked": {
+    "formatId": "1",
+    "row": "640×360——MP4—59.0 MB推荐",
+    "hint": "已选择 1 · MP4",
+    "video": "640×360 · — · —",
+    "audio": "含于所选文件",
+    "total": "59.0 MB",
+    "compat": "站点未标注编码MP4 容器",
+    "btnDisabled": false
+  },
+  "jobEvents": [],
+  "file": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\ia\\big_buck_bunny_720p_surround.mp4",
+  "probe": {
+    "format": "mov,mp4,m4a,3gp,3g2,mj2",
+    "size": 61878609,
+    "duration": 596.48,
+    "bitrate": 829916,
+    "video": {
+      "codec": "h264",
+      "profile": "Constrained Baseline",
+      "width": 640,
+      "height": 360,
+      "fps": "24/1",
+      "br": 697070
+    },
+    "audio": {
+      "codec": "aac",
+      "channels": 2,
+      "sampleRate": "44100",
+      "br": 128209
+    }
+  },
+  "checks": [
+    {
+      "name": "后端找到 yt-dlp",
+      "pass": true,
+      "detail": "D:\\fw-build\\fetchweir\\release\\yt-dlp.exe"
+    },
+    {
+      "name": "后端找到 ffmpeg",
+      "pass": true,
+      "detail": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
+    },
+    {
+      "name": "界面解析出格式行",
+      "pass": true,
+      "detail": "3 行，标签计数 {\"video\":\"3\",\"audio\":\"0\"}，用时 3566ms"
+    },
+    {
+      "name": "格式矩阵与解析器逐档一致",
+      "pass": true,
+      "detail": "3 档：分辨率/编码/码率/体积/协议/是否需合并全部对上；标题与时长一致"
+    },
+    {
+      "name": "选中格式后「加入下载」可用",
+      "pass": true,
+      "detail": "{\"hint\":\"已选择 1 · MP4\",\"video\":\"640×360 · — · —\",\"audio\":\"含于所选文件\",\"total\":\"59.0 MB\",\"compat\":\"站点未标注编码MP4 容器\",\"btnDisabled\":false}"
+    },
+    {
+      "name": "下载完成",
+      "pass": true,
+      "detail": "{\"mode\":\"direct\",\"ms\":8204,\"path\":\"C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Local\\\\Temp\\\\fw-video-e2e\\\\ia\\\\big_buck_bunny_720p_surround.mp4\"}"
+    },
+    {
+      "name": "成品文件已落盘",
+      "pass": true,
+      "detail": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\ia\\big_buck_bunny_720p_surround.mp4 · 61878609 字节"
+    },
+    {
+      "name": "ffprobe 读到视频轨",
+      "pass": true,
+      "detail": "{\"codec\":\"h264\",\"profile\":\"Constrained Baseline\",\"width\":640,\"height\":360,\"fps\":\"24/1\",\"br\":697070}"
+    },
+    {
+      "name": "ffprobe 读到音频轨（已合并）",
+      "pass": true,
+      "detail": "{\"codec\":\"aac\",\"channels\":2,\"sampleRate\":\"44100\",\"br\":128209}"
+    }
+  ],
+  "tools": {
+    "ytdlp": "D:\\fw-build\\fetchweir\\release\\yt-dlp.exe",
+    "ffmpeg": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
+  },
+  "tabs": {
+    "video": "3",
+    "audio": "0"
+  },
+  "matrix": {
+    "uiCount": 3,
+    "ytdlpCount": 3,
+    "tabTotal": 3,
+    "missing": [],
+    "extra": [],
+    "diff": [],
+    "title": {
+      "ui": "Big Buck Bunny",
+      "ytdlp": "Big Buck Bunny"
+    },
+    "duration": {
+      "ui": 596.46,
+      "ytdlp": 596.46
+    },
+    "drmOnly": false
+  },
+  "started": {
+    "mode": "direct",
+    "task": {
+      "connBase": 8,
+      "connDegraded": false,
+      "connLimit": 8,
+      "connReason": null,
+      "connections": 8,
+      "createdAt": 1794126667789,
+      "doneBytes": 0,
+      "error": null,
+      "fileName": "big_buck_bunny_720p_surround.mp4",
+      "id": 1,
+      "savePath": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\ia\\big_buck_bunny_720p_surround.mp4",
+      "speedBps": 0,
+      "state": "active",
+      "supportsRanges": false,
+      "totalBytes": 0,
+      "url": "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
+    }
+  },
+  "task": {
+    "id": 1,
+    "url": "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4",
+    "fileName": "big_buck_bunny_720p_surround.mp4",
+    "savePath": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\ia\\big_buck_bunny_720p_surround.mp4",
+    "totalBytes": 61878609,
+    "doneBytes": 61878609,
+    "speedBps": 0,
+    "state": "completed",
+    "error": null,
+    "createdAt": 1794126667789,
+    "supportsRanges": true,
+    "connections": 8,
+    "connBase": 8,
+    "connLimit": 8,
+    "connDegraded": false,
+    "connReason": null
+  },
+  "pass": true
+}

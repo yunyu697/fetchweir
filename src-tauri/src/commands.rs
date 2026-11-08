@@ -420,6 +420,22 @@ pub fn video_status() -> serde_json::Value {
     crate::video::status()
 }
 
+/// 解析器与合并工具的真实位置；前端设置页据此显示「已随包 / 缺失」，不写死。
+#[derive(Serialize)]
+pub struct VideoTools {
+    pub ytdlp: Option<String>,
+    pub ffmpeg: Option<String>,
+}
+
+#[tauri::command(async)]
+pub fn video_tools() -> VideoTools {
+    let path = |p: Option<PathBuf>| p.map(|x| x.to_string_lossy().to_string());
+    VideoTools {
+        ytdlp: path(crate::video::ytdlp_path()),
+        ffmpeg: path(crate::video::ffmpeg_path()),
+    }
+}
+
 /// 前端启动完成的探针：写标记文件，供无头冒烟测试判断 WebView 已加载且 IPC 可用。
 #[tauri::command]
 pub fn ui_ready() -> Result<(), String> {

@@ -1341,8 +1341,15 @@
     return c.split('.')[0];
   };
   const fmtBitrate = (tbr) => tbr > 0 ? Math.round(tbr) + ' kbps' : '—';
-  const isVideoFmt = (f) => f.vcodec && f.vcodec !== 'none';
-  const hasAudioFmt = (f) => f.acodec && f.acodec !== 'none';
+  /* 有的站点（archive.org 这类直链）不单独标注编码，只给画面尺寸：
+   * 这类是「音视频合一的整文件」，不能当成音频，也不能当成纯视频流。 */
+  const opaqueWholeFile = (f) => !f.vcodec && !f.acodec && (f.height || 0) > 0;
+  const isVideoFmt = (f) => (f.vcodec && f.vcodec !== 'none') || opaqueWholeFile(f);
+  const hasAudioFmt = (f) => (f.acodec && f.acodec !== 'none') || opaqueWholeFile(f);
+  /* 纯视频流下载时由解析器配一条音轨：与 yt-dlp 的 bestaudio 一致，取码率最高的纯音频格式。 */
+  const bestAudioFmt = (formats) => formats
+    .filter((x) => !x.drm && !isVideoFmt(x) && hasAudioFmt(x))
+    .sort((a, b) => (b.tbr || 0) - (a.tbr || 0))[0] || null;
 
   function renderVideo() {
     const info = state.video.info;
@@ -1401,9 +1408,9 @@
   }
 
   function preferredFormat(formats) {
-    const avail = formats.filter((f) => !f.drm && !f.needsMux && isVideoFmt(f));
+    const avail = formats.filter((f) => !f.drm && isVideoFmt(f));
     if (!avail.length) {
-      const audio = formats.filter((f) => !f.drm && !f.needsMux && hasAudioFmt(f) && !isVideoFmt(f));
+      const audio = formats.filter((f) => !f.drm && hasAudioFmt(f) && !isVideoFmt(f));
       return audio[0] || null;
     }
     const pref = (state.settings && state.settings.videoPreferred) || 'compat';
@@ -1431,10 +1438,10 @@
       return;
     }
     rows.forEach((f) => {
-      const off = f.drm || f.needsMux;
+      const off = f.drm;
       const tr = el('tr', (off ? 'off' : '') + (f.formatId === state.video.sel ? ' on' : ''));
       tr.dataset.fmt = f.formatId;
-      tr.title = f.drm ? (f.drmReason || '受 DRM 保护') : f.needsMux ? '单流格式需要 ffmpeg 转封装，当前版本不可直接下载' : '';
+      tr.title = f.drm ? (f.drmReason || '受 DRM 保护') : f.needsMux ? '纯视频流，下载时自动合并最佳音轨' : '';
       const tdRadio = el('td');
       const radio = el('span', 'radio' + (f.formatId === state.video.sel ? ' on' : ''));
       tdRadio.append(radio);
@@ -1457,7 +1464,7 @@
       const tdNote = el('td');
       if (f.recommended) tdNote.append(el('span', 'q-badge best', '推荐'));
       if (f.drm) tdNote.append(document.createTextNode(' '), el('span', 'q-badge warn', 'DRM 保护'));
-      if (f.needsMux) tdNote.append(document.createTextNode(' '), el('span', 'q-badge warn', '需转封装'));
+      if (f.needsMux) tdNote.append(document.createTextNode(' '), el('span', 'q-badge warn', '需合并音轨'));
       if (!f.drm && !f.needsMux && !f.recommended) {
         if (isVideoFmt(f) && hasAudioFmt(f)) tdNote.append(el('span', 'q-badge', '含音轨'));
         else if (!isVideoFmt(f)) tdNote.append(el('span', 'q-badge', '仅音频'));
@@ -1490,16 +1497,19 @@
       return;
     }
     const video = isVideoFmt(f);
-    const blocked = f.drm || f.needsMux;
+    const blocked = !!f.drm;
+    const muxAudio = f.needsMux ? bestAudioFmt(info.formats) : null;
     $('outVideo').textContent = video ? `${(f.width || '?')}×${(f.height || '?')} · ${codecName(f.vcodec)} · ${f.fps ? Math.round(f.fps) + 'fps' : '—'}` : '—';
     $('outVSize').textContent = video ? fmtBytes(f.size) : '—';
-    $('outAudio').textContent = video ? (hasAudioFmt(f) ? codecName(f.acodec) : '需另选音轨') : codecName(f.acodec);
-    $('outASize').textContent = video ? (hasAudioFmt(f) ? '含于所选' : '—') : fmtBytes(f.size);
-    $('outTotal').textContent = fmtBytes(f.size);
+    $('outAudio').textContent = video ? (opaqueWholeFile(f) ? '含于所选文件' : hasAudioFmt(f) ? codecName(f.acodec) : (muxAudio ? `自动配 ${codecName(muxAudio.acodec)}` : '自动配最佳音轨')) : codecName(f.acodec);
+    $('outASize').textContent = video ? (hasAudioFmt(f) ? '含于所选' : (muxAudio ? fmtBytes(muxAudio.size) : '另计')) : fmtBytes(f.size);
+    $('outTotal').textContent = video && muxAudio ? fmtBytes(f.size + muxAudio.size) : fmtBytes(f.size);
     out.disabled = blocked;
     $('fmtHint').textContent = blocked
-      ? (f.drm ? '该格式受 DRM 保护，按产品边界不可下载。' : '该格式只有单条流，需要 ffmpeg 转封装，当前版本不可下载。')
-      : `已选择 ${f.formatId} · ${(f.ext || '').toUpperCase()}`;
+      ? (f.drm ? '该格式受 DRM 保护，按产品边界不可下载。' : `已选择 ${f.formatId} · ${(f.ext || '').toUpperCase()}`)
+      : (f.needsMux
+        ? `已选择 ${f.formatId} · 纯视频流，下载时自动合并最佳音轨`
+        : `已选择 ${f.formatId} · ${(f.ext || '').toUpperCase()}`);
     renderCompat(f);
   }
 
@@ -1509,10 +1519,11 @@
     const add = (text, cls) => box.append(el('span', 'cv' + (cls ? ' ' + cls : ''), text));
     if (!f) { add('未选择格式'); return; }
     if (f.drm) { add('DRM 受保护', 'no'); return; }
-    if (f.needsMux) { add('需要转封装', 'no'); add('v1 不随包 ffmpeg', 'no'); return; }
+    if (f.needsMux) { add('纯视频流', ''); add('下载时合并最佳音轨', 'ok'); return; }
     if (/^(avc1|h264)/i.test(f.vcodec)) add('H.264 · 通用兼容', 'ok');
-    else if (isVideoFmt(f)) add(codecName(f.vcodec) + ' · 部分播放器需解码', 'no');
-    if (hasAudioFmt(f)) add(codecName(f.acodec) + ' 音轨', 'ok');
+    else if (f.vcodec && f.vcodec !== 'none') add(codecName(f.vcodec) + ' · 部分播放器需解码', 'no');
+    else if (opaqueWholeFile(f)) add('站点未标注编码', '');
+    if (hasAudioFmt(f) && f.acodec && f.acodec !== 'none') add(codecName(f.acodec) + ' 音轨', 'ok');
     add((f.ext || '').toUpperCase() + ' 容器', '');
   }
 
@@ -1607,7 +1618,7 @@
   async function addVideoTask() {
     const info = state.video.info;
     const f = info && info.formats.find((x) => x.formatId === state.video.sel);
-    if (!f || f.drm || f.needsMux) return;
+    if (!f || f.drm) return;
     if (isDemo) {
       demoVideoJob();
       toast('演示模式：已加入视频下载队列');
@@ -2706,6 +2717,19 @@
     if (engine) engine.textContent = isDemo ? '引擎就绪 · 演示模式' : '引擎就绪 · v' + (info.version || '?');
   }
 
+  /* 设置页的工具状态取自后端实际探测结果，避免写死「已随包/未随包」。 */
+  function paintVideoTools(tools) {
+    const node = $('vidToolsState');
+    const tag = $('vidToolsTag');
+    if (!node || !tag) return;
+    const okVideo = !!(tools && tools.ytdlp);
+    const okMux = !!(tools && tools.ffmpeg);
+    node.className = 'st ' + (okVideo && okMux ? 'ok' : 'err');
+    node.lastChild.textContent = okVideo && okMux ? '就绪' : (okVideo ? '缺 ffmpeg' : '缺 yt-dlp');
+    tag.textContent = [tools && tools.ytdlp ? 'yt-dlp' : '', tools && tools.ffmpeg ? 'ffmpeg' : ''].filter(Boolean).join(' + ') || '缺失';
+    tag.title = [tools && tools.ytdlp, tools && tools.ffmpeg].filter(Boolean).join('\n');
+  }
+
   /* ---------------- demo 演示节奏 ---------------- */
   function startDemoTicker() {
     setInterval(() => {
@@ -2769,6 +2793,7 @@
       const info = await invoke('app_info');
       applyInfo(info);
     } catch (err) { toast('读取应用信息失败：' + ((err && err.message) || err), 'err'); }
+    try { paintVideoTools(await invoke('video_tools')); } catch (err) { /* 旧后端没有该命令时保持默认文案 */ }
     try {
       const s = await invoke('get_settings');
       state.settings = normalizeSettings(s);

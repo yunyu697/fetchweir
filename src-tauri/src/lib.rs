@@ -333,6 +333,7 @@ pub fn run() {
             commands::add_video_task,
             commands::cancel_video,
             commands::video_status,
+            commands::video_tools,
         ])
         .run(tauri::generate_context!())
         .expect("Fetchweir 启动失败");

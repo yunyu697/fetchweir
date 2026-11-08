@@ -1,0 +1,183 @@
+{
+  "page": "https://www.bilibili.com/video/BV1GJ411x7h7",
+  "label": "bili",
+  "formats": [
+    {
+      "id": "30080",
+      "text": "1920×1080H.26425MP42629 kbps66.6 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100113",
+      "text": "1920×1080HEVC25MP4749 kbps19.0 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100026",
+      "text": "1920×1080AV125MP4604 kbps15.3 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "30064",
+      "text": "1280×720H.26425MP41753 kbps44.4 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100111",
+      "text": "1280×720HEVC25MP4359 kbps9.1 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100024",
+      "text": "1280×720AV125MP4292 kbps7.4 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "30032",
+      "text": "852×480H.26425MP4787 kbps19.9 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100110",
+      "text": "852×480HEVC25MP4219 kbps5.5 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100023",
+      "text": "852×480AV125MP4184 kbps4.7 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "30016",
+      "text": "640×360H.26425MP4350 kbps8.9 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100109",
+      "text": "640×360HEVC25MP4153 kbps3.9 MB 需合并音轨",
+      "off": false
+    },
+    {
+      "id": "100022",
+      "text": "640×360AV125MP4156 kbps3.9 MB 需合并音轨",
+      "off": false
+    }
+  ],
+  "picked": {
+    "formatId": "30080",
+    "row": "1920×1080H.26425MP42629 kbps66.6 MB 需合并音轨",
+    "hint": "已选择 30080 · 纯视频流，下载时自动合并最佳音轨",
+    "video": "1920×1080 · H.264 · 25fps",
+    "audio": "自动配 AAC",
+    "total": "71.7 MB",
+    "compat": "纯视频流下载时合并最佳音轨",
+    "btnDisabled": false
+  },
+  "jobEvents": [
+    {
+      "jobId": 1,
+      "message": "已完成",
+      "path": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\bili\\【官方 MV】Never Gonna Give You Up - Rick Astley.mp4",
+      "percent": 100,
+      "stage": "done"
+    }
+  ],
+  "file": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\bili\\【官方 MV】Never Gonna Give You Up - Rick Astley.mp4",
+  "probe": {
+    "format": "mov,mp4,m4a,3gp,3g2,mj2",
+    "size": 75234071,
+    "duration": 212.308833,
+    "bitrate": 2834891,
+    "video": {
+      "codec": "h264",
+      "profile": "High",
+      "width": 1920,
+      "height": 1080,
+      "fps": "25/1",
+      "br": 2627607
+    },
+    "audio": {
+      "codec": "aac",
+      "channels": 2,
+      "sampleRate": "48000",
+      "br": 201984
+    }
+  },
+  "checks": [
+    {
+      "name": "后端找到 yt-dlp",
+      "pass": true,
+      "detail": "D:\\fw-build\\fetchweir\\release\\yt-dlp.exe"
+    },
+    {
+      "name": "后端找到 ffmpeg",
+      "pass": true,
+      "detail": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
+    },
+    {
+      "name": "界面解析出格式行",
+      "pass": true,
+      "detail": "12 行，标签计数 {\"video\":\"12\",\"audio\":\"3\"}，用时 2914ms"
+    },
+    {
+      "name": "格式矩阵与解析器逐档一致",
+      "pass": true,
+      "detail": "15 档：分辨率/编码/码率/体积/协议/是否需合并全部对上；标题与时长一致"
+    },
+    {
+      "name": "选中格式后「加入下载」可用",
+      "pass": true,
+      "detail": "{\"hint\":\"已选择 30080 · 纯视频流，下载时自动合并最佳音轨\",\"video\":\"1920×1080 · H.264 · 25fps\",\"audio\":\"自动配 AAC\",\"total\":\"71.7 MB\",\"compat\":\"纯视频流下载时合并最佳音轨\",\"btnDisabled\":false}"
+    },
+    {
+      "name": "下载完成",
+      "pass": true,
+      "detail": "{\"mode\":\"delegate\",\"ms\":10226,\"path\":\"C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Local\\\\Temp\\\\fw-video-e2e\\\\bili\\\\【官方 MV】Never Gonna Give You Up - Rick Astley.mp4\"}"
+    },
+    {
+      "name": "成品文件已落盘",
+      "pass": true,
+      "detail": "C:\\Users\\Tyler Zhang\\AppData\\Local\\Temp\\fw-video-e2e\\bili\\【官方 MV】Never Gonna Give You Up - Rick Astley.mp4 · 75234071 字节"
+    },
+    {
+      "name": "ffprobe 读到视频轨",
+      "pass": true,
+      "detail": "{\"codec\":\"h264\",\"profile\":\"High\",\"width\":1920,\"height\":1080,\"fps\":\"25/1\",\"br\":2627607}"
+    },
+    {
+      "name": "ffprobe 读到音频轨（已合并）",
+      "pass": true,
+      "detail": "{\"codec\":\"aac\",\"channels\":2,\"sampleRate\":\"48000\",\"br\":201984}"
+    }
+  ],
+  "tools": {
+    "ytdlp": "D:\\fw-build\\fetchweir\\release\\yt-dlp.exe",
+    "ffmpeg": "D:\\fw-build\\fetchweir\\release\\ffmpeg.exe"
+  },
+  "tabs": {
+    "video": "12",
+    "audio": "3"
+  },
+  "matrix": {
+    "uiCount": 15,
+    "ytdlpCount": 15,
+    "tabTotal": 15,
+    "missing": [],
+    "extra": [],
+    "diff": [],
+    "title": {
+      "ui": "【官方 MV】Never Gonna Give You Up - Rick Astley",
+      "ytdlp": "【官方 MV】Never Gonna Give You Up - Rick Astley"
+    },
+    "duration": {
+      "ui": 212.393,
+      "ytdlp": 212.393
+    },
+    "drmOnly": false
+  },
+  "started": {
+    "jobId": 1,
+    "mode": "delegate"
+  },
+  "pass": true
+}

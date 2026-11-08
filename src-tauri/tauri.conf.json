@@ -38,7 +38,7 @@
       "icons/icon.ico"
     ],
     "category": "Utility",
-    "externalBin": ["binaries/yt-dlp"],
+    "externalBin": ["binaries/yt-dlp", "binaries/ffmpeg"],
     "resources": {
       "../extension": "extension"
     },

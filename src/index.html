@@ -405,7 +405,7 @@
               <div class="opt-row">
                 <span>容器</span>
                 <div class="r">
-                  <select class="mini-select" id="outContainer" disabled title="v1 未随包 ffmpeg，容器转封装未生效">
+                  <select class="mini-select" id="outContainer" disabled title="v1 不提供容器转换；合并时由 ffmpeg 按音轨自动选择容器">
                     <option>自动（跟随源）</option>
                     <option>MP4</option>
                     <option>MKV</option>
@@ -414,8 +414,8 @@
                 </div>
               </div>
               <div class="opt-row">
-                <span>转封装</span>
-                <div class="r"><button class="sw" id="outMux" disabled title="v1 未随包 ffmpeg，无法转封装"></button><span class="tag">未生效</span></div>
+                <span>音轨合并</span>
+                <div class="r"><button class="sw" id="outMux" role="switch" aria-checked="true" disabled title="纯视频流下载时自动合并最佳音轨（ffmpeg 随包）"></button><span class="tag">自动</span></div>
               </div>
               <div class="opt-row" style="border-bottom:0">
                 <span>完成后校验</span>
@@ -423,7 +423,7 @@
               </div>
               <div class="compat" id="vidCompat"></div>
               <div class="warn-box" style="margin-top:10px;font-size:11px">
-                受 DRM 保护或只有单条流的格式会被逐行禁用；单流格式需要 ffmpeg 转封装，v1 不随包。
+                受 DRM 保护的格式会被逐行禁用；纯视频流下载时自动合并最佳音轨（ffmpeg 随包，无需另外安装）。站点不标注编码的直链文件按整文件下载，体积即所选档位。
               </div>
               <button class="btn primary" id="btnVideoDownload" style="width:100%;margin-top:12px;height:34px">加入下载</button>
               <div class="video-job" id="videoJob" hidden>
@@ -880,10 +880,10 @@
                   </div>
                 </div>
                 <div class="set-row">
-                  <div class="lab">转封装工具<small>单流格式合并需要 ffmpeg</small></div>
+                  <div class="lab">解析与合并工具<small>yt-dlp 解析格式，ffmpeg 合并纯视频流的最佳音轨</small></div>
                   <div class="ctl">
-                    <span class="st err"><span class="d"></span>未随包</span>
-                    <span class="tag">未生效</span>
+                    <span class="st" id="vidToolsState"><span class="d"></span>检测中</span>
+                    <span class="tag" id="vidToolsTag">—</span>
                   </div>
                 </div>
                 <div class="set-row">

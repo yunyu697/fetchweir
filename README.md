@@ -1,6 +1,6 @@
 # Fetchweir
 
-跨平台下载管理器（Rust + Tauri 2）。分段并发下载、断点续传、浏览器扩展资源嗅探、视频格式解析（yt-dlp sidecar）。
+跨平台下载管理器（Rust + Tauri 2）。分段并发下载、断点续传、浏览器扩展资源嗅探、视频格式解析与音轨合并（yt-dlp + ffmpeg sidecar）。
 目前**只发布 Windows x64**；macOS / Linux 仅通过 CI 的编译与单测，产物未构建、运行时未验证。
 
 当前版本 **1.0.4**。发布说明见 [docs/release-notes-v1.0.4.md](docs/release-notes-v1.0.4.md)，
@@ -30,7 +30,8 @@ deb/AppImage **未在本地构建**，因此本次 Release 里没有这两个平
 | 级别 | 内容 |
 | --- | --- |
 | 已实现且本机实测 | 分段下载引擎与断点续传（本地回环集成测试）、限速与队列调度（含 4 任务同下的全局降档/回退实测）、任务表/详情/视频/嗅探/设置五屏渲染（无头截图，0 console error）、两种安装范围（1.0.4 安装包：currentUser 1.0.2→1.0.4 静默升级、perMachine 安装→核对 Program Files/HKLM/公共快捷方式→卸载清理）、自启动开关（注册表与计划任务实测）、「始终以管理员身份运行」（令牌 `TokenIsElevated` + 完整性级别 `S-1-16-12288` 确认提权，计划任务 `RunLevel=HighestAvailable`，关闭后恢复普通权限）、单实例（普通与提权状态下第二实例退出码 0 且参数转发到达首实例）、扩展三档嗅探与浮动条（真实 Chromium 加载扩展，8/8 通过，2026-11-07）、引擎内存卡（PSAPI 工作集，真实应用实测 41.4 MB）、设置页导出配置（真实应用写出 JSON，更新令牌清空）、托盘实拍 |
-| 已实现、未做全链路实机 | 更新检查与镜像下载（Ed25519 清单验签 + SHA256 校验；应用内 GUI 全流程已用真实 Release 作源实测：检查 → 发现新版本 → 下载 → SHA256 → 落盘，逐阶段截图；镜像加速下载未逐一实测）、yt-dlp 视频解析（本地样例，真实站点未跑） |
+| 已实现、未做全链路实机 | 更新检查与镜像下载（Ed25519 清单验签 + SHA256 校验；应用内 GUI 全流程已用真实 Release 作源实测：检查 → 发现新版本 → 下载 → SHA256 → 落盘，逐阶段截图；镜像加速下载未逐一实测） |
+| 已实现且真实站点实测 | 视频解析 → 选档 → 下载 → ffprobe 校验：Bilibili（15 档矩阵，1080p H.264 纯视频流 + 最佳音轨自动合并、纯音频档）、archive.org（直链整文件走自家引擎），界面字段与 yt-dlp `-J` 逐档一致；YouTube/Vimeo 被 bot 校验 / 403 挡住，见 [docs/视频站点实测.md](docs/视频站点实测.md) |
 | 未接通（界面禁用并标注） | 字幕轨下载、解析器独立更新、通知中心、原生拖放导入 |
 | 平台受限 | macOS 公证、Linux 发行版差异与系统级安装（本机与 CI 未验证）；v1.0.4 未构建 dmg/deb/AppImage |
 
@@ -38,7 +39,7 @@ deb/AppImage **未在本地构建**，因此本次 Release 里没有这两个平
 
 - 后端：Rust + Tauri 2（Tokio、reqwest、windows-sys）
 - 前端：静态 HTML/CSS/JS（无打包步骤，`frontendDist` 指向 `src/`）
-- 视频解析：yt-dlp 作为 sidecar 随包（`src-tauri/binaries/yt-dlp.exe`）
+- 视频解析与合并：yt-dlp、ffmpeg 作为 sidecar 随包（`src-tauri/binaries/`）；首次构建前跑 `tools/Sync-FwYtdlp.ps1` 与 `tools/Sync-FwFfmpeg.ps1`
 - 嗅探：Chrome MV3 扩展 + Native Messaging（stdio 帧），本地回环地址仅绑定 `127.0.0.1`
 
 不做任何 DRM / 付费墙 / 访问控制绕过；受保护流在解析阶段直接拒绝并在界面标注。
