@@ -138,6 +138,7 @@ pub fn run() {
             let engine = engine::Engine::new(handle, settings);
             engine.spawn_ticker();
             engine.spawn_budget_monitor();
+            engine.spawn_persister();
             app.manage(engine);
             app.manage(update::Updater::new(app.handle().clone()));
 
@@ -335,6 +336,14 @@ pub fn run() {
             commands::video_status,
             commands::video_tools,
         ])
-        .run(tauri::generate_context!())
-        .expect("Fetchweir 启动失败");
+        .build(tauri::generate_context!())
+        .expect("Fetchweir 启动失败")
+        .run(|app, event| {
+            // 正常退出前补一次落盘，保证最后一次进度（不超过 1 秒窗口）不丢。
+            if matches!(event, tauri::RunEvent::Exit) {
+                if let Some(engine) = app.try_state::<std::sync::Arc<engine::Engine>>() {
+                    engine.persist_now();
+                }
+            }
+        });
 }

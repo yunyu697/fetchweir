@@ -277,15 +277,68 @@ pub struct Engine {
     pub pacer: Pacer,
     /// 多任务共享的连接预算：按总吞吐统一降档/恢复，避免各任务独立下探。
     pub budget: Arc<GlobalBudget>,
+    /// 任务快照落盘路径；测试构造器（with_events）为 None，不碰真实数据目录。
+    persist_path: Option<PathBuf>,
+    /// 进度类变更只置脏，由 1Hz 的落盘循环合并写出；结构/状态变更则立即写。
+    persist_dirty: AtomicBool,
+    /// 串行化写入，避免两个线程同时 rename 同一个临时文件。
+    persist_write: Mutex<()>,
+}
+
+/// 落盘格式：只存恢复所需字段。请求头（Referer/Cookie）按既有设计不落盘。
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistTask {
+    id: u64,
+    url: String,
+    save_dir: String,
+    file_name: String,
+    user_named: bool,
+    connections: u32,
+    total: u64,
+    done: u64,
+    state: TaskState,
+    error: Option<String>,
+    supports_ranges: bool,
+    created_at: i64,
+    segments: Vec<PersistSegment>,
+    part_path: Option<String>,
+    final_path: Option<String>,
+}
+
+#[derive(Clone, Copy, Serialize, Deserialize)]
+struct PersistSegment {
+    start: u64,
+    end: u64,
+    done: u64,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PersistFile {
+    version: u32,
+    next_id: u64,
+    tasks: Vec<PersistTask>,
 }
 
 impl Engine {
     pub fn new(app: AppHandle, settings: Settings) -> Arc<Self> {
         let events: Arc<dyn TaskEvents> = Arc::new(TauriEvents { app });
-        Self::with_events(events, settings)
+        let path = crate::settings::ensure_data_dir().join("tasks.json");
+        let engine = Self::build(events, settings, Some(path));
+        engine.restore_from_disk();
+        engine
     }
 
     pub fn with_events(events: Arc<dyn TaskEvents>, settings: Settings) -> Arc<Self> {
+        Self::build(events, settings, None)
+    }
+
+    fn build(
+        events: Arc<dyn TaskEvents>,
+        settings: Settings,
+        persist_path: Option<PathBuf>,
+    ) -> Arc<Self> {
         let client = reqwest::Client::builder()
             .connect_timeout(Duration::from_secs(settings.connect_timeout_sec.clamp(3, 120) as u64))
             .read_timeout(Duration::from_secs(settings.read_timeout_sec.clamp(5, 300) as u64))
@@ -305,12 +358,181 @@ impl Engine {
             pacer: Pacer::new(settings.global_limit_bps),
             budget: Arc::new(GlobalBudget::new(settings.auto_concurrency)),
             settings: RwLock::new(settings),
+            persist_path,
+            persist_dirty: AtomicBool::new(false),
+            persist_write: Mutex::new(()),
         })
     }
 
     pub fn list(&self) -> Vec<TaskDto> {
         let tasks = self.tasks.lock().unwrap();
         tasks.iter().map(|t| t.snapshot()).collect()
+    }
+
+    /// 从 tasks.json 恢复任务列表。上次运行中的任务一律恢复为「暂停」：
+    /// 分片进度按持久化的 done 续传，不把中断当成失败。
+    fn restore_from_disk(&self) {
+        let Some(path) = self.persist_path.as_ref() else {
+            return;
+        };
+        let Ok(raw) = std::fs::read_to_string(path) else {
+            return;
+        };
+        let file = match serde_json::from_str::<PersistFile>(&raw) {
+            Ok(file) if file.version == 1 => file,
+            _ => {
+                // 文件损坏时改名留档，避免每次启动都解析失败，也不能因此起不来。
+                let _ = std::fs::rename(path, path.with_extension(format!("corrupt-{}", now_ms())));
+                return;
+            }
+        };
+
+        let mut restored = Vec::new();
+        let mut max_id = 0;
+        for pt in file.tasks {
+            let mut task = Task::new(
+                pt.id,
+                pt.url,
+                PathBuf::from(&pt.save_dir),
+                pt.file_name,
+                pt.user_named,
+                pt.connections,
+                Vec::new(),
+            );
+            task.created_at = pt.created_at;
+            task.total.store(pt.total, Ordering::Relaxed);
+            task.supports_ranges.store(pt.supports_ranges, Ordering::Relaxed);
+
+            let part = pt.part_path.map(PathBuf::from);
+            let final_path = pt.final_path.map(PathBuf::from);
+            // .part 必须与记录的总大小一致才能信分片进度；否则清零重下，避免跳过缺失字节。
+            let part_ok = match (&part, pt.total) {
+                (Some(p), total) if total > 0 => std::fs::metadata(p)
+                    .map(|m| m.len() == total)
+                    .unwrap_or(false),
+                _ => false,
+            };
+            let segments: Vec<Segment> = pt
+                .segments
+                .into_iter()
+                .map(|s| Segment {
+                    start: s.start,
+                    end: s.end,
+                    done: if part_ok { s.done.min(s.end.saturating_sub(s.start)) } else { 0 },
+                })
+                .collect();
+
+            let mut state = pt.state;
+            let mut error = pt.error;
+            if matches!(state, TaskState::Active | TaskState::Queued) {
+                state = TaskState::Paused;
+            }
+            if state == TaskState::Completed
+                && !final_path.as_ref().map(|p| p.exists()).unwrap_or(false)
+            {
+                state = TaskState::Failed;
+                error = Some("下载文件已被移动或删除".to_string());
+            }
+
+            let done = if state == TaskState::Completed {
+                pt.total
+            } else {
+                segments.iter().map(|s| s.done).sum()
+            };
+            task.done.store(done, Ordering::Relaxed);
+            *task.state.lock().unwrap() = state;
+            *task.error.lock().unwrap() = error;
+            *task.segments.lock().unwrap() = segments;
+            *task.part_path.lock().unwrap() = part;
+            *task.final_path.lock().unwrap() = final_path;
+
+            max_id = max_id.max(pt.id);
+            restored.push(Arc::new(task));
+        }
+
+        self.next_id.store(max_id + 1, Ordering::SeqCst);
+        *self.tasks.lock().unwrap() = restored;
+    }
+
+    fn persist_snapshot(&self) -> PersistFile {
+        let tasks = self.tasks.lock().unwrap();
+        let tasks = tasks
+            .iter()
+            .map(|t| {
+                let segments = t.segments.lock().unwrap();
+                PersistTask {
+                    id: t.id,
+                    url: t.url.clone(),
+                    save_dir: t.save_dir.to_string_lossy().to_string(),
+                    file_name: t.file_name(),
+                    user_named: t.user_named,
+                    connections: t.connections,
+                    total: t.total.load(Ordering::Relaxed),
+                    done: t.done.load(Ordering::Relaxed),
+                    state: t.state(),
+                    error: t.error.lock().unwrap().clone(),
+                    supports_ranges: t.supports_ranges.load(Ordering::Relaxed),
+                    created_at: t.created_at,
+                    segments: segments
+                        .iter()
+                        .map(|s| PersistSegment {
+                            start: s.start,
+                            end: s.end,
+                            done: s.done,
+                        })
+                        .collect(),
+                    part_path: t.part_path().map(|p| p.to_string_lossy().to_string()),
+                    final_path: t.final_path().map(|p| p.to_string_lossy().to_string()),
+                }
+            })
+            .collect();
+        PersistFile {
+            version: 1,
+            next_id: self.next_id.load(Ordering::SeqCst),
+            tasks,
+        }
+    }
+
+    /// 立即落盘：用于增删、暂停/继续、完成/失败等低频状态变更。
+    pub fn persist_now(&self) {
+        let Some(path) = self.persist_path.clone() else {
+            return;
+        };
+        let Ok(raw) = serde_json::to_string(&self.persist_snapshot()) else {
+            return;
+        };
+        let _guard = self.persist_write.lock().unwrap();
+        let tmp = path.with_extension("json.tmp");
+        if std::fs::write(&tmp, raw).is_ok() && std::fs::rename(&tmp, &path).is_ok() {
+            self.persist_dirty.store(false, Ordering::Relaxed);
+        } else {
+            self.persist_dirty.store(true, Ordering::Relaxed);
+        }
+    }
+
+    fn mark_persist_dirty(&self) {
+        if self.persist_path.is_some() {
+            self.persist_dirty.store(true, Ordering::Relaxed);
+        }
+    }
+
+    /// 进度落盘节流：最多每秒写一次，避免每收到一个数据块就写盘拖慢界面。
+    pub fn spawn_persister(self: &Arc<Self>) {
+        if self.persist_path.is_none() {
+            return;
+        }
+        let engine = self.clone();
+        tauri::async_runtime::spawn(async move {
+            let mut tick = tokio::time::interval(Duration::from_millis(1000));
+            tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+            tick.tick().await;
+            loop {
+                tick.tick().await;
+                if engine.persist_dirty.swap(false, Ordering::Relaxed) {
+                    engine.persist_now();
+                }
+            }
+        });
     }
 
     pub fn find(&self, id: u64) -> Option<Arc<Task>> {
@@ -368,6 +590,7 @@ impl Engine {
         if auto_start {
             self.start(&task);
         }
+        self.persist_now();
         Ok(task.snapshot())
     }
 
@@ -389,6 +612,7 @@ impl Engine {
         tauri::async_runtime::spawn(async move {
             engine.run_task(running, token, run_id).await;
         });
+        self.mark_persist_dirty();
         self.emit_task(&task);
     }
 
@@ -405,6 +629,7 @@ impl Engine {
             task.speed.reset();
             task.set_state(TaskState::Paused);
             self.emit_task(&task);
+            self.persist_now();
         }
     }
 
@@ -413,6 +638,7 @@ impl Engine {
             if matches!(task.state(), TaskState::Paused | TaskState::Failed) {
                 task.set_error(None);
                 self.start(&task);
+                self.persist_now();
             }
         }
     }
@@ -439,6 +665,7 @@ impl Engine {
             }
         }
         self.events.removed(id);
+        self.persist_now();
         Ok(())
     }
 
@@ -478,6 +705,10 @@ impl Engine {
                 if changed {
                     engine.events.progress(&items);
                     last = items;
+                }
+                // 有活跃任务时标记进度待落盘，由 1Hz 的落盘循环合并写出。
+                if !last.is_empty() {
+                    engine.mark_persist_dirty();
                 }
             }
         });
@@ -601,14 +832,13 @@ impl Engine {
         task.supports_ranges.store(meta.ranges, Ordering::Relaxed);
 
         let file_name = task.file_name();
-        let final_path = unique_path(&task.save_dir, &file_name);
-        let part_path = final_path.with_extension(format!(
-            "{}part",
-            final_path
-                .extension()
-                .map(|e| format!("{}.", e.to_string_lossy()))
-                .unwrap_or_default()
-        ));
+        // 恢复的任务沿用上次选定的最终路径：.part 已存在时重新 unique_path 会挑到 "(1)"，断点就丢了。
+        let final_path = task
+            .final_path()
+            .unwrap_or_else(|| unique_path(&task.save_dir, &file_name));
+        let part_path = task
+            .part_path()
+            .unwrap_or_else(|| part_path_for(&final_path));
         *task.part_path.lock().unwrap() = Some(part_path.clone());
         *task.final_path.lock().unwrap() = Some(final_path.clone());
 
@@ -710,6 +940,7 @@ impl Engine {
                 task.total.store(meta.total, Ordering::Relaxed);
                 task.set_state(TaskState::Completed);
                 self.emit_task(&task);
+                self.persist_now();
             }
             Err(e) => self.fail(&task, format!("重命名失败：{e}")),
         }
@@ -858,8 +1089,21 @@ impl Engine {
         task.set_error(Some(msg));
         task.set_state(TaskState::Failed);
         self.emit_task(task);
+        self.persist_now();
     }
 }
+
+/// `.part` 与最终文件同目录，保留原扩展名，便于用户识别未完成文件。
+fn part_path_for(final_path: &std::path::Path) -> PathBuf {
+    final_path.with_extension(format!(
+        "{}part",
+        final_path
+            .extension()
+            .map(|e| format!("{}.", e.to_string_lossy()))
+            .unwrap_or_default()
+    ))
+}
+
 
 fn plan_segments(total: u64, connections: u32) -> Vec<Segment> {
     if total == 0 {
