@@ -43,6 +43,8 @@ pub struct Settings {
     pub auto_concurrency: bool,
     pub global_limit_bps: u64,
     pub theme: String,
+    /// 颜色主题：violet / azure / emerald / amber。与 theme 独立保存，互不覆盖。
+    pub color_theme: String,
     /// 更新源仓库（owner/name）。默认为只放发布产物的公开仓库；
     /// 客户端只读，不携带任何访问令牌。
     pub update_repo: String,
@@ -81,6 +83,7 @@ impl Default for Settings {
             auto_concurrency: true,
             global_limit_bps: 0,
             theme: "dark".to_string(),
+            color_theme: "violet".to_string(),
             update_repo: "yunyu697/fetchweir".to_string(),
             update_mirror: "github".to_string(),
             homepage: "https://github.com/yunyu697/fetchweir".to_string(),

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" data-density="comfortable">
+<html lang="zh-CN" data-theme="dark" data-color="violet" data-density="comfortable">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -907,10 +907,10 @@
             <!-- s6 -->
             <section class="sec" id="s6">
               <div class="sec-h">外观</div>
-              <div class="sec-d">主题、强调色与列表密度</div>
+              <div class="sec-d">明暗主题、颜色主题与列表密度，两项主题互不影响</div>
               <div class="card">
                 <div class="set-row">
-                  <div class="lab">主题<small>跟随系统时会同步系统外观</small></div>
+                  <div class="lab">明暗主题<small>只决定浅色 / 深色，跟随系统时随系统实际外观切换</small></div>
                   <div class="ctl">
                     <div class="seg-tabs" id="themeSeg">
                       <button data-theme-set="dark">深色</button>
@@ -920,15 +920,13 @@
                   </div>
                 </div>
                 <div class="set-row">
-                  <div class="lab">强调色<small>按钮、进度条与选中态</small></div>
+                  <div class="lab">颜色主题<small>整套配色方案，与明暗主题自由组合</small></div>
                   <div class="ctl">
-                    <div class="swatches" id="swatches">
-                      <button class="sw-dot" data-accent="#6C8CFF" style="background:#6C8CFF" aria-label="蓝色"></button>
-                      <button class="sw-dot" data-accent="#9A7BFF" style="background:#9A7BFF" aria-label="紫色"></button>
-                      <button class="sw-dot" data-accent="#2ED47A" style="background:#2ED47A" aria-label="绿色"></button>
-                      <button class="sw-dot" data-accent="#F5A524" style="background:#F5A524" aria-label="琥珀"></button>
-                      <button class="sw-dot" data-accent="#FF5F6D" style="background:#FF5F6D" aria-label="红色"></button>
-                      <button class="sw-dot" data-accent="#38C6E0" style="background:#38C6E0" aria-label="青色"></button>
+                    <div class="color-grid" id="colorGrid">
+                      <button class="color-card on" data-color-set="violet" type="button" title="紫罗兰（默认）"><span class="cc-dots"><i style="background:#8434DE"></i><i style="background:#A78BFA"></i><i style="background:#C58DFF"></i></span><span>紫罗兰</span></button>
+                      <button class="color-card" data-color-set="azure" type="button" title="海蓝"><span class="cc-dots"><i style="background:#0B63C5"></i><i style="background:#6BB8FF"></i><i style="background:#4FE0E0"></i></span><span>海蓝</span></button>
+                      <button class="color-card" data-color-set="emerald" type="button" title="森绿"><span class="cc-dots"><i style="background:#0B6B48"></i><i style="background:#47D6A0"></i><i style="background:#A3E635"></i></span><span>森绿</span></button>
+                      <button class="color-card" data-color-set="amber" type="button" title="暖砂"><span class="cc-dots"><i style="background:#B45309"></i><i style="background:#FBBF5C"></i><i style="background:#FF9E64"></i></span><span>暖砂</span></button>
                     </div>
                   </div>
                 </div>
@@ -1008,7 +1006,7 @@
       <span style="width:1px;height:10px;background:var(--line)"></span>
       <span id="statusQueue">队列 0</span>
       <svg class="spark" viewBox="0 0 120 16" fill="none" aria-hidden="true">
-        <polyline id="sparkLine" points="0,14 10,13 20,12 30,13 40,10 50,11 60,8 70,9 80,7 90,8 100,5 110,6 120,4" stroke="var(--fg-3)" stroke-width="1.1" stroke-linecap="round"/>
+        <polyline id="sparkLine" points="0,14 10,13 20,12 30,13 40,10 50,11 60,8 70,9 80,7 90,8 100,5 110,6 120,4" stroke="var(--chart-1)" stroke-width="1.1" stroke-linecap="round"/>
       </svg>
       <div class="right">
         <span id="statusSpeed">0 MB/s</span>

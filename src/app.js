@@ -161,15 +161,6 @@
   /* 自动降并发后，任务实际使用的连接数以 connLimit 为准。 */
   const connNow = (t) => Math.max(1, Math.min(t.connections || 1, t.connLimit || t.connections || 1));
 
-  const lighten = (hex, amt) => {
-    const h = String(hex || '#6C8CFF').trim();
-    const v = h.startsWith('#') ? h.slice(1) : h;
-    if (v.length !== 6) return '#9A7BFF';
-    const rgb = [0, 2, 4].map((i) => parseInt(v.slice(i, i + 2), 16));
-    const f = (x) => Math.round(x + (255 - x) * amt);
-    return `rgb(${f(rgb[0])},${f(rgb[1])},${f(rgb[2])})`;
-  };
-
   /* ---------------- 轻提示 ---------------- */
   let toastTimer = 0;
   function toast(msg, kind) {
@@ -203,13 +194,13 @@
     autoConcurrency: true,
     globalLimitBps: 0,
     theme: 'dark',
+    colorTheme: 'violet',
     updateRepo: 'yunyu697/fetchweir',
     updateMirror: 'github',
     homepage: 'https://github.com/yunyu697/fetchweir',
     sniffTier: 'B',
     sniffTtlHours: 24,
     maxConnections: 16,
-    accent: '#6C8CFF',
     density: 'comfortable',
     reduceMotion: false,
     closeToTray: true,
@@ -311,6 +302,7 @@
   const DEMO_NM = { hostName: 'com.fetchweir.sniff', extensionId: 'fetchweir-extension', endpointPort: 49873, registered: ['chrome', 'edge'], tier: 'B' };
 
   /* ---------------- 外观 ---------------- */
+  const COLOR_THEMES = ['violet', 'azure', 'emerald', 'amber'];
   const mqLight = window.matchMedia('(prefers-color-scheme: light)');
   function paintTheme(pref) {
     state.themePref = pref || state.themePref || 'dark';
@@ -318,16 +310,16 @@
     document.documentElement.dataset.theme = resolved;
     $$('[data-theme-set]').forEach((b) => b.classList.toggle('on', b.dataset.themeSet === state.themePref));
   }
-  function applyAccent(hex) {
-    const accent = /^#[0-9a-f]{6}$/i.test(hex || '') ? hex : '#6C8CFF';
-    document.documentElement.style.setProperty('--accent', accent);
-    document.documentElement.style.setProperty('--accent-2', lighten(accent, 0.22));
-    $$('.sw-dot').forEach((d) => d.classList.toggle('on', d.dataset.accent.toLowerCase() === accent.toLowerCase()));
+  /* 颜色主题与明暗完全独立：只切换 data-color，由 CSS 提供整组 token。 */
+  function applyColorTheme(name) {
+    const color = COLOR_THEMES.includes(name) ? name : 'violet';
+    document.documentElement.dataset.color = color;
+    $$('[data-color-set]').forEach((b) => b.classList.toggle('on', b.dataset.colorSet === color));
   }
   function applyVisuals(s) {
     if (!s) return;
     paintTheme(s.theme || 'dark');
-    applyAccent(s.accent);
+    applyColorTheme(s.colorTheme);
     document.documentElement.dataset.density = s.density === 'compact' ? 'compact' : 'comfortable';
     $$('[data-density-set]').forEach((b) => b.classList.toggle('on', b.dataset.densitySet === document.documentElement.dataset.density));
     document.documentElement.classList.toggle('reduce-motion', !!s.reduceMotion);
@@ -1007,6 +999,7 @@
     s.readTimeoutSec = Math.max(1, Number(s.readTimeoutSec) || 30);
     s.density = s.density === 'compact' ? 'compact' : 'comfortable';
     s.theme = ['dark', 'light', 'system'].includes(s.theme) ? s.theme : 'dark';
+    s.colorTheme = COLOR_THEMES.includes(s.colorTheme) ? s.colorTheme : 'violet';
     s.sniffTier = ['A', 'B', 'C'].includes(s.sniffTier) ? s.sniffTier : 'B';
     s.videoPreferred = ['compat', 'best', 'small'].includes(s.videoPreferred) ? s.videoPreferred : 'compat';
     return s;
@@ -1105,7 +1098,7 @@
     $('sniffTier').value = s.sniffTier;
     $('videoPrefSel').value = s.videoPreferred;
     paintTheme(s.theme);
-    applyAccent(s.accent);
+    applyColorTheme(s.colorTheme);
     document.documentElement.dataset.density = s.density === 'compact' ? 'compact' : 'comfortable';
     $$('[data-density-set]').forEach((b) => b.classList.toggle('on', b.dataset.densitySet === document.documentElement.dataset.density));
     paintSwitch('swCloseTray', s.closeToTray);
@@ -2261,10 +2254,10 @@
       paintTheme(state.settings.theme);
       scheduleSave(200);
     }));
-    $$('.sw-dot').forEach((node) => node.addEventListener('click', () => {
+    $$('[data-color-set]').forEach((node) => node.addEventListener('click', () => {
       if (!state.settings) return;
-      state.settings.accent = node.dataset.accent;
-      applyAccent(node.dataset.accent);
+      state.settings.colorTheme = node.dataset.colorSet;
+      applyColorTheme(state.settings.colorTheme);
       scheduleSave(200);
     }));
     $$('[data-density-set]').forEach((node) => node.addEventListener('click', () => {
