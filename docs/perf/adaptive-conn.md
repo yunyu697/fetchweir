@@ -103,4 +103,5 @@
 `cargo test engine::adaptive`：11 条用例，覆盖单任务降档/恢复、零速率降档、
 多任务无效降档回退、4 任务与 8 任务不做无谓试探、预算均分、用户值上限、关闭自动、
 429 立即降档、8 任务 429 与吞吐降档叠加。本机测试 exe 因环境 DLL 无法启动
-（`STATUS_ENTRYPOINT_NOT_FOUND`），通过情况见 CI。
+（`STATUS_ENTRYPOINT_NOT_FOUND`），以 CI 结果为准：run `42456218330`（windows / ubuntu / macOS）
+全部通过，两条 8 任务用例均为 `ok`。
