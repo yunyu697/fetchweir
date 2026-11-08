@@ -71,7 +71,15 @@ switch ($FwTask) {
             $FwHadUser = Test-Path $FwSetup
             if ($FwHadUser) { Copy-Item $FwSetup $FwBackup -Force }
             $FwJson = '{"bundle":{"windows":{"nsis":{"installMode":"perMachine"}}}}'
-            & npm run build --prefix $FwRepoRoot -- --config $FwJson
+            # 内联 JSON 经 npm → cmd 转发后引号会被吃掉，tauri 收到的是非法 JSON；
+            # 先落成无 BOM 的临时文件再把路径传过去。
+            $FwCfg = Join-Path ([IO.Path]::GetTempPath()) ("fw-permachine-" + [Guid]::NewGuid().ToString('N') + '.json')
+            $FwJson | Set-Content -Path $FwCfg -Encoding utf8NoBOM
+            try {
+                & npm run build --prefix $FwRepoRoot -- --config $FwCfg
+            } finally {
+                Remove-Item -LiteralPath $FwCfg -Force -ErrorAction SilentlyContinue
+            }
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             if (-not (Test-Path $FwSetup)) { throw "未找到 perMachine 安装包：$FwSetup" }
             $FwAllUsers = $FwSetup -replace '-setup\.exe$', '-setup-allusers.exe'

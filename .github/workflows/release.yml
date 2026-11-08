@@ -1,22 +1,27 @@
-name: tag-version-check
+name: release
 
-# CI 在 tag 上只做版本校验：
-#   · 不创建 Release，不上传任何安装包或清单资产；
-#   · 不读取 FW_SIGNING_KEY / FW_RELEASES_PAT 等 secret；
-#   · 只校验 tag 与 version.json 是否一致（版本号唯一来源）。
-# 发布流程：本地出包 + 手动 `gh release create`（见 docs/发布检查清单.md）。
+# tag 触发时构建并发布两个安装范围包：
+#   · Fetchweir_X.Y.Z_x64-setup.exe          当前用户安装，内嵌 asInvoker，不弹 UAC
+#   · Fetchweir_X.Y.Z_x64-setup-allusers.exe 所有用户安装，内嵌 requireAdministrator
+# 两个包一起上传到 Release；有签名私钥时再上传 latest.json / latest.json.sig。
+#
+# 缺 FW_SIGNING_KEY 时不会静默跳过：流水线打 ::warning、写 step summary，
+# 并在 docs/发布检查清单.md 里记录该次发布为「未签名」。
+#
+# 只在 Windows x64 出包：macOS 缺 arm64 ffmpeg sidecar 与公证流程，Linux 的安装路径
+# 未实测。这两个平台的状态见 docs/发布检查清单.md，不做“看起来支持”的构建。
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  version:
-    name: 版本标记校验
-    runs-on: ubuntu-latest
+  windows:
+    name: Windows x64 构建与发布
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -29,3 +34,82 @@ jobs:
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         shell: pwsh
         run: ./tools/Test-FwVersion.ps1
+
+      - name: 同步视频解析器 sidecar
+        shell: pwsh
+        run: ./tools/Sync-FwYtdlp.ps1 -FwTriple x86_64-pc-windows-msvc
+
+      - name: 同步 ffmpeg sidecar（纯视频流合并音轨）
+        shell: pwsh
+        run: ./tools/Sync-FwFfmpeg.ps1 -FwTriple x86_64-pc-windows-msvc
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 安装前端依赖
+        run: npm ci --no-audit --no-fund
+
+      - name: 构建两个安装范围并落 dist
+        shell: pwsh
+        run: ./tools/Build-Fw.ps1 -FwTask release
+
+      - name: 校验两包字节不同与内嵌执行级别
+        shell: pwsh
+        run: ./tools/Test-FwInstallers.ps1
+
+      - name: 生成并签名更新清单
+        shell: pwsh
+        env:
+          FW_SIGNING_KEY: ${{ secrets.FW_SIGNING_KEY }}
+        run: |
+          if (-not $env:FW_SIGNING_KEY) {
+            $fwMsg = '缺少 secret FW_SIGNING_KEY：本次不生成 latest.json / latest.json.sig，已安装的客户端不会检测到这个版本。'
+            Write-Host "::warning title=发布未签名::$fwMsg"
+            Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## 发布未签名`n`n$fwMsg`n"
+            exit 0
+          }
+          node tools/New-FwManifest.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node tools/Sign-FwManifest.mjs --in dist/latest.json --out dist/latest.json.sig
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## 清单已签名`n`nlatest.json 与 latest.json.sig 已生成。`n"
+
+      - name: 上传到 Release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $fwTag = "${{ github.ref_name }}"
+          $fwVer = (Get-Content version.json -Raw | ConvertFrom-Json).version
+          $fwFiles = @(Get-ChildItem dist -File | Where-Object { $_.Name -like '*.exe' -or $_.Name -like 'latest.json*' } | ForEach-Object { $_.FullName })
+          if ($fwFiles.Count -eq 0) { throw 'dist 里没有可上传的资产' }
+
+          gh release view $fwTag 2>$null | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            $fwNotes = Join-Path 'docs' "release-notes-v$fwVer.md"
+            if (Test-Path $fwNotes) {
+              gh release create $fwTag --title "Fetchweir $fwTag" --notes-file $fwNotes
+            } else {
+              gh release create $fwTag --title "Fetchweir $fwTag" --notes "Fetchweir $fwTag 构建产物。安装范围与已知限制见 docs/发布检查清单.md。"
+            }
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+          gh release upload $fwTag @fwFiles --clobber
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release view $fwTag --json assets --jq '.assets[] | "\(.name) \(.size) 字节"'
+
+      - name: 非 tag 触发（只构建，不上传）
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        shell: pwsh
+        run: |
+          Write-Host '::notice title=仅构建::本次不是 tag 触发，安装包只做构建与校验，不创建 Release。'
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '## 仅构建`n`n非 tag 触发，跳过 Release 上传。`n'
