@@ -2,16 +2,19 @@
 
 跨平台下载管理器（Rust + Tauri 2）。分段并发下载、断点续传、浏览器扩展资源嗅探、视频格式解析（yt-dlp sidecar）。
 
-当前版本 **1.0.0**（正式版）。发布说明见 [docs/release-notes-v1.0.0.md](docs/release-notes-v1.0.0.md)，
-其中区分「已实测 / 未验证 / 被环境挡住」并写明原因；`v1.0.0` tag 触发 CI 产出 Windows（两种安装范围）、
-Linux（deb / AppImage）与 macOS（未签名 dmg）产物。
+当前版本 **1.0.4**。发布说明见 [docs/release-notes-v1.0.4.md](docs/release-notes-v1.0.4.md)，
+其中区分「已实测 / 未验证 / 被环境挡住」并写明原因。
+
+**发布口径**：GitHub 上的 tag 只作版本标记（CI 仅校验 tag 与 `version.json` 一致），
+**不创建 Release、不上传任何安装包**。Windows / macOS / Linux 安装包一律在本地构建，
+命令见下方「构建与测试」。
 
 ## 完成度（如实分级）
 
 | 级别 | 内容 |
 | --- | --- |
-| 已实现且本机实测 | 分段下载引擎与断点续传（本地回环集成测试）、限速与队列调度、任务表/详情/视频/嗅探/设置五屏渲染（无头截图，0 console error）、两种安装范围（仅当前用户 / 所有用户，均用 1.0.0 发布资产实测安装→核对→卸载清理）、自启动开关（注册表与计划任务实测）、「始终以管理员身份运行」（令牌 `TokenIsElevated` + 完整性级别 `S-1-16-12288` 确认提权，计划任务 `RunLevel=HighestAvailable`，关闭后恢复普通权限）、单实例（普通与提权状态下第二实例退出码 0 且参数转发到达首实例）、扩展三档嗅探与浮动条（真实 Chromium 加载扩展，8/8 通过，2026-11-07）、引擎内存卡（PSAPI 工作集，真实应用实测 41.4 MB）、设置页导出配置（真实应用写出 JSON，更新令牌清空）、托盘实拍 |
-| 已实现、未做全链路实机 | 更新检查与镜像下载（字节数校验，无签名校验）、yt-dlp 视频解析（本地样例，真实站点未跑） |
+| 已实现且本机实测 | 分段下载引擎与断点续传（本地回环集成测试）、限速与队列调度、任务表/详情/视频/嗅探/设置五屏渲染（无头截图，0 console error）、两种安装范围（仅当前用户 / 所有用户，均用 1.0.0 安装包实测安装→核对→卸载清理）、自启动开关（注册表与计划任务实测）、「始终以管理员身份运行」（令牌 `TokenIsElevated` + 完整性级别 `S-1-16-12288` 确认提权，计划任务 `RunLevel=HighestAvailable`，关闭后恢复普通权限）、单实例（普通与提权状态下第二实例退出码 0 且参数转发到达首实例）、扩展三档嗅探与浮动条（真实 Chromium 加载扩展，8/8 通过，2026-11-07）、引擎内存卡（PSAPI 工作集，真实应用实测 41.4 MB）、设置页导出配置（真实应用写出 JSON，更新令牌清空）、托盘实拍 |
+| 已实现、未做全链路实机 | 更新检查与镜像下载（Ed25519 清单验签 + SHA256 校验，本地静态源闭环实测；默认 GitHub 源在无 Release 时明确提示「未找到可用的更新源」）、yt-dlp 视频解析（本地样例，真实站点未跑） |
 | 未接通（界面禁用并标注） | 字幕轨下载、解析器独立更新、通知中心、原生拖放导入 |
 | 平台受限 | macOS 公证、Linux 发行版差异与系统级安装（本机与 CI 未验证） |
 
@@ -33,9 +36,15 @@ Linux（deb / AppImage）与 macOS（未签名 dmg）产物。
 pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask check    # 编译检查（含测试目标）
 pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask test     # 引擎集成测试（本地回环，无 GUI）
 pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask build    # 调试二进制
-pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle   # 安装包（Windows 产出 NSIS）
-pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle -FwScope perMachine   # 额外产出 *-setup-allusers.exe
+pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle   # 只打当前用户安装包
+pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask bundle -FwScope perMachine   # 只打所有用户安装包
+pwsh -NoProfile -File tools/Build-Fw.ps1 -FwTask release  # 一条命令：两种安装范围 → dist，并打印 SHA256
 ```
+
+`-FwTask release` 会先构建 currentUser 包、再构建 perMachine 包，把
+`Fetchweir_<version>_x64-setup.exe` 与 `Fetchweir_<version>_x64-setup-allusers.exe`
+复制到仓库根目录 `dist/`，并在终端输出版本号、字节数与 SHA256。版本号取自
+`version.json`，不需要额外参数。
 
 无头验证：
 

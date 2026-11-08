@@ -1232,6 +1232,9 @@
     if (u.stage === 'updateAvailable' && u.latestVersion) hintText = `发现新版本 v${u.latestVersion}`;
     if (u.stage === 'upToDate') hintText = '已是最新版本';
     if (u.stage === 'downloading') hintText = `正在下载 ${Math.round(u.progress || 0)}%`;
+    // 没有可更新版本时详情面板是收起的；失败原因（例如「未找到可用的更新源」）
+    // 必须露在这行提示里，否则用户只看到「检查失败」而不知道源不可用。
+    if (u.stage === 'failed' && !hasLatest && u.message) hintText = u.message;
     hint.textContent = hintText;
     hint.classList.toggle('err-color', u.stage === 'failed');
     if (u.currentVersion) $('setVersion').textContent = 'v' + u.currentVersion;

@@ -229,17 +229,22 @@ enum ManifestErr {
     Rejected(String),
 }
 
-/// 清单根地址。默认走公开仓库的 latest release 资产目录。
-/// `FETCHWEIR_UPDATE_BASE` 是本地闭环验证用的钩子：指向本地静态服务时，
-/// 清单仍必须通过签名校验，改地址并不能伪造内容。
-fn manifest_base(repo: &str) -> String {
-    if let Ok(v) = std::env::var("FETCHWEIR_UPDATE_BASE") {
-        let v = v.trim().trim_end_matches('/');
-        if !v.is_empty() {
-            return v.to_string();
-        }
+/// 清单根地址。默认走 GitHub latest release 资产目录；仓库尚未发布 Release 时这里会 404，
+/// 上层据此提示「未找到可用的更新源」。
+/// `FETCHWEIR_UPDATE_BASE` 是本地联调/自建源钩子：指向静态服务时清单仍必须通过签名校验。
+/// 显式指定的更新源（本地联调或自建源）；未设置时返回 None。
+fn custom_manifest_base() -> Option<String> {
+    let v = std::env::var("FETCHWEIR_UPDATE_BASE").ok()?;
+    let v = v.trim().trim_end_matches('/');
+    if v.is_empty() {
+        None
+    } else {
+        Some(v.to_string())
     }
-    format!("https://github.com/{repo}/releases/latest/download")
+}
+
+fn manifest_base(repo: &str) -> String {
+    custom_manifest_base().unwrap_or_else(|| format!("https://github.com/{repo}/releases/latest/download"))
 }
 
 fn base64_decode(s: &str) -> Result<Vec<u8>, String> {
@@ -517,7 +522,7 @@ impl Updater {
         self.set_stage("failed", Some(message))
     }
 
-    /// 读取公开发布仓库最新 Release 里的 latest.json，并用内置公钥验签。
+    /// 读取更新源上的 latest.json，并用内置公钥验签。
     async fn fetch_manifest(
         self: &Arc<Self>,
         client: &reqwest::Client,
@@ -532,7 +537,7 @@ impl Updater {
         })?;
         if resp.status() == reqwest::StatusCode::NOT_FOUND {
             return Err(ManifestErr::Missing(format!(
-                "更新源 {repo} 没有发布 {MANIFEST_NAME} 清单，已回退到未校验的 Release 列表。"
+                "更新源 {base} 没有提供 {MANIFEST_NAME} 清单。"
             )));
         }
         if !resp.status().is_success() {
@@ -599,10 +604,15 @@ impl Updater {
             pre: Vec::new(),
         });
 
-        // 首选：公开发布仓库的 latest.json，签名不通过直接拒绝，绝不回退。
+        // 首选：清单 + 签名，签名不通过直接拒绝，绝不回退。
         match self.fetch_manifest(&client, &repo).await {
             Ok(manifest) => self.apply_manifest(manifest, &current),
             Err(ManifestErr::Rejected(msg)) => self.fail(msg),
+            Err(ManifestErr::Missing(why)) if custom_manifest_base().is_some() => {
+                // 显式指定的源不参与 GitHub Release 列表回退：地址上没清单就是没有更新源，
+                // 不能拿 {repo} 的 Release 冒充这个源的结果。
+                self.fail(format!("未找到可用的更新源：{why}"))
+            }
             Err(ManifestErr::Missing(why)) => {
                 // 兼容尚未迁移的旧更新源：退回 Release 列表，但没有签名与 SHA256。
                 self.check_legacy(&client, &repo, &current, why).await
@@ -676,7 +686,7 @@ impl Updater {
         if !status.is_success() {
             let msg = match status.as_u16() {
                 404 => format!(
-                    "更新源不可访问（{repo} 不存在或为私有仓库）。客户端只读公开仓库，不携带任何令牌；{manifest_note}"
+                    "未找到可用的更新源：{repo} 不存在或不可访问（客户端只读公开仓库，不携带任何令牌）。{manifest_note}"
                 ),
                 403 => "更新源拒绝访问（未认证请求触发速率限制），请稍后重试。".to_string(),
                 code => format!("更新源返回 HTTP {code}。"),
@@ -704,6 +714,11 @@ impl Updater {
             if best.as_ref().map(|b| v > b.0).unwrap_or(true) {
                 best = Some((v, r, asset));
             }
+        }
+
+        // 列表为空说明这个仓库没有任何已发布版本，不能报成「没有适用于当前平台的包」。
+        if releases.is_empty() {
+            return self.fail(format!("未找到可用的更新源：{repo} 尚未发布任何版本。{manifest_note}"));
         }
 
         let Some((ver, release, asset)) = best else {
