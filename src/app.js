@@ -1033,6 +1033,10 @@
     s.colorTheme = COLOR_THEMES.includes(s.colorTheme) ? s.colorTheme : 'violet';
     s.sniffTier = ['A', 'B', 'C'].includes(s.sniffTier) ? s.sniffTier : 'B';
     s.videoPreferred = ['compat', 'best', 'small'].includes(s.videoPreferred) ? s.videoPreferred : 'compat';
+    s.cookieSource = ['none', 'browser', 'file'].includes(s.cookieSource) ? s.cookieSource : 'none';
+    s.cookieBrowser = ['chrome', 'edge', 'firefox', 'brave', 'vivaldi'].includes(s.cookieBrowser) ? s.cookieBrowser : 'chrome';
+    s.cookieProfile = typeof s.cookieProfile === 'string' ? s.cookieProfile : '';
+    s.cookieFile = typeof s.cookieFile === 'string' ? s.cookieFile : '';
     return s;
   }
   async function persistSettings() {
@@ -1128,6 +1132,7 @@
     $('tierSel').value = s.sniffTier;
     $('sniffTier').value = s.sniffTier;
     $('videoPrefSel').value = s.videoPreferred;
+    renderCookieSettings();
     paintTheme(s.theme);
     applyColorTheme(s.colorTheme);
     document.documentElement.dataset.density = s.density === 'compact' ? 'compact' : 'comfortable';
@@ -1145,6 +1150,51 @@
       $('setVersion').textContent = 'v' + state.info.version;
       $('statusVersion').textContent = 'v' + state.info.version;
     }
+  }
+
+  /* Cookie 来源：只同步枚举与路径；Cookie 内容始终由解析器在本机读取。 */
+  function syncCookieRows() {
+    const s = state.settings;
+    if (!s) return;
+    $('cookieSourceSel').value = s.cookieSource;
+    $('cookieBrowserSel').value = s.cookieBrowser;
+    $('cookieProfileInput').value = s.cookieProfile || '';
+    $('cookieFileInput').value = s.cookieFile || '';
+    $('rowCookieBrowser').hidden = s.cookieSource !== 'browser';
+    $('rowCookieFile').hidden = s.cookieSource !== 'file';
+  }
+  let cookieStatusSeq = 0;
+  async function refreshCookieStatus() {
+    const s = state.settings;
+    if (!s) return;
+    const seq = ++cookieStatusSeq;
+    let usable = true;
+    let message = '';
+    if (isDemo) {
+      message = s.cookieSource === 'file'
+        ? (s.cookieFile ? '演示模式：正式运行时会检查文件可读性' : '尚未选择 cookies.txt 文件')
+        : s.cookieSource === 'browser' ? `演示模式：将读取 ${s.cookieBrowser} 的 Cookie` : '不使用 Cookie（默认）';
+    } else {
+      try {
+        const st = await invoke('cookie_status');
+        if (seq !== cookieStatusSeq) return;
+        usable = !!st.usable;
+        message = st.message;
+      } catch (err) {
+        if (seq !== cookieStatusSeq) return;
+        usable = false;
+        message = '读取 Cookie 状态失败：' + ((err && err.message) || err);
+      }
+    }
+    if (seq !== cookieStatusSeq) return;
+    $('cookieHint').textContent = message;
+    const tag = $('cookieTag');
+    tag.textContent = usable ? '可用' : '回退为不使用';
+    tag.classList.toggle('err-color', !usable);
+  }
+  function renderCookieSettings() {
+    syncCookieRows();
+    refreshCookieStatus();
   }
 
   function updateLimitLabel() {
@@ -2448,6 +2498,47 @@
       if (state.video.info) {
         state.video.sel = null;
         renderVideo();
+      }
+    });
+
+    /* Cookie 来源：只保存来源与路径，内容交给解析器在本机读取 */
+    on('cookieSourceSel', 'change', () => {
+      if (!state.settings) return;
+      state.settings.cookieSource = $('cookieSourceSel').value;
+      syncCookieRows();
+      scheduleSave(200);
+      refreshCookieStatus();
+    });
+    on('cookieBrowserSel', 'change', () => {
+      if (!state.settings) return;
+      state.settings.cookieBrowser = $('cookieBrowserSel').value;
+      scheduleSave(200);
+      refreshCookieStatus();
+    });
+    on('cookieProfileInput', 'input', () => {
+      if (!state.settings) return;
+      state.settings.cookieProfile = $('cookieProfileInput').value.trim();
+      scheduleSave(800);
+      refreshCookieStatus();
+    });
+    on('cookieFileInput', 'input', () => {
+      if (!state.settings) return;
+      state.settings.cookieFile = $('cookieFileInput').value.trim();
+      scheduleSave(800);
+      refreshCookieStatus();
+    });
+    on('btnPickCookieFile', 'click', async () => {
+      if (!state.settings) return;
+      if (isDemo) { toast('演示模式：正式运行时可选择本地 cookies.txt'); return; }
+      try {
+        const picked = await invoke('pick_cookie_file');
+        if (!picked) return;
+        state.settings.cookieFile = picked;
+        $('cookieFileInput').value = picked;
+        scheduleSave(200);
+        refreshCookieStatus();
+      } catch (err) {
+        toast('选择文件失败：' + ((err && err.message) || err), 'err');
       }
     });
 

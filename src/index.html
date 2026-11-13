@@ -898,6 +898,40 @@
                   </div>
                 </div>
                 <div class="set-row">
+                  <div class="lab">Cookie 来源<small>站点要求登录验证时使用；仅在本机传给解析器，不上传</small></div>
+                  <div class="ctl">
+                    <select class="mini-select" id="cookieSourceSel">
+                      <option value="none">不使用</option>
+                      <option value="browser">从浏览器读取</option>
+                      <option value="file">使用本地 cookies.txt</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="set-row" id="rowCookieBrowser" hidden>
+                  <div class="lab">浏览器<small>直接读取该浏览器的 Cookie 库，不复制到应用目录</small></div>
+                  <div class="ctl" style="gap:8px;flex-wrap:wrap">
+                    <select class="mini-select" id="cookieBrowserSel">
+                      <option value="chrome">Chrome</option>
+                      <option value="edge">Edge</option>
+                      <option value="firefox">Firefox</option>
+                      <option value="brave">Brave</option>
+                      <option value="vivaldi">Vivaldi</option>
+                    </select>
+                    <label class="field" style="width:190px"><input id="cookieProfileInput" type="text" placeholder="profile（可选）" autocomplete="off"></label>
+                  </div>
+                </div>
+                <div class="set-row" id="rowCookieFile" hidden>
+                  <div class="lab">cookies.txt<small>Netscape 格式；文件被删或不可读时解析会回退为不使用</small></div>
+                  <div class="ctl" style="gap:8px;flex-wrap:wrap">
+                    <label class="field" style="width:min(320px,34vw)"><input id="cookieFileInput" type="text" placeholder="C:\Users\...\cookies.txt" autocomplete="off"></label>
+                    <button class="btn sm" id="btnPickCookieFile">选择文件</button>
+                  </div>
+                </div>
+                <div class="set-row" id="rowCookieHint">
+                  <div class="lab">Cookie 状态<small id="cookieHint">—</small></div>
+                  <div class="ctl"><span class="tag" id="cookieTag">—</span></div>
+                </div>
+                <div class="set-row">
                   <div class="lab">DRM 保护内容<small>按产品边界始终拒绝下载</small></div>
                   <div class="ctl"><span class="st err"><span class="d"></span>始终拒绝</span></div>
                 </div>
