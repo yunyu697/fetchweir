@@ -42,6 +42,31 @@ pub struct VideoInfoDto {
     pub message: Option<String>,
     pub drm_only: bool,
     pub formats: Vec<FormatDto>,
+    /// Cookie 来源不可用时的回退说明（例如 cookies.txt 被删）；来源正常时为 None。
+    pub cookie_warning: Option<String>,
+}
+
+/// 解析失败的凭据类错误前缀；前端据此展示操作引导，`\n` 之后仍是原始错误。
+pub const AUTH_ERROR_PREFIX: &str = "FW_AUTH::";
+
+/// 识别站点要求登录/人机校验的 stderr 特征。
+/// 返回 bot / login / forbidden 三类，便于界面给出对应文案。
+pub fn auth_issue(stderr: &str) -> Option<&'static str> {
+    let s = stderr.to_ascii_lowercase();
+    let has = |needle: &str| s.contains(needle);
+    if has("sign in to confirm") && has("not a bot") {
+        return Some("bot");
+    }
+    if has("confirm your age") || has("age-restricted") || has("inappropriate for some users") {
+        return Some("login");
+    }
+    if has("http error 403") || has("403 forbidden") || has("response status 403") {
+        return Some("forbidden");
+    }
+    if has("login required") || has("sign in to continue") || has("please log in") || has("requires authentication") {
+        return Some("login");
+    }
+    None
 }
 
 pub struct VideoHost {
@@ -162,18 +187,20 @@ pub fn ffmpeg_path() -> Option<PathBuf> {
         .find(|p| p.exists())
 }
 
-pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, String> {
+pub async fn probe(host: &Arc<VideoHost>, url: &str, settings: &crate::settings::Settings) -> Result<VideoInfoDto, String> {
     if let Some(cached) = host.cache.lock().unwrap().get(url) {
         return Ok(cached.clone());
     }
     let exe = ytdlp_path().ok_or_else(|| "未找到视频解析器（yt-dlp sidecar）".to_string())?;
+    let cookies = crate::cookies::build(settings);
+    let mut cmd = crate::platform::hidden_tokio_command(&exe);
+    cmd.args(["-J", "--no-playlist", "--no-warnings", "--skip-download"])
+        .args(&cookies.args)
+        .arg(url)
+        .stdin(Stdio::null());
     let out = tokio::time::timeout(
         std::time::Duration::from_secs(PROBE_TIMEOUT_SECS),
-        crate::platform::hidden_tokio_command(&exe)
-            .args(["-J", "--no-playlist", "--no-warnings", "--skip-download"])
-            .arg(url)
-            .stdin(Stdio::null())
-            .output(),
+        cmd.output(),
     )
     .await
     .map_err(|_| "解析超时（60 秒）".to_string())?
@@ -185,6 +212,11 @@ pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, Str
         let brief: String = line.chars().take(200).collect();
         if err.to_ascii_lowercase().contains("drm protected") {
             return Err("该视频受 DRM 保护，按产品边界不提供解析与下载".to_string());
+        }
+        if let Some(kind) = auth_issue(&err) {
+            // 原始 stderr 附在前缀之后，界面的「查看原始错误」直接展示这段。
+            let raw: String = err.trim().chars().take(1200).collect();
+            return Err(format!("{AUTH_ERROR_PREFIX}{kind}\n{raw}"));
         }
         return Err(format!("解析器返回失败：{brief}"));
     }
@@ -279,8 +311,12 @@ pub async fn probe(host: &Arc<VideoHost>, url: &str) -> Result<VideoInfoDto, Str
         },
         drm_only,
         formats,
+        cookie_warning: cookies.warning.clone(),
     };
-    host.cache.lock().unwrap().insert(url.to_string(), dto.clone());
+    // 带警告的结果不写缓存：用户修好 cookies.txt 后重新解析应立即按新来源执行。
+    if cookies.warning.is_none() {
+        host.cache.lock().unwrap().insert(url.to_string(), dto.clone());
+    }
     Ok(dto)
 }
 
@@ -349,6 +385,14 @@ fn delegate(
     ffmpeg: Option<PathBuf>,
 ) -> Result<Value, String> {
     let exe = ytdlp_path().ok_or_else(|| "未找到视频解析器（yt-dlp sidecar）".to_string())?;
+    let settings = app
+        .state::<Arc<crate::engine::Engine>>()
+        .inner()
+        .settings
+        .read()
+        .unwrap()
+        .clone();
+    let cookies = crate::cookies::build(&settings);
     let dir = save_dir
         .filter(|s| !s.trim().is_empty())
         .unwrap_or_else(|| crate::settings::system_download_dir().to_string_lossy().to_string());
@@ -366,6 +410,8 @@ fn delegate(
         .arg("--no-playlist")
         .arg("--newline")
         .arg("--no-warnings")
+        // Cookie 来源不可用时这里为空，本次按「不使用」下载，并在返回里带警告。
+        .args(&cookies.args)
         // Windows 控制台默认用本地代码页输出；标题含中文时路径会变成乱码字节，
         // 读日志按 UTF-8 解码就会整行失败。强制 UTF-8 后路径才能被正确取回。
         .arg("--encoding")
@@ -403,6 +449,7 @@ fn delegate(
         let mut out_line: Vec<u8> = Vec::new();
         let mut err_line: Vec<u8> = Vec::new();
         let mut path: Option<String> = None;
+        let mut last_err = String::new();
         let mut last = json!({"jobId": job_id, "stage": "starting", "percent": 0.0});
 
         let emit = |app: &AppHandle, payload: Value| {
@@ -436,6 +483,7 @@ fn delegate(
                     let t: String = text.trim().chars().take(200).collect();
                     err_line.clear();
                     if !t.trim().is_empty() {
+                        last_err = t.clone();
                         emit(&app2, json!({"jobId": job_id, "stage": "running", "percent": last.get("percent").and_then(|v| v.as_f64()).unwrap_or(0.0), "message": t}));
                     }
                 }
@@ -447,16 +495,23 @@ fn delegate(
         drop(guard);
         host2.jobs.lock().unwrap().remove(&job_id);
         let ok = status.map(|s| s.success()).unwrap_or(false);
+        let message = if ok {
+            "已完成".to_string()
+        } else if auth_issue(&last_err).is_some() {
+            "站点要求登录验证：请在设置 → 视频与格式里选择 Cookie 来源".to_string()
+        } else {
+            "解析器退出异常，请查看日志".to_string()
+        };
         emit(&app2, json!({
             "jobId": job_id,
             "stage": if ok { "done" } else { "failed" },
             "percent": if ok { 100.0 } else { last.get("percent").and_then(|v| v.as_f64()).unwrap_or(0.0) },
             "path": path,
-            "message": if ok { "已完成".to_string() } else { "解析器退出异常，请查看日志".to_string() },
+            "message": message,
         }));
     });
 
-    Ok(json!({"mode": "delegate", "jobId": job_id}))
+    Ok(json!({"mode": "delegate", "jobId": job_id, "cookieWarning": cookies.warning}))
 }
 
 struct Progress {
@@ -566,7 +621,7 @@ pub fn status() -> Value {
 
 #[cfg(test)]
 mod tests {
-    use super::{mux_needed, output_path, parse_progress, strip_verbatim};
+    use super::{auth_issue, mux_needed, output_path, parse_progress, strip_verbatim};
 
     #[test]
     fn output_path_joins_relative_and_strips_verbatim() {
@@ -597,5 +652,15 @@ mod tests {
     #[test]
     fn ignore_destination_line() {
         assert!(parse_progress("[download] Destination: out.mp4").is_none());
+    }
+
+    #[test]
+    fn classify_bot_check_and_status_codes() {
+        let bot = "ERROR: [youtube] -yqNI2GfXMQ: Sign in to confirm you're not a bot. This helps protect our community.\nUse --cookies-from-browser or --cookies";
+        assert_eq!(auth_issue(bot), Some("bot"));
+        assert_eq!(auth_issue("ERROR: [youtube] x: HTTP Error 403: Forbidden"), Some("forbidden"));
+        assert_eq!(auth_issue("ERROR: This video is age-restricted"), Some("login"));
+        assert_eq!(auth_issue("ERROR: Login required"), Some("login"));
+        assert_eq!(auth_issue("ERROR: unable to download video data: timeout"), None);
     }
 }

@@ -73,6 +73,15 @@ pub struct Settings {
     pub read_timeout_sec: u32,
     /// 视频首选组合：compat（1080p H.264 MP4）/ best / small。
     pub video_preferred: String,
+    /// 视频解析凭据来源：none（默认）/ browser / file。
+    /// 只在这里记录来源，Cookie 内容不落应用数据目录。
+    pub cookie_source: String,
+    /// 来源为 browser 时读取哪个浏览器：chrome / edge / firefox / brave / vivaldi。
+    pub cookie_browser: String,
+    /// 浏览器 profile 目录名或完整路径；留空表示浏览器默认 profile。
+    pub cookie_profile: String,
+    /// 来源为 file 时的 cookies.txt 绝对路径；原文件只读，不复制。
+    pub cookie_file: String,
 }
 
 impl Default for Settings {
@@ -99,6 +108,10 @@ impl Default for Settings {
             connect_timeout_sec: 10,
             read_timeout_sec: 30,
             video_preferred: "compat".to_string(),
+            cookie_source: "none".to_string(),
+            cookie_browser: "chrome".to_string(),
+            cookie_profile: String::new(),
+            cookie_file: String::new(),
         }
     }
 }

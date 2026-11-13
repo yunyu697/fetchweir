@@ -1,5 +1,6 @@
 // Fetchweir 主进程：装配引擎、命令与窗口。
 mod commands;
+pub mod cookies;
 pub mod engine;
 pub mod nm;
 pub mod platform;
@@ -243,8 +244,9 @@ pub fn run() {
             // 供无浏览器环境验证 yt-dlp 接线与 DRM 拒绝。
             if let Ok(url) = std::env::var("FW_VIDEO_PROBE") {
                 let host = app.state::<std::sync::Arc<video::VideoHost>>().inner().clone();
+                let probe_settings = settings::load();
                 tauri::async_runtime::spawn(async move {
-                    let body = match video::probe(&host, &url).await {
+                    let body = match video::probe(&host, &url, &probe_settings).await {
                         Ok(info) => serde_json::to_value(&info).unwrap_or_default(),
                         Err(e) => serde_json::json!({ "error": e }),
                     };
@@ -332,6 +334,8 @@ pub fn run() {
             commands::set_sniff_tier,
             commands::set_bar_theme,
             commands::probe_video,
+            commands::cookie_status,
+            commands::pick_cookie_file,
             commands::add_video_task,
             commands::cancel_video,
             commands::video_status,

@@ -120,6 +120,11 @@ pub fn save_settings(engine: State<'_, Arc<Engine>>, settings: Settings) -> Resu
     let mut next = settings;
     // 镜像由 set_update_mirror 独占维护，避免普通保存把用户选择重置回默认。
     next.update_mirror = engine.settings.read().unwrap().update_mirror.clone();
+    // Cookie 来源只保存枚举与路径，不保存任何 Cookie 内容。
+    next.cookie_source = crate::cookies::normalize_source(&next.cookie_source);
+    next.cookie_browser = crate::cookies::normalize_browser(&next.cookie_browser);
+    next.cookie_profile = next.cookie_profile.trim().to_string();
+    next.cookie_file = next.cookie_file.trim().to_string();
     settings::save(&next)?;
     engine.pacer.set_bps(next.global_limit_bps);
     engine.budget.set_enabled(next.auto_concurrency);
@@ -419,7 +424,68 @@ pub async fn probe_video(
     url: String,
 ) -> Result<crate::video::VideoInfoDto, String> {
     let host = app.state::<std::sync::Arc<crate::video::VideoHost>>().inner().clone();
-    crate::video::probe(&host, &url).await
+    let settings = app
+        .state::<Arc<Engine>>()
+        .inner()
+        .settings
+        .read()
+        .unwrap()
+        .clone();
+    crate::video::probe(&host, &url, &settings).await
+}
+
+/// Cookie 来源状态：设置页据此显示可读性，并在文件不可用时提示回退。
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CookieStatus {
+    pub source: String,
+    pub usable: bool,
+    pub message: String,
+}
+
+#[tauri::command]
+pub fn cookie_status(engine: State<'_, Arc<Engine>>) -> CookieStatus {
+    let settings = engine.settings.read().unwrap().clone();
+    let (usable, message) = crate::cookies::status(&settings);
+    CookieStatus {
+        source: crate::cookies::normalize_source(&settings.cookie_source),
+        usable,
+        message,
+    }
+}
+
+/// 选择本地 cookies.txt。Windows 用系统文件对话框；其它平台未提供，返回错误让用户手填。
+#[tauri::command]
+pub async fn pick_cookie_file() -> Result<Option<String>, String> {
+    #[cfg(windows)]
+    {
+        let script = r#"Add-Type -AssemblyName System.Windows.Forms
+$owner = New-Object System.Windows.Forms.Form
+$owner.TopMost = $true
+$owner.ShowInTaskbar = $false
+$owner.WindowState = 'Minimized'
+$owner.Opacity = 0
+$d = New-Object System.Windows.Forms.OpenFileDialog
+$d.Title = '选择 cookies.txt'
+$d.Filter = 'Cookies 文本 (*.txt)|*.txt|所有文件 (*.*)|*.*'
+$d.CheckFileExists = $true
+if ($d.ShowDialog($owner) -eq [System.Windows.Forms.DialogResult]::OK) { [Console]::Out.Write($d.FileName) }
+$owner.Dispose()"#;
+        let root = std::env::var("SystemRoot").unwrap_or_else(|_| "C:\\Windows".to_string());
+        let exe = PathBuf::from(root).join("System32\\WindowsPowerShell\\v1.0\\powershell.exe");
+        let out = crate::platform::hidden_tokio_command(&exe)
+            .args(["-NoProfile", "-STA", "-Command", script])
+            .stdin(std::process::Stdio::null())
+            .output()
+            .await
+            .map_err(|e| format!("打开文件选择器失败：{e}"))?;
+        let path = String::from_utf8_lossy(&out.stdout).trim().to_string();
+        Ok(if path.is_empty() { None } else { Some(path) })
+    }
+    #[cfg(not(windows))]
+    {
+        Err("当前平台未提供文件选择器，请手动填写 cookies.txt 路径".to_string())
+    }
 }
 
 #[tauri::command]
