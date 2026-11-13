@@ -1601,6 +1601,33 @@
     add((f.ext || '').toUpperCase() + ' 容器', '');
   }
 
+  /* 解析器返回的凭据类错误：整段 stderr 只放进「查看原始错误」，界面先给可操作引导。 */
+  const AUTH_HINT_TEXT = {
+    bot: 'YouTube 要求验证登录状态（人机校验）。请在设置里选择浏览器 Cookie 来源，或指定本地 cookies.txt，然后重新解析。',
+    login: '该页面需要登录后才能解析。请在设置里选择已登录该站点的浏览器，或指定导出的 cookies.txt，然后重新解析。',
+    forbidden: '站点拒绝了本次请求（HTTP 403）。如果浏览器里能正常播放，请在设置里选择该浏览器的 Cookie 来源后重试。',
+  };
+  function clearVideoAuthHint() {
+    const box = $('vidAuthHint');
+    if (box) box.hidden = true;
+    const raw = $('vidAuthRaw');
+    if (raw) raw.textContent = '';
+  }
+  function showVideoAuthHint(kind, raw) {
+    $('vidAuthText').textContent = AUTH_HINT_TEXT[kind] || AUTH_HINT_TEXT.login;
+    $('vidAuthRaw').textContent = raw || '';
+    $('vidAuthHint').hidden = false;
+    $('vidEmpty').hidden = true;
+    $('vidTop').hidden = true;
+    $('vidGrid').hidden = true;
+  }
+  function goCookieSettings() {
+    setView('settings');
+    const nav = document.querySelector('#setNav a[data-jump="s5"]');
+    if (nav) nav.click();
+    setTimeout(() => { const sel = $('cookieSourceSel'); if (sel) sel.focus(); }, 60);
+  }
+
   async function probeVideo() {
     const url = $('videoUrl').value.trim();
     const empty = $('vidEmpty');
@@ -1612,6 +1639,7 @@
       return;
     }
     empty.classList.remove('err-color');
+    clearVideoAuthHint();
     state.video.url = url;
     if (isDemo) {
       state.video.info = demoVideo();
@@ -1631,16 +1659,28 @@
       state.video.sel = null;
       empty.textContent = VID_EMPTY_TEXT;
       renderVideo();
+      if (info.cookieWarning) {
+        refreshCookieStatus();
+        toast(info.cookieWarning, 'err');
+      }
       if (info.drmOnly) toast('该页面仅提供 DRM 保护流，按产品边界不下载', 'err');
     } catch (err) {
       const msg = (err && err.message) || String(err);
-      empty.hidden = false;
-      empty.textContent = '解析失败：' + msg;
-      empty.classList.add('err-color');
       state.video.info = null;
       $('vidTop').hidden = true;
       $('vidGrid').hidden = true;
-      toast('解析失败：' + msg, 'err');
+      const PREFIX = 'FW_AUTH::';
+      if (msg.startsWith(PREFIX)) {
+        const nl = msg.indexOf('\n');
+        const kind = (nl >= 0 ? msg.slice(PREFIX.length, nl) : msg.slice(PREFIX.length)).trim();
+        showVideoAuthHint(kind, nl >= 0 ? msg.slice(nl + 1) : '');
+        toast('需要登录验证：请在设置里选择 Cookie 来源', 'err');
+      } else {
+        empty.hidden = false;
+        empty.textContent = '解析失败：' + msg;
+        empty.classList.add('err-color');
+        toast('解析失败：' + msg, 'err');
+      }
     } finally {
       btn.disabled = false;
       btn.textContent = '解析';
@@ -2654,6 +2694,7 @@
 
     /* 视频页 */
     on('btnProbe', 'click', probeVideo);
+    on('btnAuthGoSettings', 'click', goCookieSettings);
     on('videoUrl', 'keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); probeVideo(); } });
     on('btnCopyLink', 'click', copySelectedLink);
     on('btnAudioOnly', 'click', () => {

@@ -343,6 +343,16 @@
         </div>
 
         <div class="vid-empty" id="vidEmpty">还没有解析结果。输入页面链接后点击「解析」，格式清单由本地解析器返回。</div>
+        <div class="vid-empty vid-auth" id="vidAuthHint" hidden>
+          <div class="vid-auth-text" id="vidAuthText"></div>
+          <div class="vid-auth-actions">
+            <button class="btn sm primary" id="btnAuthGoSettings">前往设置选择 Cookie 来源</button>
+          </div>
+          <details class="vid-auth-raw">
+            <summary>查看原始错误</summary>
+            <pre id="vidAuthRaw"></pre>
+          </details>
+        </div>
 
         <div class="vid-top" id="vidTop" hidden>
           <div class="poster">

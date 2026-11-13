@@ -570,6 +570,16 @@ html[data-theme="light"] .thumb.d{background:linear-gradient(150deg,#F7E9CE,#FEF
   border:1px dashed var(--line);border-radius:var(--r-lg);padding:42px 20px;text-align:center;
   color:var(--fg-3);font-size:12.5px;margin-bottom:14px;
 }
+.vid-auth{text-align:left;color:var(--fg-2);line-height:1.65;border-style:solid}
+.vid-auth-text{font-size:12.5px}
+.vid-auth-actions{margin-top:10px;display:flex;gap:8px}
+.vid-auth-raw{margin-top:10px}
+.vid-auth-raw summary{cursor:pointer;color:var(--fg-3);font-size:12px}
+.vid-auth-raw pre{
+  margin:8px 0 0;padding:10px 12px;border-radius:var(--r-md,8px);background:var(--bg-2);
+  color:var(--fg-2);font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;
+  max-height:220px;overflow:auto;
+}
 .vid-top{display:grid;grid-template-columns:250px minmax(0,1fr);gap:14px;margin-bottom:14px;align-items:start}
 .vid-grid{display:grid;grid-template-columns:minmax(0,1fr) 312px;gap:14px;align-items:start}
 .poster{
