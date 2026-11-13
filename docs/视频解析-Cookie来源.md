@@ -51,6 +51,18 @@ Chrome 已明确失败；Firefox 的读取路径本身可用（cookies.txt 导�
 同时给解析器加了 `--encoding utf-8`：管道输出默认走系统 ANSI 代码页，
 否则原始错误里的 `’` 会变成乱码（`you��re`）。
 
+## 自救排查
+
+- **选 Edge：先彻底退出浏览器再解析。** Edge 常驻后台进程，Cookie 库被占用时解析器会报
+  `Could not copy Chrome cookie database`。请关闭所有 Edge 窗口，并在任务管理器里确认
+  `msedge.exe` 全部结束（或在 Edge 设置里关闭「启动加速 / 后台继续运行扩展和应用」），
+  然后回到 Fetchweir 重新解析。
+- **Chrome 报 `Failed to decrypt with DPAPI`：** Windows 上的 App-Bound Encryption 会让解析器
+  读不了新版 Chrome 的 Cookie。替代做法是在已登录的 Chrome 里把 Cookie 导出为 Netscape 格式的
+  `cookies.txt`（浏览器扩展或开发者工具均可），设置里选「使用本地 cookies.txt」并指向该文件。
+- **Firefox 没读到登录态：** 确认所填 profile（留空为默认）下确实存在 `cookies.sqlite`，
+  且该 profile 登录过目标站点；解析器能读库但没有 Cookie 时，仍会被人机校验挡住。
+
 ## 证据
 
 离屏脚本 `tools/Test-FwCookie.mjs`（`FW_SMOKE=1` + WebView2 CDP，不抢前台）：
