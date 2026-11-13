@@ -194,7 +194,8 @@ pub async fn probe(host: &Arc<VideoHost>, url: &str, settings: &crate::settings:
     let exe = ytdlp_path().ok_or_else(|| "未找到视频解析器（yt-dlp sidecar）".to_string())?;
     let cookies = crate::cookies::build(settings);
     let mut cmd = crate::platform::hidden_tokio_command(&exe);
-    cmd.args(["-J", "--no-playlist", "--no-warnings", "--skip-download"])
+    // 管道输出默认按系统 ANSI 代码页编码，强制 UTF-8 避免错误原文出现乱码。
+    cmd.args(["-J", "--no-playlist", "--no-warnings", "--skip-download", "--encoding", "utf-8"])
         .args(&cookies.args)
         .arg(url)
         .stdin(Stdio::null());

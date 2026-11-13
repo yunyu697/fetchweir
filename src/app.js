@@ -1051,6 +1051,8 @@
       await invoke('save_settings', { settings: next });
       state.settings = next;
       markSaved('已自动保存');
+      // 保存后后端才拿到新来源，重新探测一次可读性，避免状态行停留在上一次结果。
+      refreshCookieStatus();
     } catch (err) {
       markSaved('保存失败：' + ((err && err.message) || err), true);
       toast('设置保存失败：' + ((err && err.message) || err), 'err');
