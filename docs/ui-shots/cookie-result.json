@@ -1,0 +1,47 @@
+{
+  "when": "2026-11-13T08:26:32.701Z",
+  "exe": "D:\\fw-build\\fetchweir\\debug\\fetchweir.exe",
+  "beforeVideoPreferred": "compat",
+  "results": [
+    {
+      "name": "默认来源复现人机校验并显示引导",
+      "pass": true,
+      "detail": "YouTube 要求验证登录状态（人机校验）。请在设置里选择浏览器 Cookie 来源，或指定本地 cookies.txt，然后重新解析。（D:\\Users\\Tyler Zhang\\Documents\\Trae-CN\\temp_20261107_01\\docs\\ui-shots\\cookie-auth-guidance.png）"
+    },
+    {
+      "name": "原始错误收进详情而不是直接展示",
+      "pass": true,
+      "detail": "ERROR: [youtube] -yqNI2GfXMQ: Sign in to confirm you're not a bot. This helps protect our "
+    },
+    {
+      "name": "引导提示可操作（前往设置按钮）",
+      "pass": true,
+      "detail": "#btnAuthGoSettings"
+    },
+    {
+      "name": "cookies.txt 路径保存到设置",
+      "pass": true,
+      "detail": "cookieSource=file file=C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-cookies-not-exist.txt"
+    },
+    {
+      "name": "文件缺失时界面明确提示并回退",
+      "pass": true,
+      "detail": "回退为不使用 · cookies.txt 不存在：C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-cookies-not-ex（D:\\Users\\Tyler Zhang\\Documents\\Trae-CN\\temp_20261107_01\\docs\\ui-shots\\cookie-settings-file-missing.png）"
+    },
+    {
+      "name": "浏览器与 profile 保存到设置",
+      "pass": true,
+      "detail": "firefox:NoSuchProfileFwTest"
+    },
+    {
+      "name": "profile 确实传给了 yt-dlp",
+      "pass": true,
+      "detail": "解析失败：解析器返回失败：ERROR: could not find firefox cookies database in 'C:\\\\Users\\\\Tyler Zhang\\\\AppData\\\\Roaming\\\\Mozilla\\\\Firef（D:\\Users\\Tyler Zhang\\Documents\\Trae-CN\\temp_20261107_01\\docs\\ui-shots\\cookie-browser-profile-error.png）"
+    },
+    {
+      "name": "文件缺失时解析回退为不使用并提示",
+      "pass": true,
+      "detail": "toast=cookies.txt 不存在：C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-cookies-not-exist.txt；本次已回退为不使用 Co top=true（D:\\Users\\Tyler Zhang\\Documents\\Trae-CN\\temp_20261107_01\\docs\\ui-shots\\cookie-fallback-direct.mp4.png）"
+    }
+  ]
+}
