@@ -16,6 +16,9 @@ YouTube 等站点在未登录或不带登录态时会给 `Sign in to confirm you
 来源只在本地传给解析器：Cookie 内容不写进设置、日志，也不复制到应用数据目录。
 `settings.json` 里只有来源、浏览器名、profile 与 cookies.txt 路径。
 
+解析器自身读取 Chromium 系浏览器的 Cookie 库时，可能把数据库复制到系统临时目录（`%TEMP%`）再读，
+进程退出后由其清理；应用不参与复制，也不保留副本。cookies.txt 按原路径只读，不做任何拷贝。
+
 ### 不可用时的回退
 
 - cookies.txt 被删、不是文件或打不开：设置页状态行直接显示「不存在 / 无法读取」，
