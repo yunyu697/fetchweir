@@ -1,0 +1,141 @@
+{
+  "startedAt": "2026-11-14T09:38:45.305Z",
+  "steps": [
+    {
+      "name": "关闭前主窗口可见",
+      "ok": true,
+      "detail": "hwnd=659218"
+    },
+    {
+      "name": "点关闭后进程驻留且主窗口隐藏",
+      "ok": true,
+      "detail": "visible=false processes=1"
+    },
+    {
+      "name": "界面关闭「始终以管理员身份运行」并落盘",
+      "ok": true,
+      "detail": "aria=true before=true after=false disk=false"
+    },
+    {
+      "name": "不存在的仓库给出明确失败提示",
+      "ok": true,
+      "detail": "未找到可用的更新源：yunyu697/fetchweir-no-such-repo-xyz 不存在或不可访问（客户端只读公开仓库，不携带任何令牌）。更新源 https://github.com/yunyu697/fetchweir-no-such-repo-xyz/releases/latest/download 没有提供 latest.json 清单。"
+    },
+    {
+      "name": "恢复默认仓库后检查恢复正常",
+      "ok": true,
+      "detail": "stage=upToDate latest=null verified=false msg=null"
+    }
+  ],
+  "checks": {
+    "closeBefore": {
+      "pid": 3740,
+      "hwnd": 659218,
+      "visible": true,
+      "title": "Fetchweir",
+      "cls": "Tauri Window"
+    },
+    "closeAfter": {
+      "window": {
+        "pid": 3740,
+        "hwnd": 659218,
+        "visible": false,
+        "title": "Fetchweir",
+        "cls": "Tauri Window"
+      },
+      "processes": 1,
+      "all": [
+        {
+          "pid": 3740,
+          "hwnd": 659218,
+          "visible": false,
+          "title": "Fetchweir",
+          "cls": "Tauri Window"
+        },
+        {
+          "pid": 3740,
+          "hwnd": 1183912,
+          "visible": false,
+          "title": "",
+          "cls": "tray_icon_app"
+        },
+        {
+          "pid": 3740,
+          "hwnd": 528242,
+          "visible": true,
+          "title": "dev.fetchweir.app-siw",
+          "cls": "dev.fetchweir.app-sic"
+        },
+        {
+          "pid": 3740,
+          "hwnd": 331778,
+          "visible": true,
+          "title": "",
+          "cls": "Tao Thread Event Target"
+        },
+        {
+          "pid": 3740,
+          "hwnd": 135342,
+          "visible": false,
+          "title": "MSCTFIME UI",
+          "cls": "MSCTFIME UI"
+        },
+        {
+          "pid": 3740,
+          "hwnd": 397318,
+          "visible": false,
+          "title": "Default IME",
+          "cls": "IME"
+        }
+      ]
+    },
+    "bDebug": [
+      "{\"t\":\"Fetchweir · 下载管理\",\"u\":\"http://tauri.localhost/\",\"r\":\"complete\",\"n\":62178,\"admin\":true,\"nav\":true}"
+    ],
+    "bAfter": [
+      "{\"aria\":\"false\",\"dis\":false,\"toast\":\"已关闭：恢复普通权限启动\"}"
+    ],
+    "adminSwitch": {
+      "aria": "true",
+      "beforeAdmin": true,
+      "afterAdmin": false,
+      "diskAdmin": false
+    },
+    "cTrace": [
+      {
+        "dom": "yunyu697/fetchweir-no-such-repo-xyz",
+        "be": "yunyu697/fetchweir",
+        "disk": "yunyu697/fetchweir",
+        "toast": ""
+      },
+      {
+        "dom": "yunyu697/fetchweir-no-such-repo-xyz",
+        "be": "yunyu697/fetchweir-no-such-repo-xyz",
+        "disk": "yunyu697/fetchweir-no-such-repo-xyz",
+        "toast": ""
+      }
+    ],
+    "cTrace2": [
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz",
+      "yunyu697/fetchweir-no-such-repo-xyz"
+    ],
+    "badRepo": {
+      "stage": "failed",
+      "message": "未找到可用的更新源：yunyu697/fetchweir-no-such-repo-xyz 不存在或不可访问（客户端只读公开仓库，不携带任何令牌）。更新源 https://github.com/yunyu697/fetchweir-no-such-repo-xyz/releases/latest/download 没有提供 latest.json 清单。"
+    },
+    "defaultRepo": {
+      "stage": "upToDate",
+      "latest": null,
+      "verified": false,
+      "message": null
+    }
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:39:20.996Z"
+}

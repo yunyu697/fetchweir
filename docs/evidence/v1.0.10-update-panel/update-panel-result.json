@@ -1,0 +1,72 @@
+{
+  "startedAt": "2026-11-14T09:23:06.844Z",
+  "steps": [
+    {
+      "name": "开始下载（本地 1.0.11，40 MB）",
+      "ok": true,
+      "detail": "1114112/41943040 B"
+    },
+    {
+      "name": "取消后回到可更新并提示已取消",
+      "ok": true,
+      "detail": "stage=updateAvailable message=已取消。已下载的部分会保留，下次继续。"
+    },
+    {
+      "name": "取消后不再继续下载",
+      "ok": true,
+      "detail": "1245184 -> 1245184"
+    },
+    {
+      "name": "已下载分片保留为 .part",
+      "ok": true,
+      "detail": "part=1245184B downloaded=1245184B"
+    },
+    {
+      "name": "仅下载完成并可安装",
+      "ok": true,
+      "detail": "D:\\Users\\Tyler Zhang\\Downloads\\Fetchweir_1.0.12_x64-setup.exe 2097152B"
+    },
+    {
+      "name": "打开下载目录：Explorer 打开对应文件夹",
+      "ok": true,
+      "detail": "hwnd=5177486 title=下载 - 文件资源管理器 cls=CabinetWClass"
+    }
+  ],
+  "checks": {
+    "beforeCancel": {
+      "stage": "downloading",
+      "downloaded": 1114112,
+      "total": 41943040,
+      "progress": 0.0265625
+    },
+    "afterCancel": {
+      "stage": "updateAvailable",
+      "downloaded": 1245184,
+      "message": "已取消。已下载的部分会保留，下次继续。",
+      "partSize": 1245184
+    },
+    "downloaded": {
+      "stage": "downloaded",
+      "path": "D:\\Users\\Tyler Zhang\\Downloads\\Fetchweir_1.0.12_x64-setup.exe",
+      "size": 2097152,
+      "canInstall": true
+    },
+    "explorer": {
+      "before": [],
+      "after": [
+        "下载 - 文件资源管理器"
+      ],
+      "fresh": [
+        {
+          "pid": 24012,
+          "hwnd": 5177486,
+          "visible": true,
+          "title": "下载 - 文件资源管理器",
+          "cls": "CabinetWClass"
+        }
+      ]
+    }
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:23:28.497Z"
+}

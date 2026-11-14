@@ -1,0 +1,189 @@
+{
+  "startedAt": "2026-11-14T09:40:38.162Z",
+  "steps": [
+    {
+      "name": "不限速源吞吐明显高于 1.2 MB/s（证明源本身不慢）",
+      "ok": true,
+      "detail": "control avg=56.08 MB/s in 0.2s"
+    },
+    {
+      "name": "限速 1.2 MB/s 时平均吞吐不超过设定值 10%",
+      "ok": true,
+      "detail": "limited avg=1.21 MB/s (101% of limit), 9.9s, state=completed"
+    }
+  ],
+  "checks": {
+    "control": {
+      "bytes": 12583049,
+      "seconds": 0.214,
+      "avgBps": 58799294,
+      "state": "completed"
+    },
+    "limited": {
+      "bytes": 12583049,
+      "total": 12583049,
+      "seconds": 9.934,
+      "avgBps": 1266665,
+      "limitBps": 1258291,
+      "state": "completed",
+      "samples": [
+        {
+          "t": 0.004,
+          "done": 0,
+          "speed": 0,
+          "state": "active"
+        },
+        {
+          "t": 0.422,
+          "done": 614027,
+          "speed": 3780009,
+          "state": "active"
+        },
+        {
+          "t": 0.826,
+          "done": 1202729,
+          "speed": 2305350,
+          "state": "active"
+        },
+        {
+          "t": 1.254,
+          "done": 1595205,
+          "speed": 1795138,
+          "state": "active"
+        },
+        {
+          "t": 1.674,
+          "done": 2405467,
+          "speed": 1771912,
+          "state": "active"
+        },
+        {
+          "t": 2.077,
+          "done": 2823259,
+          "speed": 1604583,
+          "state": "active"
+        },
+        {
+          "t": 2.485,
+          "done": 3241051,
+          "speed": 1479114,
+          "state": "active"
+        },
+        {
+          "t": 2.902,
+          "done": 3658843,
+          "speed": 1451903,
+          "state": "active"
+        },
+        {
+          "t": 3.328,
+          "done": 4494427,
+          "speed": 1353666,
+          "state": "active"
+        },
+        {
+          "t": 3.739,
+          "done": 4912219,
+          "speed": 1290686,
+          "state": "active"
+        },
+        {
+          "t": 4.155,
+          "done": 5330011,
+          "speed": 1329220,
+          "state": "active"
+        },
+        {
+          "t": 4.559,
+          "done": 5747803,
+          "speed": 1297937,
+          "state": "active"
+        },
+        {
+          "t": 4.975,
+          "done": 6583387,
+          "speed": 1247351,
+          "state": "active"
+        },
+        {
+          "t": 5.393,
+          "done": 7001179,
+          "speed": 1295159,
+          "state": "active"
+        },
+        {
+          "t": 5.799,
+          "done": 7418971,
+          "speed": 1260779,
+          "state": "active"
+        },
+        {
+          "t": 6.204,
+          "done": 7836763,
+          "speed": 1277247,
+          "state": "active"
+        },
+        {
+          "t": 6.623,
+          "done": 8672347,
+          "speed": 1259984,
+          "state": "active"
+        },
+        {
+          "t": 7.042,
+          "done": 9213409,
+          "speed": 999103,
+          "state": "active"
+        },
+        {
+          "t": 7.447,
+          "done": 9631201,
+          "speed": 1290315,
+          "state": "active"
+        },
+        {
+          "t": 7.851,
+          "done": 10048993,
+          "speed": 1266599,
+          "state": "active"
+        },
+        {
+          "t": 8.27,
+          "done": 10466785,
+          "speed": 1280058,
+          "state": "active"
+        },
+        {
+          "t": 8.676,
+          "done": 10884577,
+          "speed": 1261828,
+          "state": "active"
+        },
+        {
+          "t": 9.096,
+          "done": 11720161,
+          "speed": 1279830,
+          "state": "active"
+        },
+        {
+          "t": 9.513,
+          "done": 12089975,
+          "speed": 1103827,
+          "state": "active"
+        },
+        {
+          "t": 9.934,
+          "done": 12583049,
+          "speed": 0,
+          "state": "completed"
+        }
+      ]
+    }
+  },
+  "source": {
+    "port": 8788,
+    "total": 12583049
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:40:52.887Z"
+}

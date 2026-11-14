@@ -1,0 +1,57 @@
+{
+  "startedAt": "2026-11-14T09:41:46.854Z",
+  "steps": [
+    {
+      "name": "本地签名清单可用（1.0.12 / 926 B / 已验签）",
+      "ok": true,
+      "detail": "stage=updateAvailable verified=true size=926"
+    },
+    {
+      "name": "界面切到 ghfast 后后端与设置文件同步",
+      "ok": true,
+      "detail": "github -> ghfast / disk=ghfast"
+    },
+    {
+      "name": "选中镜像后下载完成且字节校验一致",
+      "ok": true,
+      "detail": "stage=downloaded size=926 sha=a31c0bce15dfcebe msg=已通过所选镜像下载完成，共 926 B。"
+    },
+    {
+      "name": "镜像恢复为 GitHub 直连",
+      "ok": true,
+      "detail": "mirror=github"
+    }
+  ],
+  "checks": {
+    "available": {
+      "stage": "updateAvailable",
+      "latest": "1.0.12",
+      "size": 926,
+      "verified": true,
+      "mirrors": [
+        "github",
+        "ghfast",
+        "ghproxy"
+      ]
+    },
+    "mirrorSwitch": {
+      "before": "github",
+      "after": "ghfast",
+      "disk": "ghfast"
+    },
+    "mirrorDownload": {
+      "stage": "downloaded",
+      "message": "已通过所选镜像下载完成，共 926 B。",
+      "path": "D:\\Users\\Tyler Zhang\\Downloads\\Fetchweir_1.0.12_x64-setup.exe",
+      "size": 926,
+      "sha": "a31c0bce15dfcebe882c18ea1677f90f1700ec5816575dcc8f9286cda8f90594",
+      "total": 926
+    },
+    "mirrorRestored": {
+      "mirror": "github",
+      "disk": "github"
+    }
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:41:53.308Z"
+}
