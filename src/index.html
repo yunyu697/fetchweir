@@ -707,13 +707,13 @@
                   </div>
                 </div>
                 <div class="set-row disabled">
-                  <div class="lab">同时下载任务数<small>超出部分进入排队</small></div>
+                  <div class="lab">同时下载任务数<small>当前没有全局任务队列：新建任务立即并发下载，暂不支持限制同时下载数。</small></div>
                   <div class="ctl">
-                    <select class="mini-select" id="taskConcurrency" disabled title="调度器暂按全局队列顺序执行，任务并发数未生效">
+                    <select class="mini-select" id="taskConcurrency" disabled title="暂不支持限制同时下载任务数：当前所有任务直接并发，没有全局队列">
                       <option>3</option>
                       <option>5</option>
                     </select>
-                    <span class="tag">未生效</span>
+                    <span class="tag">暂不支持</span>
                   </div>
                 </div>
                 <div class="set-row disabled">
