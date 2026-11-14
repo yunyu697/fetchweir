@@ -417,7 +417,8 @@
     const barRow = el('div', 't-bar');
     const bar = el('div', 'bar');
     const fill = el('i');
-    bar.append(fill);
+    const ticks = el('div', 'seg-ticks');
+    bar.append(fill, ticks);
     const pct = el('span', 'pct');
     barRow.append(bar, pct);
     main.append(name, sub, barRow);
@@ -496,6 +497,7 @@
     fill.className = t.state === 'completed' ? 'done' : t.state === 'queued' ? 'wait' : '';
     fill.style.background = t.state === 'failed' ? 'var(--err)' : '';
     if (pctEl) pctEl.textContent = t.state === 'queued' ? '—' : Math.round(pct) + '%';
+    paintTicks(row, t);
 
     if (t.state === 'completed') {
       sizeMain.textContent = fmtBytes(t.totalBytes);
@@ -524,6 +526,28 @@
       if (spans[5]) spans[5].textContent = '· ' + fmtBytes(t.totalBytes);
       if (spans[6]) spans[6].textContent = '· ' + fmtSpeed(t.speedBps);
     }
+  }
+
+  /* 分段刻度只画后端真实下发的分段边界，不按等距猜测。
+   * 进度每 200ms 重绘一次，用边界签名跳过没有变化的行。 */
+  function paintTicks(row, t) {
+    const box = row && row.querySelector('.t-bar .seg-ticks');
+    if (!box) return;
+    const on = !!(state.settings && state.settings.segmentTicks);
+    const total = Number(t.totalBytes) || 0;
+    const segs = on && t.supportsRanges && total > 0 && Array.isArray(t.segments) && t.segments.length > 1
+      ? t.segments
+      : [];
+    const sig = segs.map((s) => s.end).join(',');
+    if (box.dataset.sig === sig) return;
+    box.dataset.sig = sig;
+    box.textContent = '';
+    // 最后一段的 end 就是文件末尾，不重复画右边界。
+    segs.slice(0, -1).forEach((s) => {
+      const line = el('span');
+      line.style.left = Math.min(100, Math.max(0, (s.end / total) * 100)) + '%';
+      box.append(line);
+    });
   }
 
   /* ---------------- 列表 ---------------- */
@@ -1037,6 +1061,8 @@
     s.cookieBrowser = ['chrome', 'edge', 'firefox', 'brave', 'vivaldi'].includes(s.cookieBrowser) ? s.cookieBrowser : 'chrome';
     s.cookieProfile = typeof s.cookieProfile === 'string' ? s.cookieProfile : '';
     s.cookieFile = typeof s.cookieFile === 'string' ? s.cookieFile : '';
+    s.startMinimized = s.startMinimized === true;
+    s.segmentTicks = s.segmentTicks === true;
     return s;
   }
   async function persistSettings() {
@@ -1140,10 +1166,12 @@
     document.documentElement.dataset.density = s.density === 'compact' ? 'compact' : 'comfortable';
     $$('[data-density-set]').forEach((b) => b.classList.toggle('on', b.dataset.densitySet === document.documentElement.dataset.density));
     paintSwitch('swCloseTray', s.closeToTray);
+    paintSwitch('swStartTray', s.startMinimized);
     paintSwitch('swAutostart', s.autostart);
     paintSwitch('swRunAsAdmin', s.runAsAdmin);
     renderInstallInfo();
     paintSwitch('swReduce', s.reduceMotion);
+    paintSwitch('swTicks', s.segmentTicks);
     $('setUpdateRepo').value = s.updateRepo || '';
     $('setHomepage').value = s.homepage || '';
     renderExtStatus();
@@ -1568,6 +1596,7 @@
       $('outASize').textContent = '—';
       $('outTotal').textContent = '—';
       out.disabled = true;
+      syncContainer(null);
       $('fmtHint').textContent = '选择一行可用格式后点击「加入下载」。';
       renderCompat(null);
       return;
@@ -1581,12 +1610,33 @@
     $('outASize').textContent = video ? (hasAudioFmt(f) ? '含于所选' : (muxAudio ? fmtBytes(muxAudio.size) : '另计')) : fmtBytes(f.size);
     $('outTotal').textContent = video && muxAudio ? fmtBytes(f.size + muxAudio.size) : fmtBytes(f.size);
     out.disabled = blocked;
+    syncContainer(f);
     $('fmtHint').textContent = blocked
       ? (f.drm ? '该格式受 DRM 保护，按产品边界不可下载。' : `已选择 ${f.formatId} · ${(f.ext || '').toUpperCase()}`)
       : (f.needsMux
         ? `已选择 ${f.formatId} · 纯视频流，下载时自动合并最佳音轨`
         : `已选择 ${f.formatId} · ${(f.ext || '').toUpperCase()}`);
     renderCompat(f);
+  }
+
+  /* 容器选择只在「纯视频流 + 合并音轨」时有后端支持；其余跟随源格式。 */
+  function syncContainer(f) {
+    const sel = $('outContainer');
+    const tag = $('outContainerTag');
+    if (!sel) return;
+    const can = !!f && !f.drm && !!f.needsMux;
+    sel.disabled = !can;
+    if (!can) sel.value = 'auto';
+    sel.title = can
+      ? '合并纯视频流时由 ffmpeg 输出为所选容器；MP4 与编码不兼容时，解析器可能改为 MKV 或报错'
+      : '仅纯视频流合并时可指定；直链与纯音频跟随源格式，转封装暂不支持';
+    if (tag) tag.textContent = can ? '合并时生效' : '跟随源';
+  }
+
+  function selectedContainer() {
+    const sel = $('outContainer');
+    if (!sel || sel.disabled) return null;
+    return sel.value === 'mp4' || sel.value === 'mkv' ? sel.value : null;
   }
 
   function renderCompat(f) {
@@ -1744,7 +1794,8 @@
       const res = await invoke('add_video_task', {
         url: state.video.url || info.webpageUrl,
         formatId: f.formatId,
-        saveDir: (state.settings && state.settings.downloadDir) || null
+        saveDir: (state.settings && state.settings.downloadDir) || null,
+        container: selectedContainer()
       });
       if (res && res.mode === 'direct' && res.task) {
         upsertTask(res.task);
@@ -2392,7 +2443,9 @@
     }));
     bindSwitch('swReduce', 'reduceMotion', (v) => document.documentElement.classList.toggle('reduce-motion', v));
     bindSwitch('swCloseTray', 'closeToTray');
+    bindSwitch('swStartTray', 'startMinimized');
     bindSwitch('swAutoConn', 'autoConcurrency');
+    bindSwitch('swTicks', 'segmentTicks', () => renderTasks());
 
     // 自启动与提权需要落系统状态，不能用纯前端开关直接写设置。
     const swAutostart = $('swAutostart');

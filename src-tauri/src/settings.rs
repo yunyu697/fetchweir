@@ -62,8 +62,12 @@ pub struct Settings {
     /// 列表密度：comfortable / compact。
     pub density: String,
     pub reduce_motion: bool,
+    /// 任务列表进度条显示真实分段边界。
+    pub segment_ticks: bool,
     /// 关闭窗口时保持后台运行。
     pub close_to_tray: bool,
+    /// 启动后只驻留托盘，不弹出主窗口（下次启动生效）。
+    pub start_minimized: bool,
     /// 开机自启动（Windows：普通权限写 HKCU Run，管理员模式写计划任务）。
     pub autostart: bool,
     /// 始终以管理员身份运行（仅 Windows；开启后每次启动都会请求 UAC）。
@@ -103,6 +107,8 @@ impl Default for Settings {
             density: "comfortable".to_string(),
             reduce_motion: false,
             close_to_tray: true,
+            start_minimized: false,
+            segment_ticks: false,
             autostart: false,
             run_as_admin: false,
             connect_timeout_sec: 10,

@@ -137,6 +137,17 @@ fn has_audio(f: &FormatDto) -> bool {
     !matches!(f.acodec.as_str(), "" | "none")
 }
 
+/// 合并输出容器：只接受 mp4 / mkv；auto 或空表示跟随解析器默认。
+/// 转封装只发生在「纯视频流 + 音轨合并」路径，其他格式不改容器。
+fn merge_container(raw: Option<&str>) -> Result<Option<String>, String> {
+    let v = raw.map(|s| s.trim().to_ascii_lowercase()).unwrap_or_default();
+    match v.as_str() {
+        "" | "auto" => Ok(None),
+        "mp4" | "mkv" => Ok(Some(v)),
+        other => Err(format!("不支持的输出容器：{other}（只支持 mp4 / mkv）")),
+    }
+}
+
 /// 只有「纯视频」才需要把另一条音轨合并进来；纯音频格式本身就是完整文件。
 fn mux_needed(vcodec: &str, acodec: &str) -> bool {
     let video = !matches!(vcodec, "" | "none");
@@ -328,6 +339,7 @@ pub fn download(
     url: &str,
     format_id: &str,
     save_dir: Option<String>,
+    container: Option<String>,
 ) -> Result<Value, String> {
     let info = host
         .cache
@@ -352,6 +364,10 @@ pub fn download(
     }
     // 保存目录可能来自 TEMP 等环境变量，本身是 8.3 短路径；统一还原成长路径。
     let save_dir = save_dir.map(normalize_dir);
+    let container = merge_container(container.as_deref())?;
+    if container.is_some() && !fmt.needs_mux {
+        return Err("所选格式不是纯视频流，容器跟随源文件；转封装暂不支持".to_string());
+    }
     if fmt.needs_mux {
         // 纯视频流：交给解析器取该视频 + 最佳音轨，由 ffmpeg 合并。
         let ff = ffmpeg_path().ok_or_else(|| {
@@ -359,7 +375,7 @@ pub fn download(
                 .to_string()
         })?;
         let spec = format!("{format_id}+bestaudio/best");
-        return delegate(app, host, url, format_id, save_dir, Some(spec), Some(ff));
+        return delegate(app, host, url, format_id, save_dir, Some(spec), Some(ff), container);
     }
     // 纯音频格式（如 B 站的 m4a 音轨）必须由解析器处理：它的直链带签名与请求头。
     let audio_only = !has_video(fmt) && has_audio(fmt);
@@ -373,7 +389,7 @@ pub fn download(
             .map_err(|e| e.to_string())?;
         return Ok(json!({"mode": "direct", "task": task}));
     }
-    delegate(app, host, url, format_id, save_dir, None, None)
+    delegate(app, host, url, format_id, save_dir, None, None, None)
 }
 
 fn delegate(
@@ -384,6 +400,7 @@ fn delegate(
     save_dir: Option<String>,
     spec: Option<String>,
     ffmpeg: Option<PathBuf>,
+    container: Option<String>,
 ) -> Result<Value, String> {
     let exe = ytdlp_path().ok_or_else(|| "未找到视频解析器（yt-dlp sidecar）".to_string())?;
     let settings = app
@@ -405,6 +422,7 @@ fn delegate(
         id
     };
 
+    let merging = spec.is_some();
     let mut cmd = crate::platform::hidden_tokio_command(&exe);
     cmd.arg("-f")
         .arg(spec.unwrap_or_else(|| format_id.to_string()))
@@ -425,6 +443,12 @@ fn delegate(
         .arg("%(title)s.%(ext)s");
     if let Some(ff) = ffmpeg.as_ref().and_then(|p| p.parent()) {
         cmd.arg("--ffmpeg-location").arg(ff);
+    }
+    // 只在真正合并音轨时生效；直链与纯音频没有转封装能力，前面已拦截 container。
+    if merging {
+        if let Some(c) = container.as_deref() {
+            cmd.arg("--merge-output-format").arg(c);
+        }
     }
     let mut child = cmd
         .arg(url)
@@ -622,7 +646,7 @@ pub fn status() -> Value {
 
 #[cfg(test)]
 mod tests {
-    use super::{auth_issue, mux_needed, output_path, parse_progress, strip_verbatim};
+    use super::{auth_issue, merge_container, mux_needed, output_path, parse_progress, strip_verbatim};
 
     #[test]
     fn output_path_joins_relative_and_strips_verbatim() {
@@ -640,6 +664,15 @@ mod tests {
         assert!(!mux_needed("avc1.640028", "mp4a.40.2"), "已含音轨不合并");
         assert!(!mux_needed("none", "mp4a.40.2"), "纯音频本身完整");
         assert!(!mux_needed("", ""), "解析器没给编码信息时不臆测");
+    }
+
+    #[test]
+    fn merge_container_only_accepts_mp4_and_mkv() {
+        assert_eq!(merge_container(None).unwrap(), None);
+        assert_eq!(merge_container(Some("auto")).unwrap(), None);
+        assert_eq!(merge_container(Some(" MP4 ")).unwrap(), Some("mp4".to_string()));
+        assert_eq!(merge_container(Some("mkv")).unwrap(), Some("mkv".to_string()));
+        assert!(merge_container(Some("avi")).is_err());
     }
 
     #[test]

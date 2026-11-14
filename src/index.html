@@ -416,12 +416,12 @@
               <div class="opt-row">
                 <span>容器</span>
                 <div class="r">
-                  <select class="mini-select" id="outContainer" disabled title="v1 不提供容器转换；合并时由 ffmpeg 按音轨自动选择容器">
-                    <option>自动（跟随源）</option>
-                    <option>MP4</option>
-                    <option>MKV</option>
+                  <select class="mini-select" id="outContainer" disabled title="仅纯视频流合并时可指定；直链与纯音频跟随源格式">
+                    <option value="auto">自动（跟随源）</option>
+                    <option value="mp4">MP4</option>
+                    <option value="mkv">MKV</option>
                   </select>
-                  <span class="tag">未生效</span>
+                  <span class="tag" id="outContainerTag">跟随源</span>
                 </div>
               </div>
               <div class="opt-row">
@@ -434,7 +434,7 @@
               </div>
               <div class="compat" id="vidCompat"></div>
               <div class="warn-box" style="margin-top:10px;font-size:11px">
-                受 DRM 保护的格式会被逐行禁用；纯视频流下载时自动合并最佳音轨（ffmpeg 随包，无需另外安装）。站点不标注编码的直链文件按整文件下载，体积即所选档位。
+                受 DRM 保护的格式会被逐行禁用；纯视频流下载时自动合并最佳音轨（ffmpeg 随包，无需另外安装）。容器选项只作用于纯视频流合并；直链与纯音频跟随源格式，暂不支持转封装。MP4 与所选编码不兼容时，解析器可能改为 MKV 或报错。站点不标注编码的直链文件按整文件下载，体积即所选档位。
               </div>
               <button class="btn primary" id="btnVideoDownload" style="width:100%;margin-top:12px;height:34px">加入下载</button>
               <div class="video-job" id="videoJob" hidden>
@@ -574,11 +574,11 @@
                   <span class="t">提权后的拖放限制（UIPI）</span>
                   提权窗口收不到普通权限资源管理器拖来的文件或链接，这是 Windows 的完整性级别限制，无法在应用内绕过。请改用「粘贴链接」或浏览器扩展发送下载任务；扩展与主进程通过本机回环通信，提权后仍可用。
                 </div>
-                <div class="set-row disabled">
-                  <div class="lab">启动后最小化到托盘<small>不弹出主窗口</small></div>
+                <div class="set-row">
+                  <div class="lab">启动后最小化到托盘<small>不弹出主窗口，托盘图标仍在</small></div>
                   <div class="ctl">
-                    <button class="sw" id="swStartTray" disabled title="后端未提供托盘启动参数，当前版本未生效"></button>
-                    <span class="tag">未生效</span>
+                    <button class="sw" id="swStartTray" role="switch" aria-checked="false" title="开启后下次启动只驻留托盘"></button>
+                    <span class="tag">下次启动生效</span>
                   </div>
                 </div>
                 <div class="set-row">
@@ -983,11 +983,10 @@
                     </div>
                   </div>
                 </div>
-                <div class="set-row disabled">
-                  <div class="lab">进度条分段刻度<small>在进度条上显示分段边界</small></div>
+                <div class="set-row">
+                  <div class="lab">进度条分段刻度<small>在进度条上标出当前分段规划的真实边界</small></div>
                   <div class="ctl">
-                    <button class="sw" id="swTicks" disabled title="分段边界未下发到前端，刻度显示未生效"></button>
-                    <span class="tag">未生效</span>
+                    <button class="sw" id="swTicks" role="switch" aria-checked="false"></button>
                   </div>
                 </div>
                 <div class="set-row">

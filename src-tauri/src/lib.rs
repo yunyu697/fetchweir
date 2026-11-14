@@ -281,7 +281,8 @@ pub fn run() {
             setup_tray(app)?;
 
             // 默认显示窗口；冒烟测试用 FW_SMOKE=1 保持隐藏，避免占用前台。
-            if std::env::var("FW_SMOKE").is_err() {
+            // 设置「启动后最小化到托盘」时同样跳过 show()，托盘仍可唤回窗口。
+            if std::env::var("FW_SMOKE").is_err() && !boot.start_minimized {
                 if let Some(window) = app.get_webview_window("main") {
                     let _ = window.show();
                 }

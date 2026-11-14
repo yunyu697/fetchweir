@@ -349,11 +349,9 @@ html[data-theme="light"] .mark img.brand-logo-light{display:block}
 .bar i{position:absolute;inset:0 auto 0 0;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s var(--ease)}
 .bar i.done{background:var(--ok)}
 .bar i.wait{background:var(--fg-3)}
-.bar.ticks::after{
-  content:"";position:absolute;inset:0;
-  background:repeating-linear-gradient(90deg,transparent 0 19px,var(--tick) 19px 21px);
-  opacity:.55;pointer-events:none;
-}
+/* 真实分段边界：位置由后端下发的 segments 计算，不使用等距假刻度 */
+.seg-ticks{position:absolute;inset:0;pointer-events:none}
+.seg-ticks span{position:absolute;top:0;bottom:0;width:1px;background:var(--tick);opacity:.75}
 
 /* ============ task list ============ */
 /* 列宽统一由 --cols-task 控制：换档时只需要改这一个变量 */

@@ -43,6 +43,14 @@ impl TaskState {
     }
 }
 
+/// 前端画进度条刻度用的真实分段边界（字节偏移）。
+#[derive(Clone, Copy, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SegmentDto {
+    pub start: u64,
+    pub end: u64,
+}
+
 /// 送给前端的任务快照（完整字段，用于新增/状态变更）。
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -66,6 +74,8 @@ pub struct TaskDto {
     pub conn_degraded: bool,
     /// 自动降档原因；未降档为 null。
     pub conn_reason: Option<String>,
+    /// 当前分段规划；未分段（单连接或尚未探测）时为空。
+    pub segments: Vec<SegmentDto>,
 }
 
 /// 高频进度事件里的精简字段。
@@ -239,6 +249,13 @@ impl Task {
             conn_limit: conn.limit,
             conn_degraded: conn.degraded,
             conn_reason: conn.reason,
+            segments: self
+                .segments
+                .lock()
+                .unwrap()
+                .iter()
+                .map(|s| SegmentDto { start: s.start, end: s.end })
+                .collect(),
         }
     }
 }
@@ -880,6 +897,9 @@ impl Engine {
             self.fail(&task, "服务端未返回文件大小，无法开始下载".into());
             return;
         }
+
+        // 分段边界是新增/恢复后才确定的，补发一次快照，前端据此画真实刻度。
+        self.emit_task(&task);
 
         let mut handles = Vec::new();
         for (idx, _) in plan.iter().enumerate() {

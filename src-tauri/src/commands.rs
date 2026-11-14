@@ -494,9 +494,10 @@ pub fn add_video_task(
     url: String,
     format_id: String,
     save_dir: Option<String>,
+    container: Option<String>,
 ) -> Result<serde_json::Value, String> {
     let host = app.state::<std::sync::Arc<crate::video::VideoHost>>().inner().clone();
-    crate::video::download(&app, &host, &url, &format_id, save_dir)
+    crate::video::download(&app, &host, &url, &format_id, save_dir, container)
 }
 
 #[tauri::command]
