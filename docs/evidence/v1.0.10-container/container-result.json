@@ -1,0 +1,107 @@
+{
+  "startedAt": "2026-11-14T09:13:26.751Z",
+  "steps": [
+    {
+      "name": "启动 1.0.10",
+      "ok": true,
+      "detail": "version=1.0.10 dataDir=C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir"
+    },
+    {
+      "name": "直链整文件：容器禁用并说明原因",
+      "ok": true,
+      "detail": "disabled=true tag=跟随源 title=仅纯视频流合并时可指定；直链与纯音频跟随源格式，转封装暂不支持"
+    },
+    {
+      "name": "纯音频档：容器禁用并说明原因",
+      "ok": true,
+      "detail": "disabled=true tag=跟随源 title=仅纯视频流合并时可指定；直链与纯音频跟随源格式，转封装暂不支持"
+    },
+    {
+      "name": "纯视频流：容器可选择",
+      "ok": true,
+      "detail": "disabled=false tag=合并时生效"
+    },
+    {
+      "name": "界面已选 MKV",
+      "ok": true,
+      "detail": "value=mkv"
+    },
+    {
+      "name": "真实下载产出 .mkv",
+      "ok": true,
+      "detail": "【官方 MV】Never Gonna Give You Up - Rick Astley.mkv 75182363B 13s"
+    },
+    {
+      "name": "ffprobe 容器为 Matroska",
+      "ok": true,
+      "detail": "format_name=matroska,webm streams=video:h264,audio:aac"
+    },
+    {
+      "name": "成品含视频轨与音频轨",
+      "ok": true,
+      "detail": "video+audio"
+    },
+    {
+      "name": "恢复原下载目录",
+      "ok": true,
+      "detail": "D:\\Users\\Tyler Zhang\\Downloads"
+    }
+  ],
+  "checks": {
+    "downloadDir": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-verify\\dl-video",
+    "directLink": {
+      "disabled": true,
+      "value": "auto",
+      "tag": "跟随源",
+      "title": "仅纯视频流合并时可指定；直链与纯音频跟随源格式，转封装暂不支持",
+      "hint": "已选择 1 · MP4"
+    },
+    "pureAudio": {
+      "disabled": true,
+      "value": "auto",
+      "tag": "跟随源",
+      "title": "仅纯视频流合并时可指定；直链与纯音频跟随源格式，转封装暂不支持",
+      "hint": "已选择 30216 · M4A"
+    },
+    "muxable": {
+      "disabled": false,
+      "value": "auto",
+      "tag": "合并时生效",
+      "title": "合并纯视频流时由 ffmpeg 输出为所选容器；MP4 与编码不兼容时，解析器可能改为 MKV 或报错",
+      "hint": "已选择 30080 · 纯视频流，下载时自动合并最佳音轨"
+    },
+    "selected": "mkv",
+    "clickedAt": "2026-11-14T09:13:37.148Z",
+    "output": {
+      "path": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-verify\\dl-video\\【官方 MV】Never Gonna Give You Up - Rick Astley.mkv",
+      "size": 75182363,
+      "secondsFromClick": 13
+    },
+    "ffprobe": {
+      "format_name": "matroska,webm",
+      "format_long_name": "Matroska / WebM",
+      "duration": "212.309000",
+      "size": "75182363",
+      "streams": [
+        {
+          "codec_type": "video",
+          "codec_name": "h264",
+          "profile": "High",
+          "width": 1920,
+          "height": 1080
+        },
+        {
+          "codec_type": "audio",
+          "codec_name": "aac",
+          "profile": "LC",
+          "sample_rate": "48000",
+          "channels": 2
+        }
+      ]
+    },
+    "downloadDirRestoredFrom": "D:\\\\Users\\\\Tyler Zhang\\\\Downloads",
+    "downloadDirAfter": "D:\\Users\\Tyler Zhang\\Downloads"
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:15:39.281Z"
+}

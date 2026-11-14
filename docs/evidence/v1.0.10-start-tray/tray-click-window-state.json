@@ -1,0 +1,48 @@
+{
+  "at": "2026-11-14T17:01:09.8511358+08:00",
+  "note": "真实右键托盘图标后（未出现菜单，主窗口直接弹出）",
+  "windows": [
+    {
+      "pid": 19728,
+      "hwnd": 2426568,
+      "visible": true,
+      "title": "Fetchweir",
+      "cls": "Tauri Window"
+    },
+    {
+      "pid": 19728,
+      "hwnd": 20906202,
+      "visible": false,
+      "title": "",
+      "cls": "tray_icon_app"
+    },
+    {
+      "pid": 19728,
+      "hwnd": 3408430,
+      "visible": true,
+      "title": "dev.fetchweir.app-siw",
+      "cls": "dev.fetchweir.app-sic"
+    },
+    {
+      "pid": 19728,
+      "hwnd": 2950572,
+      "visible": true,
+      "title": "",
+      "cls": "Tao Thread Event Target"
+    },
+    {
+      "pid": 19728,
+      "hwnd": 1179756,
+      "visible": false,
+      "title": "MSCTFIME UI",
+      "cls": "MSCTFIME UI"
+    },
+    {
+      "pid": 19728,
+      "hwnd": 1245478,
+      "visible": false,
+      "title": "Default IME",
+      "cls": "IME"
+    }
+  ]
+}

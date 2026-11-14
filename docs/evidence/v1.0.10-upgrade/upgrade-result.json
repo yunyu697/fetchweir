@@ -1,0 +1,109 @@
+{
+  "startedAt": "2026-11-14T08:43:58.503Z",
+  "steps": [
+    {
+      "name": "启动 1.0.9 安装版",
+      "ok": true,
+      "detail": "version=1.0.9 dataDir=C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir"
+    },
+    {
+      "name": "写入可观察设置",
+      "ok": true,
+      "detail": "connections=11 theme=dark colorTheme=emerald"
+    },
+    {
+      "name": "造一条已完成任务",
+      "ok": true,
+      "detail": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-verify\\dl-upgrade\\keep-1.0.9.bin 2097152B"
+    },
+    {
+      "name": "检查到 1.0.10 且清单验签通过",
+      "ok": true,
+      "detail": "verified=true asset=Fetchweir_1.0.10_x64-setup.exe size=53581688"
+    },
+    {
+      "name": "更新流程进入安装/进程退出",
+      "ok": true,
+      "detail": "reason=exit history=downloading > process-exit"
+    },
+    {
+      "name": "旧进程已退出",
+      "ok": true,
+      "detail": "exitCode=0"
+    },
+    {
+      "name": "重启后版本为 1.0.10",
+      "ok": true,
+      "detail": "version=1.0.10 dataDir=C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir"
+    },
+    {
+      "name": "设置保留",
+      "ok": true,
+      "detail": "connections=11 theme=dark colorTheme=emerald"
+    },
+    {
+      "name": "任务记录保留",
+      "ok": true,
+      "detail": "keep-1.0.9.bin state=completed fileOk=true"
+    }
+  ],
+  "checks": {
+    "before": {
+      "version": "1.0.9",
+      "dataDir": "C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir",
+      "pid": 8136
+    },
+    "settingsBefore": {
+      "connections": 11,
+      "theme": "dark",
+      "colorTheme": "emerald"
+    },
+    "seededTask": {
+      "fileName": "keep-1.0.9.bin",
+      "state": "completed",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-verify\\dl-upgrade\\keep-1.0.9.bin",
+      "size": 2097152
+    },
+    "update": {
+      "currentVersion": "1.0.9",
+      "latestVersion": "1.0.10",
+      "verified": true,
+      "assetName": "Fetchweir_1.0.10_x64-setup.exe",
+      "assetSize": 53581688,
+      "sha256": "57ab66074daae5009a3dbbebbe749afb4e57c4ff8754776217c428c2a9e6a917"
+    },
+    "updateStages": [
+      {
+        "stage": "downloading",
+        "progress": 0,
+        "downloaded": 0,
+        "total": 53581688,
+        "message": null,
+        "at": "2026-11-14T08:44:03.667Z"
+      },
+      {
+        "stage": "process-exit",
+        "at": "2026-11-14T08:44:16.567Z"
+      }
+    ],
+    "after": {
+      "version": "1.0.10",
+      "dataDir": "C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir"
+    },
+    "newPid": "15368",
+    "settingsAfterUpgrade": {
+      "connections": 11,
+      "theme": "dark",
+      "colorTheme": "emerald"
+    },
+    "taskAfterUpgrade": {
+      "state": "completed",
+      "savePath": "C:\\Users\\TYLERZ~1\\AppData\\Local\\Temp\\fw-verify\\dl-upgrade\\keep-1.0.9.bin",
+      "doneBytes": 2097152,
+      "fileOk": true
+    },
+    "cdpErrors": []
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T08:44:25.646Z"
+}

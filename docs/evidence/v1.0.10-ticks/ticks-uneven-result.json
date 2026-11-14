@@ -1,0 +1,56 @@
+{
+  "startedAt": "2026-11-14T09:18:40.041Z",
+  "steps": [
+    {
+      "name": "不等长分段：刻度跟随 end/total（12.5% / 87.5%）",
+      "ok": true,
+      "detail": "actual=[12.5, 87.5] expected=[12.5, 87.5] pct=0%"
+    },
+    {
+      "name": "清理测试任务",
+      "ok": true,
+      "detail": "stillPresent=false"
+    }
+  ],
+  "checks": {
+    "seeded": {
+      "id": 6,
+      "segments": [
+        {
+          "start": 0,
+          "end": 500000,
+          "done": 500000
+        },
+        {
+          "start": 500000,
+          "end": 3500000,
+          "done": 1000000
+        },
+        {
+          "start": 3500000,
+          "end": 4000000,
+          "done": 0
+        }
+      ],
+      "total": 4000000
+    },
+    "dom": {
+      "tickLefts": [
+        "12.5%",
+        "87.5%"
+      ],
+      "pct": "0%",
+      "state": null
+    },
+    "expected": [
+      12.5,
+      87.5
+    ],
+    "actual": [
+      12.5,
+      87.5
+    ]
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:18:41.635Z"
+}

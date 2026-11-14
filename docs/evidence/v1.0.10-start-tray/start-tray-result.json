@@ -1,0 +1,194 @@
+{
+  "startedAt": "2026-11-14T08:46:02.683Z",
+  "steps": [
+    {
+      "name": "启动 1.0.10（未开启最小化）",
+      "ok": true,
+      "detail": "version=1.0.10"
+    },
+    {
+      "name": "基线：主窗口可见",
+      "ok": true,
+      "detail": "title=Fetchweir visible=true"
+    },
+    {
+      "name": "界面开关写入并落盘",
+      "ok": true,
+      "detail": "before=false after=true disk=true"
+    },
+    {
+      "name": "开启后真实启动：主窗口不显示且进程存活",
+      "ok": true,
+      "detail": "visible=false processes=1 version=1.0.10"
+    },
+    {
+      "name": "唤回主窗口（与托盘同一 show_main 路径）",
+      "ok": true,
+      "detail": "visible=true"
+    },
+    {
+      "name": "再次重启仍生效（持久化）",
+      "ok": true,
+      "detail": "settings=true disk=true visible=false"
+    }
+  ],
+  "checks": {
+    "baselineWindow": {
+      "visible": true,
+      "windows": [
+        {
+          "pid": 6216,
+          "hwnd": 1248054,
+          "visible": true,
+          "title": "Fetchweir",
+          "cls": "Tauri Window"
+        },
+        {
+          "pid": 6216,
+          "hwnd": 1443470,
+          "visible": false,
+          "title": "",
+          "cls": "tray_icon_app"
+        },
+        {
+          "pid": 6216,
+          "hwnd": 2031680,
+          "visible": true,
+          "title": "dev.fetchweir.app-siw",
+          "cls": "dev.fetchweir.app-sic"
+        },
+        {
+          "pid": 6216,
+          "hwnd": 1574648,
+          "visible": true,
+          "title": "",
+          "cls": "Tao Thread Event Target"
+        },
+        {
+          "pid": 6216,
+          "hwnd": 524436,
+          "visible": false,
+          "title": "MSCTFIME UI",
+          "cls": "MSCTFIME UI"
+        },
+        {
+          "pid": 6216,
+          "hwnd": 1443146,
+          "visible": false,
+          "title": "Default IME",
+          "cls": "IME"
+        }
+      ]
+    },
+    "switch": {
+      "beforeClick": false,
+      "afterClick": true,
+      "diskStartMinimized": true
+    },
+    "restart1": {
+      "version": "1.0.10",
+      "mainWindowVisible": false,
+      "processes": 1,
+      "windows": [
+        {
+          "pid": 23856,
+          "hwnd": 1313590,
+          "visible": false,
+          "title": "",
+          "cls": "tray_icon_app"
+        },
+        {
+          "pid": 23856,
+          "hwnd": 1769728,
+          "visible": false,
+          "title": "Fetchweir",
+          "cls": "Tauri Window"
+        },
+        {
+          "pid": 23856,
+          "hwnd": 1114254,
+          "visible": true,
+          "title": "dev.fetchweir.app-siw",
+          "cls": "dev.fetchweir.app-sic"
+        },
+        {
+          "pid": 23856,
+          "hwnd": 3214132,
+          "visible": true,
+          "title": "",
+          "cls": "Tao Thread Event Target"
+        },
+        {
+          "pid": 23856,
+          "hwnd": 853708,
+          "visible": false,
+          "title": "MSCTFIME UI",
+          "cls": "MSCTFIME UI"
+        },
+        {
+          "pid": 23856,
+          "hwnd": 853332,
+          "visible": false,
+          "title": "Default IME",
+          "cls": "IME"
+        }
+      ]
+    },
+    "recall": {
+      "mainWindowVisible": true
+    },
+    "restart2": {
+      "startMinimized": true,
+      "mainWindowVisible": false,
+      "diskStartMinimized": true,
+      "windows": [
+        {
+          "pid": 3472,
+          "hwnd": 919244,
+          "visible": false,
+          "title": "",
+          "cls": "tray_icon_app"
+        },
+        {
+          "pid": 3472,
+          "hwnd": 1443322,
+          "visible": false,
+          "title": "Fetchweir",
+          "cls": "Tauri Window"
+        },
+        {
+          "pid": 3472,
+          "hwnd": 655514,
+          "visible": true,
+          "title": "dev.fetchweir.app-siw",
+          "cls": "dev.fetchweir.app-sic"
+        },
+        {
+          "pid": 3472,
+          "hwnd": 853790,
+          "visible": true,
+          "title": "",
+          "cls": "Tao Thread Event Target"
+        },
+        {
+          "pid": 3472,
+          "hwnd": 1179790,
+          "visible": false,
+          "title": "MSCTFIME UI",
+          "cls": "MSCTFIME UI"
+        },
+        {
+          "pid": 3472,
+          "hwnd": 1378048,
+          "visible": false,
+          "title": "Default IME",
+          "cls": "IME"
+        }
+      ]
+    },
+    "cdpErrors": [],
+    "leftRunning": true
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T08:46:20.276Z"
+}

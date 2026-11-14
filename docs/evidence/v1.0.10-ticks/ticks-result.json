@@ -1,0 +1,110 @@
+{
+  "startedAt": "2026-11-14T09:18:00.819Z",
+  "steps": [
+    {
+      "name": "启动 1.0.10",
+      "ok": true,
+      "detail": "version=1.0.10"
+    },
+    {
+      "name": "设置页开启分段刻度并落盘",
+      "ok": true,
+      "detail": "before=true after=true"
+    },
+    {
+      "name": "刻度数量 = 分段数 - 1",
+      "ok": true,
+      "detail": "ticks=3 segments=4"
+    },
+    {
+      "name": "每个刻度位置 = 该段 end/total",
+      "ok": true,
+      "detail": "expected=[25.0000, 50.0000, 75.0000] actual=[25, 50, 75] maxDiff=0.0000pp"
+    },
+    {
+      "name": "不存在旧的等距假刻度伪元素",
+      "ok": true,
+      "detail": "bar.ticks 元素=0 ::after=none"
+    },
+    {
+      "name": "下载完成且分段保持不变",
+      "ok": true,
+      "detail": "state=completed done=12583049/12583049"
+    }
+  ],
+  "checks": {
+    "taskId": 5,
+    "totalBytes": 0,
+    "midTask": {
+      "state": "active",
+      "doneBytes": 262144,
+      "totalBytes": 12583049,
+      "connections": 4,
+      "segments": [
+        {
+          "start": 0,
+          "end": 3145762
+        },
+        {
+          "start": 3145762,
+          "end": 6291524
+        },
+        {
+          "start": 6291524,
+          "end": 9437286
+        },
+        {
+          "start": 9437286,
+          "end": 12583049
+        }
+      ]
+    },
+    "dom": {
+      "tickCount": 3,
+      "tickLefts": [
+        "25%",
+        "50%",
+        "75%"
+      ],
+      "oldFakeTicksElements": 0,
+      "barAfterContent": "none",
+      "fillWidth": "10.4166%",
+      "progressText": "10%"
+    },
+    "expectedPercents": [
+      24.999998013200138,
+      49.999996026400275,
+      74.99999403960041
+    ],
+    "actualPercents": [
+      25,
+      50,
+      75
+    ],
+    "maxDiffPercentPoint": 0.000005960399590776433,
+    "completed": {
+      "state": "completed",
+      "doneBytes": 12583049,
+      "segments": [
+        {
+          "start": 0,
+          "end": 3145762
+        },
+        {
+          "start": 3145762,
+          "end": 6291524
+        },
+        {
+          "start": 6291524,
+          "end": 9437286
+        },
+        {
+          "start": 9437286,
+          "end": 12583049
+        }
+      ]
+    }
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:18:19.485Z"
+}
