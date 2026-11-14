@@ -700,10 +700,10 @@
                   </div>
                 </div>
                 <div class="set-row disabled">
-                  <div class="lab">全局连接上限<small>同时存在的分段连接总数</small></div>
+                  <div class="lab">全局连接上限<small>手动上限暂不支持；当前按自动全局预算调度，额度为各活跃任务设定分段数之和，多任务时按总吞吐统一降档/恢复。</small></div>
                   <div class="ctl">
-                    <input class="slider" id="globalRange" type="range" min="8" max="64" step="4" value="32" disabled title="后端只提供单任务上限，全局并发未生效">
-                    <span class="tag">未生效</span>
+                    <input class="slider" id="globalRange" type="range" min="8" max="64" step="4" value="32" disabled title="暂不支持手动全局上限：后端按各活跃任务设定分段数之和自动分配全局预算">
+                    <span class="tag">暂不支持</span>
                   </div>
                 </div>
                 <div class="set-row disabled">
@@ -806,10 +806,10 @@
                   </div>
                 </div>
                 <div class="set-row disabled">
-                  <div class="lab">自动嗅探当前标签页<small>新开页面立即开始捕获</small></div>
+                  <div class="lab">自动嗅探当前标签页<small>浏览器扩展当前始终捕获可下载资源；暂不支持在应用内关闭或按标签页切换。</small></div>
                   <div class="ctl">
-                    <button class="sw" id="swAutoSniff" disabled title="扩展侧未提供自动捕获开关，当前版本未生效"></button>
-                    <span class="tag">未生效</span>
+                    <button class="sw" id="swAutoSniff" disabled title="暂不支持：扩展始终捕获，未提供自动嗅探开关"></button>
+                    <span class="tag">暂不支持</span>
                   </div>
                 </div>
                 <div class="set-row disabled">
