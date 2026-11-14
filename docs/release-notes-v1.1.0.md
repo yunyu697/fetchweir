@@ -47,6 +47,23 @@
 - 浏览器扩展只能手动“加载已解压”，Firefox Native Messaging 往返未联调；
 - 安装包无 Authenticode 签名，首次运行会触发 SmartScreen，需手动放行。
 
+## 发布与安装验证（2026-11-14）
+
+- 流水线：tag `v1.1.0` 触发的 `release.yml` 成功（run 43582123593），Release 已发布且非草稿、非预发布；
+- 四个资产：`Fetchweir_1.1.0_x64-setup.exe` 53,594,497 B（sha256 `b0552446…`）、
+  `Fetchweir_1.1.0_x64-setup-allusers.exe` 53,590,507 B（sha256 `00b9d54e…`）、
+  `latest.json` 918 B、`latest.json.sig` 89 B；
+- 清单：`latest.json` 中两条 Windows x64 资产的 size/sha256 与真实文件一致，Ed25519 签名用客户端内置公钥验签通过；
+- 旧客户端：安装版 1.0.10 检查更新 → `updateAvailable`、`latestVersion=1.1.0`、`verified=true`、
+  资产 53,594,497 B；点「更新」完成应用内升级（下载→退出→安装→重新拉起），新进程
+  `app_info.version=1.1.0`；
+- 安装版界面：设置 → 下载引擎「完成后校验」、设置 → 网络与限速「HTTP 代理」、
+  设置 → 视频与格式「解析器自动更新」均显示“暂不支持”且保持禁用；视频页真实解析
+  Bilibili 结果后，「下载字幕」旁显示“暂不支持”。
+- 证据：`docs/evidence/v1.1.0-release/`（`release-assets.json`、`release-1.1.0-result.json`、
+  `01-check-update-1.1.0.png`、`04-label-verify.png`、`05-label-proxy.png`、`06-label-parser.png`、
+  `07-labels-video-parsed.png`）。
+
 ## 升级方式
 
 应用内「检查更新」或从 Release 下载安装包覆盖安装。设置、任务记录与主题保持不变。

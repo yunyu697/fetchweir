@@ -1,0 +1,43 @@
+{
+  "tag": "v1.1.0",
+  "draft": false,
+  "prerelease": false,
+  "publishedAt": "2026-11-14T09:57:09Z",
+  "url": "https://github.com/yunyu697/fetchweir/releases/tag/v1.1.0",
+  "assetNames": [
+    "Fetchweir_1.1.0_x64-setup-allusers.exe",
+    "Fetchweir_1.1.0_x64-setup.exe",
+    "latest.json",
+    "latest.json.sig"
+  ],
+  "fourAssets": true,
+  "signatureValid": true,
+  "manifestVersion": "1.1.0",
+  "rows": [
+    {
+      "name": "Fetchweir_1.1.0_x64-setup.exe",
+      "platform": "windows",
+      "arch": "x86_64",
+      "url": "https://github.com/yunyu697/fetchweir/releases/download/v1.1.0/Fetchweir_1.1.0_x64-setup.exe",
+      "manifestSize": 53594497,
+      "realSize": 53594497,
+      "sizeOk": true,
+      "manifestSha": "b0552446cc420b9c3cc92d1f1e34919ba38f0a17b23636d74cb38782fa714a76",
+      "realSha": "b0552446cc420b9c3cc92d1f1e34919ba38f0a17b23636d74cb38782fa714a76",
+      "shaOk": true
+    },
+    {
+      "name": "Fetchweir_1.1.0_x64-setup-allusers.exe",
+      "platform": "windows",
+      "arch": "x86_64",
+      "url": "https://github.com/yunyu697/fetchweir/releases/download/v1.1.0/Fetchweir_1.1.0_x64-setup-allusers.exe",
+      "manifestSize": 53590507,
+      "realSize": 53590507,
+      "sizeOk": true,
+      "manifestSha": "00b9d54e68f20799802bf06866f587a67da5e3bdbe6dd7bbbdb4b76e34215e28",
+      "realSha": "00b9d54e68f20799802bf06866f587a67da5e3bdbe6dd7bbbdb4b76e34215e28",
+      "shaOk": true
+    }
+  ],
+  "pass": true
+}

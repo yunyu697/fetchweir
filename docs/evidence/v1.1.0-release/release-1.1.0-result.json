@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-11-14T09:59:14.879Z",
+  "steps": [
+    {
+      "name": "起始客户端为 1.0.10",
+      "ok": true,
+      "detail": "version=1.0.10"
+    },
+    {
+      "name": "1.0.10 客户端检查到 1.1.0 且清单验签通过",
+      "ok": true,
+      "detail": "stage=updateAvailable latest=1.1.0 verified=true size=53594497"
+    },
+    {
+      "name": "应用内升级后进程版本为 1.1.0",
+      "ok": true,
+      "detail": "version=1.1.0"
+    },
+    {
+      "name": "安装版界面显示“暂不支持”且控件保持禁用",
+      "ok": true,
+      "detail": "settings={\"verify\":\"暂不支持\",\"proxy\":\"暂不支持\",\"parser\":\"暂不支持\",\"disabled\":[true,true,true]} video={\"subtitle\":\"暂不支持\",\"verify\":\"暂不支持\",\"disabled\":[true,true]}"
+    }
+  ],
+  "checks": {
+    "before": {
+      "version": "1.0.10"
+    },
+    "updateCheck": {
+      "stage": "updateAvailable",
+      "latest": "1.1.0",
+      "verified": true,
+      "asset": "Fetchweir_1.1.0_x64-setup.exe",
+      "size": 53594497,
+      "message": null
+    },
+    "installExitSeconds": 9,
+    "after": {
+      "version": "1.1.0",
+      "dataDir": "C:\\Users\\Tyler Zhang\\AppData\\Roaming\\Fetchweir"
+    },
+    "labels": {
+      "settings": {
+        "verify": "暂不支持",
+        "proxy": "暂不支持",
+        "parser": "暂不支持",
+        "disabled": [
+          true,
+          true,
+          true
+        ]
+      },
+      "video": {
+        "subtitle": "暂不支持",
+        "verify": "暂不支持",
+        "disabled": [
+          true,
+          true
+        ]
+      }
+    }
+  },
+  "pass": true,
+  "finishedAt": "2026-11-14T09:59:43.004Z"
+}
